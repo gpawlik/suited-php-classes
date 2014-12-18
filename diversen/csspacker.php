@@ -1,5 +1,6 @@
 <?php
 
+namespace diversen;
 // Found on: 
 // http://code.google.com/p/css-packer-function-php/source/browse/css-packer-function-php-1.0.php
 
