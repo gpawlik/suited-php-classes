@@ -14,7 +14,6 @@
 
     ],
     "require": {
-        "necenzurat/redbeanphp-composer": "*",
         "pear-pear.php.net/PEAR": "1.9.*",
         "pear-pear.php.net/Pager": "2.4.*",
         "pear-pear.php.net/Validate": "0.8.*",
