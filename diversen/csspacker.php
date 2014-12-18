@@ -5,9 +5,8 @@
 
 class csspacker {
     public static function packcss ($s) {
-	return packCss($s);
+	return self::packCss($s);
     }
-}
 /*
  * css-packer-function-php
  *
@@ -28,7 +27,7 @@ class csspacker {
  *
  */
 
-function packCSS($s) {
+public static function packCSS($s) {
     $s = str_replace(array("\n", "\r", "\t", "\v", "\0", "\x0B"), '', preg_replace("/[^\x20-\xFF]/", "", trim(@strval($s))));
 
     $a = array("/[\ ]+/s" => " ",
@@ -47,5 +46,7 @@ function packCSS($s) {
         }
 
         return $s;
+}
+
 }
 
