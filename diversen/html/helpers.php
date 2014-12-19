@@ -2,6 +2,9 @@
 
 namespace diversen\html;
 use diversen\date; 
+use diversen\session;
+use diversen\html;
+use diversen\lang;
 /**
  * File containing class for html helpers
  * @package html 
@@ -134,7 +137,6 @@ class helpers {
                     $_REQUEST['birth_day'];
             return $date;
         }
-        return null;
-        
+        return null;        
     }
 }
