@@ -208,30 +208,33 @@ class imap {
         $parts = array ();
         
         $gen_sub = false;
+        
+        
+        
+        
+        
         try {
             $parts['subject'] = $message->subject;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $gen_sub = true;
         }
         $parts['plain'] = '';
-        $parts['images'] = array ();
-        $parts['movies'] = array ();
-        $parts['unknown'] = array ();
+        $parts['images'] = array();
+        $parts['movies'] = array();
+        $parts['unknown'] = array();
 
+        $parts['date'] = $message->getHeader('Date', 'string');
+        $from = $message->getHeader('From', 'string');
 
-            $parts['date'] = $message->getHeader('Date', 'string');
-            $from = $message->getHeader('From', 'string');
-
-        
         $parts['from'] = trim($this->extractMailFrom($from));
-        $parts['html'] = array ();
-        
+        $parts['html'] = array();
+
         // test if it is not a multi part message
         if (!$message->isMultipart()) {
             $parts['plain'] = $this->decodePlain($message);
         }
         
-        foreach (new RecursiveIteratorIterator($message) as $part) {
+        foreach (new \RecursiveIteratorIterator($message) as $part) {
             try {
                 $type = $this->getContentType($part);
 
@@ -256,7 +259,7 @@ class imap {
                     // else unknown
                     $parts['unknown'][] = $part;
                 }
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 error_log($e->getMessage());
             }
         } 
@@ -297,7 +300,7 @@ class imap {
                 $type = $this->getContentType($part);
                 $parts[$type][] = $part->getContent();
             } 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
                 log::error($e->getTraceAsString());
                 log::error($e->getMessage());
         }
@@ -326,7 +329,7 @@ class imap {
                     return $foundPart;
                     break;
                 }
-            } catch (Zend_Mail_Exception $e) {
+            } catch (\Exception $e) {
                  log::error($e->getMessage());
             }
         }

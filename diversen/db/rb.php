@@ -114,7 +114,7 @@ class rb {
         try{
             R::trashAll($beans);   
             R::commit();
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             R::rollback();
         }
     }
@@ -129,7 +129,7 @@ class rb {
         try{
             $res = R::store($bean);
             R::commit();
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             R::rollback();
             $res = false;
         }
