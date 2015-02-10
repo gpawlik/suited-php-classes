@@ -60,11 +60,18 @@ class dispatch {
             if (method_exists($class, $method)) {
                 
                 $call_exists = 1;
-                $class::$method();
+                $o = new $class;
+                $o->$method();
+                //$class::$method();
                 if (isset(moduleloader::$status[403])){
                     moduleloader::includeModule('error');
                     moduleloader::includeController('error/403');
-                }     
+                }  
+                
+                if (isset(moduleloader::$status[404])){
+                    moduleloader::includeModule('error');
+                    moduleloader::includeController('error/404');
+                }   
             }
         }  
 
