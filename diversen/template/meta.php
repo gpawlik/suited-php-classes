@@ -1,9 +1,12 @@
 <?php
 
 namespace diversen\template;
+
 use diversen\html;
 use diversen\conf as config;
 use diversen\template;
+use diversen\strings;
+use diversen\template\assets;
 
 /**
  * File containing class for adding meta tags
@@ -16,47 +19,89 @@ use diversen\template;
  * class used for parsing meta tags
  * @package template
  */
+class meta extends template {
 
-class meta extends template  {
-    
-        
     /**
      * holding meta tags
      * @var array $meta  
      */
     public static $meta = array();
-    
+
     /**
      * var holding meta tags strings
      * @var string $metaStr
      */
     public static $metaStr = '';
-  
-    /**
-     * method for setting meta tags. The tags will be special encoded
-     * @param   array   $ary of metatags e.g. 
-     *                         <code>array('description' => 'content of description meta tags')</code>
-     *                         or string which will be set direct. E.g. 
-     *                         
-     */
-    public static function setMeta($ary){
 
-        foreach($ary as $key => $val){
-            if (isset(self::$meta[$key])){
+    /**
+     * method for setting meta tags. The tags will be special encoded in
+     * this method
+     * @param array $ary $meta tags            
+     */
+    public static function setMeta($ary) {
+
+        foreach ($ary as $key => $val) {
+            if (isset(self::$meta[$key])) {
                 continue;
             }
             self::$meta[$key] = html::specialEncode($val);
         }
     }
-    
+
     /**
-     * sets meta tags directly. 
-     * @param string $str e.g. <code><meta name="description" content="test" /></code>
+     * sets all <head></head> meta info. 
+     * Params should not be encoded
+     * @param string $title html page title
+     * @param string $description html page description and og description
+     * @param string $keywords keywords
+     * @param string $image image
+     * @param string $type og type
      */
-    public static function setMetaAsStr ($str) {
+    public static function setMetaAll($title, $description ='', $keywords = '', $image = '', $type = '') {
+
+        $desc = strings::substr2($description, 255);
+        $og_desc = html::specialEncode(strings::substr2($description, 320));
+
+        assets::setTitle(html::specialEncode($title));
+        self::setMetaAsStr(
+                '<meta property="og:title" content="' . html::specialEncode($title) . '" />' . "\n");
+
+        if (!empty($image)) {
+            $server = config::getSchemeWithServerName();
+            $image = $server . $image;
+        }
+
+        if (!empty($type)) {
+            self::setMetaAsStr(
+                    '<meta property="og:type" content="' . $type . '"/>' . "\n");
+        }
+        if (!empty($og_desc)) {
+            self::setMetaAsStr(
+                    '<meta property="og:description" content="' . $og_desc . '"/>' . "\n");
+        }
+        if (!empty($image)) {
+            self::setMetaAsStr(
+                    '<meta property="og:image" content="' . $image . '"/>' . "\n");
+        }
+
+        if (!empty($desc)) {
+            self::setMeta(
+                    array('description' => $desc));
+        }
+        if (!empty($keywords)) {
+            self::setMeta(
+                    array('keywords' => $keywords));
+        }
+    }
+
+    /**
+     * sets a meta string directly. 
+     * @param string $str <code><meta name="description" content="test" /></code>
+     */
+    public static function setMetaAsStr($str) {
         self::$metaStr.= $str;
     }
-    
+
     /**
      * method for getting the meta tags as a string
      * You can specifiy meta keywords and description global in config.ini
@@ -65,7 +110,7 @@ class meta extends template  {
      * @return string $str the meta tags as a string. This can be used
      *                     in your mainTemplate
      */
-    public static function getMeta (){        
+    public static function getMeta() {
         $str = '';
 
         if (!isset(self::$meta['keywords'])) {
@@ -76,11 +121,11 @@ class meta extends template  {
                 self::$meta['keywords'] = $str;
             }
         }
-        
+
         // master domains are allow visible for robots
         $master = config::getMainIni('master');
         if (!isset(self::$meta['robots']) && $master) {
-            
+
             $str = '';
             $str = config::getMainIni('meta_robots');
             $str = trim($str);
@@ -102,7 +147,7 @@ class meta extends template  {
         foreach (self::$meta as $key => $val) {
             $str.= "<meta name=\"$key\" content=\"$val\" />\n";
         }
-        
+
         $str.= self::$metaStr;
         return $str;
     }
