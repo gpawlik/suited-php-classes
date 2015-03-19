@@ -338,9 +338,24 @@ class session {
      * unsets the system cookie and unsets session credentials
      */
     public static function killSession (){
-        // only keep one system cookie (e.g. if user clears his cookies)
+
         $db = new db();
         $db->delete('system_cookie', 'cookie_id', @$_COOKIE['system_cookie']);
+        
+        setcookie ("system_cookie", "", time() - 3600, "/");
+        unset($_SESSION['id'], $_SESSION['admin'], $_SESSION['super'], $_SESSION['account_type']);
+        session_destroy();
+    }
+    
+    /**
+     * method for killing all sessions based on user_id
+     * deletes all system cookies and unsets session credentials
+     * @param int $account_id
+     */
+    public static function killSessionAll ($account_id){
+        // only keep one system cookie (e.g. if user clears his cookies)
+        $db = new db();
+        $db->delete('system_cookie', 'account_id', $account_id);
         
         setcookie ("system_cookie", "", time() - 3600, "/");
         unset($_SESSION['id'], $_SESSION['admin'], $_SESSION['super'], $_SESSION['account_type']);
@@ -539,7 +554,7 @@ class session {
      * @return  mixed $res false if no user id or the users id. 
      */
     static public function getUserId(){
-        if ( !isset($_SESSION['id']) || empty($_SESSION['id']) ){
+        if (!isset($_SESSION['id']) || empty($_SESSION['id']) ){
             return false;
         } else {
             return $_SESSION['id'];
@@ -615,6 +630,24 @@ class session {
         return self::checkAccessControl($allow, $setErrorModule);
         
     }
+    
+    public static function checkAccount () {
+        $user_id = session::getUserId();
+        if ($user_id) {
+            $a = db_q::select('account')->filter('id =', $user_id)->fetchSingle();
+            
+            // user may have been deleted
+            if (empty($a)) {
+                self::killSessionAll($user_id);
+                return;
+            } 
+            
+            if ($a['locked'] == 1) {
+                self::killSessionAll($user_id);
+                return;
+            }
+        }
+    } 
     
     /**
      * checks access for 'user', 'admin' or 'super'. It 
