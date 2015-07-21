@@ -30,5 +30,7 @@ class alias {
         class_alias('diversen\profile', 'profile');
         class_alias('diversen\user', 'user');
         class_alias('diversen\time', 'time');
+        class_alias('diversen\filter\markdown', 'cosmarkdown');
+        class_alias('diversen\filter\media', 'cosmedia');
     }
 }
