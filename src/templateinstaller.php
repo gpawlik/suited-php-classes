@@ -1,5 +1,7 @@
 <?php
 
+namespace diversen;
+use diversen\conf as config;
 /**
  * file contains the template installer
  * @package installer
