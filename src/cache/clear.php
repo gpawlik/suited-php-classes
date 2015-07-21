@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen\cache;
-use diversen\db\q as q;
+use diversen\db\q;
 use diversen\file;
 /**
  * File contains methods for clearing all or some of the cached assets
