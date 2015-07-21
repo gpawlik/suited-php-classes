@@ -1,8 +1,7 @@
 <?php
 
 namespace diversen;
-use diversen\user\profile;
-use diversen\db\q as q;
+//use diversen\user\profile as user_profile;
 use diversen\db;
 use diversen\moduleloader;
 use diversen\lang;
@@ -41,7 +40,7 @@ class user {
      * @return array|false $row if row was found else false
      */
     public static function ownID ($table, $id, $user_id) {
-        $row = q::setSelect($table)->
+        $row = \q::setSelect($table)->
                 filter('id =', $id)->
                 condition('AND')->
                 filter('user_id = ', $user_id)->

@@ -29,7 +29,7 @@
         "zendframework/zend-mail": "2.*",
         "zendframework/zend-dom": "2.*"
     }, "autoload": {
-        "psr-0": { "diversen": "" }
+        "psr-4": { "src": "" }
     }
 }
 
