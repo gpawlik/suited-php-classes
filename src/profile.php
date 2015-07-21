@@ -1,6 +1,8 @@
 <?php
 
 namespace diversen;
+use diversen\moduleinstaller;
+
 /**
  * *
  * File which contains class for creating profiles which is complete systems
