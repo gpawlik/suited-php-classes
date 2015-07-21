@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen;
-use diversen\conf as config;
+use diversen\conf as conf;
 use diversen\db\admin as db_admin;
 /**
  * File contains contains class for connecting to a mysql database
@@ -117,21 +117,21 @@ class db {
      *
      */
     public static function connect($options = null){
-        self::$debug[] = "Trying to connect with " . config::$vars['coscms_main']['url'];
+        self::$debug[] = "Trying to connect with " . conf::$vars['coscms_main']['url'];
         if (isset($options['url'])) {
             $url = $options['url'];
             $username = $options['username'];
             $password = $options['password'];
         } else {
-            $url = config::getMainIni('url');
-            $username = config::getMainIni('username');
-            $password = config::getMainIni('password');
+            $url = conf::getMainIni('url');
+            $username = conf::getMainIni('username');
+            $password = conf::getMainIni('password');
             
         }
 
         try {
             
-            if (config::getMainIni('db_dont_persist') == 1) {
+            if (conf::getMainIni('db_dont_persist') == 1) {
                 $con_options = array ();
             } else {
                 $con_options = array ('PDO::ATTR_PERSISTENT' => true);
@@ -147,8 +147,8 @@ class db {
             self::$dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             
             self::setSsl();
-	        if (isset(config::$vars['coscms_main']['db_init'])) {
-                self::$dbh->exec(config::$vars['coscms_main']['db_init']);
+	        if (isset(conf::$vars['coscms_main']['db_init'])) {
+                self::$dbh->exec(conf::$vars['coscms_main']['db_init']);
 
             }
 
@@ -169,7 +169,7 @@ class db {
 
     public static function setSsl () {
 
-	    $attr = config::getMainIni('mysql_attr');
+	    $attr = conf::getMainIni('mysql_attr');
             if (isset($attr['mysql_attr'])) {
                 self::$dbh->setAttribute(\PDO::MYSQL_ATTR_SSL_KEY, $attr['ssl_key']);
                 self::$dbh->setAttribute(\PDO::MYSQL_ATTR_SSL_CERT, $attr['ssl_cert']);

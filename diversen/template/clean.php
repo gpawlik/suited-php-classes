@@ -2,7 +2,7 @@
 
 namespace diversen\template;
 use diversen\template;
-use diversen\conf as config;
+use diversen\conf as conf;
 /**
  * file contains a clean template, which can be used
  * if we need to print a clean page
@@ -21,7 +21,7 @@ class clean {
      */
     public static function header () { ?>
 <!doctype html>
-<html lang="<?=config::$vars['coscms_main']['lang']?>">
+<html lang="<?=conf::$vars['coscms_main']['lang']?>">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">

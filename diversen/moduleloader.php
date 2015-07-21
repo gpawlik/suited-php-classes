@@ -3,7 +3,7 @@
 namespace diversen;
 use diversen\moduleloader\reference;
 use diversen\lang;
-use diversen\conf as config;
+use diversen\conf as conf;
 use diversen\uri;
 /**
  * File contains class for loading modules
@@ -244,12 +244,12 @@ class moduleloader {
      */
     public function setHomeModuleInfo(){
         
-        $frontpage_module = config::getMainIni('frontpage_module');
+        $frontpage_module = conf::getMainIni('frontpage_module');
         $this->info['is_frontpage'] = true;
         $this->info['module_name'] = $frontpage_module;
         $this->info['module_base_name'] = $frontpage_module;
         $this->info['base'] = $base = _COS_MOD_PATH;
-        $this->info['language_file'] = $base . "/$frontpage_module" . '/lang/' . config::getMainIni('language') . '/language.inc';
+        $this->info['language_file'] = $base . "/$frontpage_module" . '/lang/' . conf::getMainIni('language') . '/language.inc';
         $this->info['ini_file'] =  $base . "/$frontpage_module"  . "/$frontpage_module" . '.ini';
         
         $controller_dir = $base . "/$frontpage_module/";
@@ -277,7 +277,7 @@ class moduleloader {
      */
     public function setErrorModuleInfo(){
         
-        $error_module = config::getMainIni('error_module');
+        $error_module = conf::getMainIni('error_module');
         if (!$error_module) {
             $error_module = 'error';
         }
@@ -285,7 +285,7 @@ class moduleloader {
         $this->info['module_base_name'] = $error_module;
         $this->info['base'] = $base = _COS_MOD_PATH;
         
-        $this->info['language_file'] = $base . "/$error_module" . '/lang/' . config::getMainIni('language'). '/language.inc';
+        $this->info['language_file'] = $base . "/$error_module" . '/lang/' . conf::getMainIni('language'). '/language.inc';
         $this->info['ini_file'] =  $base . "/$error_module"  . "/$error_module" . '.ini';
         
         if (isset(self::$status[404])){
@@ -326,7 +326,7 @@ class moduleloader {
 
         // if we only have one fragment 
         // means we are need to load the frontpage module
-        $frontpage_module = config::getMainIni('frontpage_module');
+        $frontpage_module = conf::getMainIni('frontpage_module');
         $this->info['module_name'] = $info['module_name'];
         if ($uri->numFragments() == 1){         
             $this->info['module_base_name'] = $frontpage_module;
@@ -338,7 +338,7 @@ class moduleloader {
             $this->info['base'] = $base = _COS_MOD_PATH;
         }
 
-        $this->info['language_file'] = $base . $info['module_base'] . '/lang/' . config::getMainIni('language'). '/language.inc';
+        $this->info['language_file'] = $base . $info['module_base'] . '/lang/' . conf::getMainIni('language'). '/language.inc';
         $this->info['ini_file'] =  $base . $info['module_base'] . $info['module_base'] . '.ini';
         $this->info['ini_file_php'] =  $base . $info['module_base'] . $info['module_base'] . '.php.ini';
         $controller_file = $base . $info['controller_path_str'] . '/' . $info['controller'] . '.php';
@@ -540,8 +540,8 @@ class moduleloader {
             return;
         }
         
-        if (!isset(config::$vars['coscms_main']['module'])){
-            config::$vars['coscms_main']['module'] = array();
+        if (!isset(conf::$vars['coscms_main']['module'])){
+            conf::$vars['coscms_main']['module'] = array();
         }
 
         $set[$module] = $module;
@@ -557,38 +557,38 @@ class moduleloader {
             return;
         }
 
-        $module_ini = config::getIniFileArray($ini_file, true);
+        $module_ini = conf::getIniFileArray($ini_file, true);
         if (is_array($module_ini)){
-            config::$vars['coscms_main']['module'] = array_merge(
-                config::$vars['coscms_main']['module'],
+            conf::$vars['coscms_main']['module'] = array_merge(
+                conf::$vars['coscms_main']['module'],
                 $module_ini
             );
         }
         
-        if (isset($module_ini['development']) && config::getEnv() =='development' ) {
-                config::$vars['coscms_main']['module'] =
+        if (isset($module_ini['development']) && conf::getEnv() =='development' ) {
+                conf::$vars['coscms_main']['module'] =
                         array_merge(
-                        config::$vars['coscms_main']['module'],
+                        conf::$vars['coscms_main']['module'],
                         $module_ini['development']
                     );
         }
 
         // check if stage settings exists.
-        if ((isset($module_ini['stage']) && config::getEnv() =='stage' ) ){
-                config::$vars['coscms_main']['module'] =
+        if ((isset($module_ini['stage']) && conf::getEnv() =='stage' ) ){
+                conf::$vars['coscms_main']['module'] =
                         array_merge(
-                        config::$vars['coscms_main']['module'],
+                        conf::$vars['coscms_main']['module'],
                         $module_ini['stage']
                     );
         }
 
         
         // load language specific configuration, e.g. en_GB or en or sv
-        $language = config::getMainIni('language');
+        $language = conf::getMainIni('language');
         if (isset($module_ini[$language])) {
-                config::$vars['coscms_main']['module'] =
+                conf::$vars['coscms_main']['module'] =
                         array_merge(
-                        config::$vars['coscms_main']['module'],
+                        conf::$vars['coscms_main']['module'],
                         $module_ini[$language]
                     );
         }
@@ -596,10 +596,10 @@ class moduleloader {
         // check for a locale ini file which only
         // can be added by end user. 
         if (file_exists($ini_locale)) {
-            $locale = config::getIniFileArray($ini_locale, true);
-            config::$vars['coscms_main']['module'] =
+            $locale = conf::getIniFileArray($ini_locale, true);
+            conf::$vars['coscms_main']['module'] =
                 array_merge(
-                config::$vars['coscms_main']['module'],
+                conf::$vars['coscms_main']['module'],
                 $locale
             );
         }
@@ -874,7 +874,7 @@ class moduleloader {
      * @param string $controller
      */
     public static function includeController ($controller) {
-        $module_path = config::$vars['coscms_base']  . '/' . _COS_MOD_DIR . '/' . $controller;
+        $module_path = conf::$vars['coscms_base']  . '/' . _COS_MOD_DIR . '/' . $controller;
         $controller_file = $module_path . '.php';
         include_once $controller_file;
     }

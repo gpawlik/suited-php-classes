@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen;
-use diversen\conf as config;
+use diversen\conf as conf;
 use diversen\log;
 use diversen\lang;
 
@@ -66,7 +66,7 @@ class imagescale {
      */
     public static function resize ($image, $thumb, $x, $y){
         //create transform driver object
-        $driver = config::getMainIni('image_driver');
+        $driver = conf::getMainIni('image_driver');
         if (!$driver) $driver = 'GD';
         $it = \Image_Transform::factory($driver);
         if (isset(self::$options)) {
@@ -113,7 +113,7 @@ class imagescale {
      */
     public static function byX ($image, $thumb, $x){
         //create transform driver object
-        $driver = config::getMainIni('image_driver');
+        $driver = conf::getMainIni('image_driver');
         if (!$driver) { 
             $driver = 'GD';
         }
@@ -164,7 +164,7 @@ class imagescale {
      */
     public static function fit ($image, $thumb, $x, $y){
         //create transform driver object
-        $driver = config::getMainIni('image_driver');
+        $driver = conf::getMainIni('image_driver');
         if (!$driver) { 
             $driver = 'GD';
         }
@@ -213,7 +213,7 @@ class imagescale {
      */
     public static function byY ($image, $thumb, $y){
         //create transform driver object
-        $driver = config::getMainIni('image_driver');
+        $driver = conf::getMainIni('image_driver');
         if (!$driver) { 
             $driver = 'GD';
         }

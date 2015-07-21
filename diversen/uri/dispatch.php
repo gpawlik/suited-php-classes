@@ -2,8 +2,8 @@
 
 namespace diversen\uri;
 use diversen\moduleloader;
-use diversen\db\q as db_q;
-use diversen\conf as config;
+use diversen\db\q as q;
+use diversen\conf as conf;
 /**
  * simple url dispatch class
  * @package uri 
@@ -101,13 +101,13 @@ class dispatch {
      * sets db routes
      */
     public static function setDbRoutes () {
-        $routes = db_q::setSelect('system_route')->fetch();
+        $routes = q::setSelect('system_route')->fetch();
         if (empty($routes)) { 
-            config::$vars['coscms_main']['routes'] = array ();
+            conf::$vars['coscms_main']['routes'] = array ();
         }
         
         foreach ($routes as $route) {
-            config::$vars['coscms_main']['routes'][$route['route']] = unserialize($route['value']);  
+            conf::$vars['coscms_main']['routes'][$route['route']] = unserialize($route['value']);  
         }
     }
     
@@ -116,7 +116,7 @@ class dispatch {
      * @return array $routes
      */
     public static function getDbRoutes () {
-        return config::$vars['coscms_main']['routes'];
+        return conf::$vars['coscms_main']['routes'];
     }
     
     /**

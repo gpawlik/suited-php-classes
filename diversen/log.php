@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen;
-use diversen\conf as config;
+use diversen\conf as conf;
 /**
  * File contains methods for logging
  * @package    log
@@ -27,8 +27,8 @@ class log {
             $message = var_export($message, true);
         }
 
-        if (config::getMainIni('debug') && $echo == true) {
-            if (config::isCli()) {
+        if (conf::getMainIni('debug') && $echo == true) {
+            if (conf::isCli()) {
                 echo $message . PHP_EOL;
             } else {
                 echo $message;
@@ -36,8 +36,8 @@ class log {
         }
 
         if ($write_file){
-            $message = strftime(config::getMainIni('date_format_long')) . ": " . $message;
-            if (config::isCli()) {
+            $message = strftime(conf::getMainIni('date_format_long')) . ": " . $message;
+            if (conf::isCli()) {
                 $path = _COS_PATH . "/logs/coscms.log";
                 error_log($message . PHP_EOL, 3, $path);
             } else {
@@ -53,7 +53,7 @@ class log {
      * @param string $message 
      */
     public static function debug ($message) {       
-        if (config::getMainIni('debug')) {
+        if (conf::getMainIni('debug')) {
             self::error($message);
             return;
         } 

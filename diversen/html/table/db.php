@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen\html\table;
-use diversen\db\q as db_q;
+use diversen\db\q as q;
 use diversen\pagination as paginate;
 
 /**
@@ -36,9 +36,9 @@ class db {
      * @return string $html
      */
     public function getTable($table, $from, $limit = 100) {
-        $total = db_q::numRows('account')->fetch();
+        $total = q::numRows('account')->fetch();
         $p = new paginate($total);
-        $rows = db_q::select($table)->limit($p->from, $limit)->fetch();
+        $rows = q::select($table)->limit($p->from, $limit)->fetch();
         $str = "<table border =1><tr>";
         $str.= $this->getTableHeaders($table);
         $str.= $this->getTableRows($rows);

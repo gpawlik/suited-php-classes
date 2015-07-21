@@ -2,10 +2,10 @@
 
 namespace diversen;
 use diversen\moduleloader;
-use diversen\conf as config;
+use diversen\conf as conf;
 use diversen\template;
 use diversen\session;
-use diversen\db\q as db_q;
+use diversen\db\q as q;
 use diversen\db;
 use diversen\file;
 use diversen\lang;
@@ -135,12 +135,12 @@ class layout {
      */
     public static function getTemplateName () {
         // check is a admin template is being used. 
-        if (session::isAdmin() && isset(config::$vars['coscms_main']['admin_template'])){
-            $template = config::$vars['coscms_main']['admin_template'];
+        if (session::isAdmin() && isset(conf::$vars['coscms_main']['admin_template'])){
+            $template = conf::$vars['coscms_main']['admin_template'];
         }
         
         if (!isset($template)) {
-            $template = config::getMainIni('template');
+            $template = conf::getMainIni('template');
         }
         
         return $template;
@@ -165,7 +165,7 @@ class layout {
 
         // always a module menu in web mode
         self::$menu['main'] = 
-                db_q::select('menus')->
+                q::select('menus')->
                 filter('parent =', 0)->condition('AND')->
                 filter('admin_only =', 0)->
                 order('weight')->
@@ -174,7 +174,7 @@ class layout {
         // admin item are special
         if (session::isAdmin()){
             self::$menu['admin'] = 
-                    db_q::select('menus')->filter('admin_only =', 1)->condition('OR')->
+                    q::select('menus')->filter('admin_only =', 1)->condition('OR')->
                     filter('section !=', '')->
                     order('weight')->
                     fetch();
@@ -198,7 +198,7 @@ class layout {
         // if no module it must be 'frontpage_module' set
         // in configuration
         if (!$module) {
-            $module = config::getMainIni('frontpage_module');
+            $module = conf::getMainIni('frontpage_module');
             $menu = self::getBaseModuleMenu($module);
             self::$menu['module'] = array_merge(self::$menu['module'], $menu);
             return;
@@ -312,7 +312,7 @@ class layout {
      */
     public static function initBlocks () {
         
-        $blocks = config::getMainIni('blocks_all');
+        $blocks = conf::getMainIni('blocks_all');
         if (!isset($blocks)) { 
             return;
         }
@@ -443,7 +443,7 @@ class layout {
         
         // if e.g. account_allow_db_config is not set we use admin as base setting
         $allow_config = $module . "_allow_db_config";
-        $allow = config::getModuleIni($allow_config);
+        $allow = conf::getModuleIni($allow_config);
         if (!$allow) {
             $allow = 'admin';
         }
@@ -724,12 +724,12 @@ class layout {
     public static function parseBlock($block){
 
         $blocks = array();
-        if (isset(config::$vars['coscms_main'][$block],config::$vars['coscms_main']['module'][$block])){
-            $blocks = array_merge(config::$vars['coscms_main'][$block], config::$vars['coscms_main']['module'][$block]);
-        } else if (isset(config::$vars['coscms_main'][$block])) {
-            $blocks = config::$vars['coscms_main'][$block];
-        } else if (isset(config::$vars['coscms_main']['module'][$block])){
-            $blocks = config::$vars['coscms_main']['module'][$block];
+        if (isset(conf::$vars['coscms_main'][$block],conf::$vars['coscms_main']['module'][$block])){
+            $blocks = array_merge(conf::$vars['coscms_main'][$block], conf::$vars['coscms_main']['module'][$block]);
+        } else if (isset(conf::$vars['coscms_main'][$block])) {
+            $blocks = conf::$vars['coscms_main'][$block];
+        } else if (isset(conf::$vars['coscms_main']['module'][$block])){
+            $blocks = conf::$vars['coscms_main']['module'][$block];
         } else {
             return $blocks;
         }
@@ -742,7 +742,7 @@ class layout {
                 moduleloader::includeModule('block_manip');
                 $row = \block_manip::getOne($val); 
                 $row['content_block'] = moduleloader::getFilteredContent(
-                    config::getModuleIni('block_manip_filters'), $row['content_block']
+                    conf::getModuleIni('block_manip_filters'), $row['content_block']
                 );
                 $row['title'] = htmlspecialchars($row['title']);
                 $content = view::get('block_manip', 'block_html', $row);

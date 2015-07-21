@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen\image;
-use diversen\conf as config;
+use diversen\conf as conf;
 /**
  * file contains a simple image captcha class
  * @package image
@@ -53,13 +53,13 @@ class captcha {
 
     function create($str) {
 
-        $font = config::getModuleIni('image_captcha_font'); //'fonts/captcha.ttf';'
-        $f_color = config::getModuleIni('image_captcha_font_color'); //'fonts/captcha.ttf';'
+        $font = conf::getModuleIni('image_captcha_font'); //'fonts/captcha.ttf';'
+        $f_color = conf::getModuleIni('image_captcha_font_color'); //'fonts/captcha.ttf';'
         if (!$f_color) {
             $f_color = 'FFFFFF';
         }
 
-        $b_color = config::getModuleIni('image_captcha_bg_color'); //'fonts/captcha.ttf';'
+        $b_color = conf::getModuleIni('image_captcha_bg_color'); //'fonts/captcha.ttf';'
         if (!$b_color) {
             $b_color = '000000';
         }

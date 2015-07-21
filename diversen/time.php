@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen;
-use diversen\conf as config;
+use diversen\conf as conf;
 /**
  * file contains time functions
  * @package time 
@@ -65,7 +65,7 @@ class time {
      */
     public static function getDateString ($date, $format = 'date_format_long'){        
         $unix_stamp = strtotime($date);
-        $date_formatted = strftime(config::getMainIni($format), $unix_stamp);
+        $date_formatted = strftime(conf::getMainIni($format), $unix_stamp);
         return $date_formatted;
     }
     

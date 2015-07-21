@@ -2,7 +2,7 @@
 
 namespace diversen;
 use diversen\lang;
-use diversen\conf as config;
+use diversen\conf as conf;
 //use diversen\conf as confi;
 /**
  * file with class for doing uploads and a couple of helper functions
@@ -379,7 +379,7 @@ class upload {
             die('Developer: Set a folder when uploading');
         }
         
-        $domain = config::getDomain();
+        $domain = conf::getDomain();
         $options = array (
             'upload_dir' => "/htdocs/files/$domain/$folder/$id",
         );

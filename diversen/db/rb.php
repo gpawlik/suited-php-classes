@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen\db;
-use \diversen\conf as config;
+use \diversen\conf as conf;
 /**
  * File contains RB (Redbeans) helpers for easy connecting to CosCMS 
  * DB using Redbeans
@@ -48,15 +48,15 @@ class rb {
         
         if (!$connected){           
             
-            $url = config::getMainIni('url');
-            $username = config::getMainIni('username');
-            $password = config::getMainIni('password');
+            $url = conf::getMainIni('url');
+            $username = conf::getMainIni('username');
+            $password = conf::getMainIni('password');
             R::setStrictTyping(false); 
             $formatter = new MyModelFormatter;
             \RedBean_ModelHelper::setModelFormatter($formatter);
             
             R::setup($url, $username,$password); //mysql
-            $freeze = config::getMainIni('rb_freeze');
+            $freeze = conf::getMainIni('rb_freeze');
             if ($freeze == 1) {
                 R::freeze(true);
             }

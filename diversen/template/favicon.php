@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen\template;
-use diversen\conf as config;
+use diversen\conf as conf;
 
 
 
@@ -24,8 +24,8 @@ class favicon {
      */
     public static function getFaviconHTML () {
         
-        $favicon = config::getMainIni('favicon');
-        $domain = config::getDomain();
+        $favicon = conf::getMainIni('favicon');
+        $domain = conf::getDomain();
         $rel_path = "/files/$domain/favicon/$favicon";
         $full_path = _COS_HTDOCS . "/$rel_path"; 
         if (!is_file($full_path)) {

@@ -3,8 +3,8 @@
 namespace diversen;
 use diversen\html;
 use diversen\moduleloader;
-use diversen\conf as config;
-use diversen\template\assets as template_assets;
+use diversen\conf as conf;
+use diversen\template\assets as assets;
 use diversen\template\meta as template_meta;
 use diversen\template\favicon as template_favicon;
 use diversen\template\logo as template_logo;
@@ -87,7 +87,7 @@ class template {
         if (!empty(self::$title)) {
             return self::$title;
         }
-        return html::specialEncode(config::getMainIni('meta_title'));
+        return html::specialEncode(conf::getMainIni('meta_title'));
     }
 
     /**
@@ -126,7 +126,7 @@ class template {
      * @return string $assets 
      */
     public static function getRelAssets () {
-        return template_assets::getRelAssets();
+        return assets::getRelAssets();
     }
     
     /**
@@ -135,7 +135,7 @@ class template {
      * @param string $link 'src' link of the asset 
      */
     public static function setRelAsset ($type, $link) {
-        template_assets::setRelAsset($type, $link);
+        assets::setRelAsset($type, $link);
     }
     
     /**
@@ -172,7 +172,7 @@ class template {
      * @param array $options
      */
     public static function setNoCacheCss ($css_url, $order = null, $options = array ()) {
-        template_assets::setNoCacheCss($css_url, $order, $options);
+        assets::setNoCacheCss($css_url, $order, $options);
     }
 
     /**
@@ -183,7 +183,7 @@ class template {
      * @param array $options
      */
     public static function setCss($css_url, $order = null, $options = null){
-        template_assets::setCss($css_url, $order, $options);
+        assets::setCss($css_url, $order, $options);
     }
 
 
@@ -192,7 +192,7 @@ class template {
      * @return  string  the css as a string
      */
     public static function getCss(){
-        return template_assets::getCss();
+        return assets::getCss();
     }
     
 
@@ -204,7 +204,7 @@ class template {
      * @return string $str
      */
     public static function getCompressedCss(){
-        return template_assets::getCompressedCss();
+        return assets::getCompressedCss();
     }
     
     /**
@@ -217,7 +217,7 @@ class template {
      * @param array $options
      */
     public static function setStringJs($js, $order = null, $options = array()){
-        template_assets::setStringJs($js, $order, $options);
+        assets::setStringJs($js, $order, $options);
     }
 
 
@@ -230,7 +230,7 @@ class template {
      * @param   array    $options defaults: array ('head' => false)
      */
     public static function setJs($js_url, $order = null, $options = null){
-        template_assets::setJs($js_url, $order, $options);
+        assets::setJs($js_url, $order, $options);
     }
 
     /**
@@ -238,7 +238,7 @@ class template {
      * @return  string  the css as a string
      */
     public static function getJs(){
-        return template_assets::getJs();
+        return assets::getJs();
     }
       
     /**
@@ -250,14 +250,14 @@ class template {
      * @return string $str
      */
     public static function getCompressedJs(){
-        return template_assets::getCompressedJs(); 
+        return assets::getCompressedJs(); 
     }
     
     /**
      * gets js for head as a string
      */
     public static function getJsHead(){
-        return template_assets::getJsHead();
+        return assets::getJsHead();
     }
     
     /**
@@ -279,7 +279,7 @@ class template {
      * @param array $options
      */
     public static function setInlineJs($js, $order = null, $options = array()){
-        template_assets::setInlineJs($js, $order, $options);
+        assets::setInlineJs($js, $order, $options);
     }
 
     /**
@@ -287,7 +287,7 @@ class template {
      * @return  string  $str the js as a string
      */
     public static function getInlineJs(){
-        return template_assets::getInlineJs();
+        return assets::getInlineJs();
     }
 
     /**
@@ -299,7 +299,7 @@ class template {
      * @param array $options
      */
     public static function setInlineCss($css, $order = null, $options = array()){
-        template_assets::setInlineCss($css, $order, $options);
+        assets::setInlineCss($css, $order, $options);
     }
     
         /**
@@ -311,7 +311,7 @@ class template {
      * @param array $options
      */
     public static function setModuleInlineCss($module, $css, $order = null, $options = array()){
-        template_assets::setModuleInlineCss($module, $css, $order, $options);
+        assets::setModuleInlineCss($module, $css, $order, $options);
     }
 
     
@@ -322,7 +322,7 @@ class template {
      * @param type $type 
      */
     public static function cacheAsset ($css, $order, $type) {
-        template_assets::cacheAsset($css, $order, $type);
+        assets::cacheAsset($css, $order, $type);
     }
     
     /**
@@ -351,7 +351,7 @@ class template {
      * @param int    $order
      */
     public static function setParseVarsCss($css, $vars, $order = null){
-        template_assets::setParseVarsCss($css, $vars, $order);
+        assets::setParseVarsCss($css, $vars, $order);
     }
 
     /**
@@ -359,7 +359,7 @@ class template {
      * @return  string  the css as a string
      */
     public static function getInlineCss(){
-        return template_assets::getInlineCss();
+        return assets::getInlineCss();
     }
 
     /**
@@ -417,20 +417,20 @@ class template {
      */
     public static function init ($template) {       
         self::$templateName = $template;
-        if (!isset(config::$vars['template'])) {
-            config::$vars['template'] = array();
+        if (!isset(conf::$vars['template'])) {
+            conf::$vars['template'] = array();
         }       
         moduleloader::setModuleIniSettings($template, 'template');
-        $css = config::getMainIni('css');
+        $css = conf::getMainIni('css');
         if ($css) {
-            template_assets::setTemplateCssIni($template, $css);
+            assets::setTemplateCssIni($template, $css);
         }
         
 
     }
     
     public static function loadTemplateIniAssets () {
-        template_assets::loadTemplateIniAssets();
+        assets::loadTemplateIniAssets();
     }
     
     
@@ -443,7 +443,7 @@ class template {
      * @param string $version
      */
     public static function setTemplateCss ($template = '', $order = 0, $version = 0){
-        template_assets::setTemplateCss($template, $order, $version);
+        assets::setTemplateCss($template, $order, $version);
 
     }
 }

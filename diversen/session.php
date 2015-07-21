@@ -3,9 +3,9 @@
 namespace diversen;
 
 use diversen\random;
-use diversen\conf as config;
+use diversen\conf as conf;
 use diversen\db;
-use diversen\db\q as db_q;
+use diversen\db\q;
 use diversen\date;
 use diversen\moduleloader;
 use diversen\event;
@@ -64,26 +64,26 @@ class session {
         // accross sub domains. Interesting: You can not use testserver
         // server without country part)
         
-        $session_host = config::getMainIni('session_host');
+        $session_host = conf::getMainIni('session_host');
         if ($session_host){
             ini_set("session.cookie_domain", $session_host);
         }
         
         // session time
-        $session_time = config::getMainIni('session_time');
+        $session_time = conf::getMainIni('session_time');
         if (!$session_time) { 
             $session_time = '0';
         }
         ini_set("session.cookie_lifetime", $session_time);
 
         // session path
-        $session_path = config::getMainIni('session_path');
+        $session_path = conf::getMainIni('session_path');
         if ($session_path) {
             ini_set("session.cookie_path", $session_path);
         }
 
         // secure session
-        $session_secure = config::getMainIni('session_secure');
+        $session_secure = conf::getMainIni('session_secure');
         if ($session_secure) { 
             ini_set("session.cookie_secure", true);
         } else {
@@ -92,7 +92,7 @@ class session {
 
         // set a session name. You need this if the session 
         // should cross sub domains
-        $session_name = config::getMainIni('session_name');
+        $session_name = conf::getMainIni('session_name');
         if ($session_name) { 
             session_name($session_name);
         }
@@ -105,17 +105,17 @@ class session {
     public static function setSessionHandler () {
         
         // use memcache if available
-        $handler = config::getMainIni('session_handler');
+        $handler = conf::getMainIni('session_handler');
         if ($handler == 'memcache'){
-            $host = config::getMainIni('memcache_host');
+            $host = conf::getMainIni('memcache_host');
             if (!$host) {
                 $host = 'localhost';
             }
-            $port = config::getMainIni('memcache_port');
+            $port = conf::getMainIni('memcache_port');
             if (!$port) {
                 $port = '11211';
             }
-            $query = config::getMainIni('memcache_query');
+            $query = conf::getMainIni('memcache_query');
             if (!$query) {
                 $query = 'persistent=0&weight=2&timeout=2&retry_interval=10';
             }
@@ -150,7 +150,7 @@ class session {
             }
             
             // get a system cookie if any
-            $row = db_q::select('system_cookie')->
+            $row = q::select('system_cookie')->
                     filter('cookie_id =', @$_COOKIE['system_cookie'])->
                     fetchSingle();
             
@@ -161,7 +161,7 @@ class session {
                 // delete system_cookies that are out of date. 
                 $now = date::getDateNow();
                 $last = date::substractDaysFromTimestamp($now, $days);
-                db_q::delete('system_cookie')->
+                q::delete('system_cookie')->
                         filter('account_id =', $row['account_id'])->condition('AND')->
                         filter('last_login <', $last)->
                         exec();
@@ -174,11 +174,11 @@ class session {
                     'cookie_id' => $new_cookie_id,
                     'last_login' => $last_login);
                 
-                db_q::delete('system_cookie')->
+                q::delete('system_cookie')->
                         filter('cookie_id=', @$_COOKIE['system_cookie'])->
                         exec();
                 
-                db_q::insert('system_cookie')->
+                q::insert('system_cookie')->
                         values($values)->
                         exec();
                         //filter('cookie_id =' , $new_cookie_id)->condition('AND')->
@@ -204,7 +204,7 @@ class session {
                     );
 
                     // trigger session_events
-                    $login_events = config::getMainIni('session_events');
+                    $login_events = conf::getMainIni('session_events');
                     event::getTriggerEvent(
                         $login_events, $args
                     );
@@ -241,10 +241,10 @@ class session {
 
         $cookie_time = self::getCookiePersistentSecs();              
         $timestamp = time() + $cookie_time;        
-        $session_host = config::getMainIni('session_host');
+        $session_host = conf::getMainIni('session_host');
         
         // secure session
-        $session_secure = config::getMainIni('session_secure');
+        $session_secure = conf::getMainIni('session_secure');
         if ($session_secure) { 
             $secure = true;
         } else {
@@ -282,7 +282,7 @@ class session {
      */
     public static function getCookiePersistentSecs () {
         
-        $days = config::getMainIni('cookie_time');        
+        $days = conf::getMainIni('cookie_time');        
         if ($days == -1) {
             // ten years
             $cookie_time = 3600 * 24 * 365 * 10;
@@ -305,7 +305,7 @@ class session {
      */
     public static function getCookiePersistentDays () {
         
-        $days = config::getMainIni('cookie_time');        
+        $days = conf::getMainIni('cookie_time');        
         if ($days == -1) {
             $cookie_time = 365 * 10;
         }
@@ -581,7 +581,7 @@ class session {
         // we check to see if we have a ini setting for 
         // the type to be allowed to an action
         // allow_edit_article = super
-        $allow = config::getModuleIni($allow);
+        $allow = conf::getModuleIni($allow);
 
         // is allow is empty means the access control
         // is not set and we grant access
@@ -634,7 +634,7 @@ class session {
     public static function checkAccount () {
         $user_id = session::getUserId();
         if ($user_id) {
-            $a = db_q::select('account')->filter('id =', $user_id)->fetchSingle();
+            $a = q::select('account')->filter('id =', $user_id)->fetchSingle();
             
             // user may have been deleted
             if (empty($a)) {

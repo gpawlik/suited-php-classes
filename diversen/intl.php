@@ -2,7 +2,7 @@
 
 namespace diversen;
 
-use diversen\conf as config;
+use diversen\conf as conf;
 use diversen\cache;
 /**
  * File containing method for getting lanugage and countries. 
@@ -34,7 +34,7 @@ class intl {
     public static function setAccountTimezone () {
 
         // set user timezone - only in web mode
-        if (!config::isCli()) {
+        if (!conf::isCli()) {
             $timezone = cache::get('account_timezone', \session::getUserId());
             if ($timezone) { 
                 date_default_timezone_set($timezone);
@@ -64,11 +64,11 @@ class intl {
     public static function setTimezone() {
         
         // if no user timezone
-        if (!config::getMainIni('date_default_timezone')) {
-            config::setMainIni('date_default_timezone', 'Europe/Copenhagen');
+        if (!conf::getMainIni('date_default_timezone')) {
+            conf::setMainIni('date_default_timezone', 'Europe/Copenhagen');
         }
         
-        date_default_timezone_set(config::getMainIni('date_default_timezone'));
+        date_default_timezone_set(conf::getMainIni('date_default_timezone'));
     }
 
     /**
@@ -79,13 +79,13 @@ class intl {
      */
     public static function getLocale() {
         // check in main config setting 'locale'
-        if (isset(config::$vars['coscms_main']['locale'])) {
-            return config::$vars['coscms_main']['locale'];
+        if (isset(conf::$vars['coscms_main']['locale'])) {
+            return conf::$vars['coscms_main']['locale'];
         }
 
         // if locale is not set we use language .utf8
-        if (isset(config::$vars['coscms_main']['language'])) {
-            return config::$vars['coscms_main']['language'] . ".utf8";
+        if (isset(conf::$vars['coscms_main']['language'])) {
+            return conf::$vars['coscms_main']['language'] . ".utf8";
         }
 
         // return system locale (e.g. 'C')

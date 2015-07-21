@@ -13,7 +13,7 @@ namespace diversen;
 
 use diversen\strings\ext as strings_ext;
 use diversen\db;
-use diversen\conf as config;
+use diversen\conf as conf;
 use diversen\db\admin as db_admin;
 use diversen\lang; 
 use diversen\moduleloader;
@@ -169,7 +169,7 @@ EOF;
             // Note: First time loaded we only load it order to load any
             // base modules which may be set
             
-            config::loadMainCli();
+            conf::loadMainCli();
             
             // load all modules
             if (!isset($options['disable_base_modules'])) {
@@ -194,11 +194,11 @@ EOF;
             // database than the default. E.g.: multi domains.
 
             $verbose = $result->options['verbose'];
-            config::$vars['verbose'] = $verbose;
+            conf::$vars['verbose'] = $verbose;
 
             // check domain
             $domain = $result->options['domain'];
-            config::$vars['domain'] = $domain;
+            conf::$vars['domain'] = $domain;
         
             
             if ($domain != 'default' || empty($domain)) {
@@ -214,7 +214,7 @@ EOF;
                     // we also loose all sub module ini settings
                     // Then db enabled modules ini settings will only work
                     // on 'default' site. 
-                    config::loadMainCli();
+                    conf::loadMainCli();
                     
                 }
             }
@@ -278,7 +278,7 @@ EOF;
                 }
 
                 $ini = _COS_PATH . "/" . _COS_MOD_DIR  . "/$val[module_name]/$val[module_name].ini";
-                self::$ini[$val['module_name']] = config::getIniFileArray($ini);                
+                self::$ini[$val['module_name']] = conf::getIniFileArray($ini);                
             }
         }
     }

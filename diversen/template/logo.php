@@ -3,7 +3,7 @@
 namespace diversen\template;
 use diversen\html;
 use diversen\moduleloader;
-use diversen\conf as config;
+use diversen\conf as conf;
 
 
 /**
@@ -26,9 +26,9 @@ class logo {
      * @return string $str the html compsoing the logo or main title
      */
     public static function getLogoHTML ($options = array()) {
-        $logo = config::getMainIni('logo');
+        $logo = conf::getMainIni('logo');
         if (!$logo){
-            $logo_method = config::getMainIni('logo_method');
+            $logo_method = conf::getMainIni('logo_method');
             if (!$logo_method) {
                 $title = $_SERVER['HTTP_HOST'];
                 $link = html::createLink('/', $title);
@@ -40,8 +40,8 @@ class logo {
             }
                 
         } else {
-            $file ="/logo/" . config::$vars['coscms_main']['logo'];
-            $src = config::getWebFilesPath($file);
+            $file ="/logo/" . conf::$vars['coscms_main']['logo'];
+            $src = conf::getWebFilesPath($file);
             if (!isset($options['alt'])){           
                 $options['alt'] = $_SERVER['HTTP_HOST'];
             }

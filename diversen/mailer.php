@@ -2,7 +2,7 @@
 
 namespace diversen;
 use diversen\mailer\mailmime;
-use diversen\conf as config;
+use diversen\conf as conf;
 /**
  * contains mail class and mail functions
  * use cosMail::multipart, this will send text, html, add attachments
@@ -52,7 +52,7 @@ class mailer {
         if (isset($options)) { 
             return $options;
         }
-        $method = config::getMainIni('mail_method');
+        $method = conf::getMainIni('mail_method');
         if ($method) {
             $options['mail_method'] = $method;
         } else {
@@ -76,28 +76,28 @@ class mailer {
         
         if ($options['mail_method'] == 'smtp') {
             // SMTP authentication params
-            $params["host"]     = config::getMainIni('smtp_params_host');
-            $params["port"]     = config::getMainIni('smtp_params_port');
-            $params["auth"]     = config::getMainIni('smtp_params_auth');
-            $params["username"] = config::getMainIni('smtp_params_username');
-            $params["password"] = config::getMainIni('smtp_params_password');
-            $params['debug']    = config::getMainIni('smtp_params_debug');
-            $params['persist']  = config::getMainIni('smtp_params_persist');
+            $params["host"]     = conf::getMainIni('smtp_params_host');
+            $params["port"]     = conf::getMainIni('smtp_params_port');
+            $params["auth"]     = conf::getMainIni('smtp_params_auth');
+            $params["username"] = conf::getMainIni('smtp_params_username');
+            $params["password"] = conf::getMainIni('smtp_params_password');
+            $params['debug']    = conf::getMainIni('smtp_params_debug');
+            $params['persist']  = conf::getMainIni('smtp_params_persist');
             //$params['pipelining'] = config::getMainIni('smtp_params_pipelining');
-            if (!config::getMainIni('smtp_params_persist')) {
+            if (!conf::getMainIni('smtp_params_persist')) {
                 $params['persist'] = false;
             }
         }
 
         if ($options['mail_method'] == 'sendmail') {
             // sendmail params
-            $params["sendmail_path"] = config::getMainIni('sendmail_path');
-            $params["sendmail_args"] = config::getMainIni('sendmail_args');
+            $params["sendmail_path"] = conf::getMainIni('sendmail_path');
+            $params["sendmail_args"] = conf::getMainIni('sendmail_args');
         }
 
         if ($options['mail_method'] == 'mail') {
             // mail function params
-            $params["mail_params"] = config::getMainIni('mail_function_params');
+            $params["mail_params"] = conf::getMainIni('mail_function_params');
         }
         $params =  array_merge($params, self::$params);
         return $params;
@@ -115,10 +115,10 @@ class mailer {
     */
     public static function getHeaders ($to, $subject, $from = null, $reply_to = null, $more = array ()) {
         if (!$from) { 
-            $from = config::getMainIni('site_email');
+            $from = conf::getMainIni('site_email');
         }
         if (!$reply_to) { 
-            $reply_to = config::getMainIni ('site_email_reply');
+            $reply_to = conf::getMainIni ('site_email_reply');
         }
         if (!$reply_to) { 
             $reply_to = $from;
@@ -132,7 +132,7 @@ class mailer {
             'Subject'       => $subject,
         );
 
-        $bounce = config::getMainIni('site_email_bounce');
+        $bounce = conf::getMainIni('site_email_bounce');
         if ($bounce) { 
             $headers['Return-Path'] = $bounce;
         }
@@ -158,9 +158,9 @@ class mailer {
     */
     public static function systemUser ($subject, $message, $from = null, $reply_to = null, $more = array ()) {
         
-        $to = config::getMainIni('system_email');
+        $to = conf::getMainIni('system_email');
         if (!$to) {
-            $to = config::getMainIni('site_email');
+            $to = conf::getMainIni('site_email');
         }
         return $res = self::text(
             $to, 

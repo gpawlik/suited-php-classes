@@ -5,7 +5,7 @@ namespace diversen\template;
 use diversen\template;
 use diversen\csspacker;
 use diversen\moduleloader;
-use diversen\conf as config;
+use diversen\conf as conf;
 use diversen\file;
 
 /**
@@ -91,14 +91,14 @@ class assets extends template {
      * @param type $type 
      */
     public static function cacheAsset ($asset, $order, $type, $options = array ()) {
-        if (config::isCli()) {
+        if (conf::isCli()) {
             return;
         }
         static $cacheChecked = false;
         
         if (!$cacheChecked) {
-            self::$cacheDirWeb = config::getWebFilesPath(self::$cacheDir);
-            self::$cacheDir = config::getFullFilesPath() . '/' . self::$cacheDir;
+            self::$cacheDirWeb = conf::getWebFilesPath(self::$cacheDir);
+            self::$cacheDir = conf::getFullFilesPath() . '/' . self::$cacheDir;
             if (!file_exists(self::$cacheDir)) {
                 mkdir(self::$cacheDir);
             }  
@@ -106,9 +106,9 @@ class assets extends template {
         }
         
         $md5 = md5($asset);        
-        $cached_asset = config::getFullFilesPath() . "/cached_assets/$md5.$type";
-        $cache_dir = config::getWebFilesPath('/cached_assets');
-        if (file_exists($cached_asset && !config::getMainIni('cached_assets_reload'))) {
+        $cached_asset = conf::getFullFilesPath() . "/cached_assets/$md5.$type";
+        $cache_dir = conf::getWebFilesPath('/cached_assets');
+        if (file_exists($cached_asset && !conf::getMainIni('cached_assets_reload'))) {
             
             if ($type == 'css') {
                 self::setCss("$cache_dir/$md5.$type", $order);
@@ -248,7 +248,7 @@ class assets extends template {
         $str = "";
         ksort(self::$css);
         
-        $cached_assets_inline = config::getMainIni('cached_assets_inline');
+        $cached_assets_inline = conf::getMainIni('cached_assets_inline');
         foreach (self::$css as $key => $val){
             if (!$cached_assets_inline) {
                 $str.= "<link rel=\"stylesheet\" type=\"text/css\" href=\"$val\" />\n";
@@ -281,7 +281,7 @@ class assets extends template {
                 $file = _COS_HTDOCS . "$val";
                     
                 $str.= "\n/* Caching $file*/\n";
-                if (!config::getMainIni('cache_disable')) {
+                if (!conf::getMainIni('cache_disable')) {
                     $str.= file::getCachedFile($file) ."\n\n\n";
                 } else {
                     $str.= file_get_contents($file);
@@ -289,7 +289,7 @@ class assets extends template {
             } 
         }
         
-        if (config::getMainIni('cached_assets_pack')) {
+        if (conf::getMainIni('cached_assets_pack')) {
             $str = csspacker::packcss($str);  
         }
         return $str;
@@ -301,13 +301,13 @@ class assets extends template {
      */
     public static function setCssAsSingleFile () {
         $str = self::getCssAsSingleStr ();
-        if (config::getMainIni('cached_assets_minify')) {
+        if (conf::getMainIni('cached_assets_minify')) {
             $cssp = new csspacker();
             $str =$cssp->packcss($str);
         }
             
         $md5 = md5($str);
-        $domain = config::getDomain();
+        $domain = conf::getDomain();
             
         $web_path = "/files/$domain/cached_assets"; 
         $file = "/css_all-$md5.css";
@@ -332,7 +332,7 @@ class assets extends template {
     public static function getCompressedCss(){
         
         ksort(self::$css);
-        if (config::getMainIni('cached_assets_compress')) {
+        if (conf::getMainIni('cached_assets_compress')) {
             self::setCssAsSingleFile();  
         } 
         
@@ -407,7 +407,7 @@ class assets extends template {
         $str = "";
         ksort(self::$js);
 
-        $cached_assets_inline = config::getMainIni('cached_assets_inline');
+        $cached_assets_inline = conf::getMainIni('cached_assets_inline');
         foreach (self::$js as $val){
             if (!$cached_assets_inline) {
                 $str.= "<script src=\"$val\" type=\"text/javascript\"></script>\n";
@@ -444,7 +444,7 @@ class assets extends template {
         $str = self::getJsAsSingleStr();
         
         $md5 = md5($str);
-        $domain = config::getDomain();
+        $domain = conf::getDomain();
             
         $web_path = "/files/$domain/cached_assets"; 
         $file = "/js_all-$md5.js";
@@ -471,7 +471,7 @@ class assets extends template {
         
         $str = "";
         ksort(self::$js);        
-        if (config::getMainIni('cached_assets_compress')) {
+        if (conf::getMainIni('cached_assets_compress')) {
             self::setJsAsSingleFile();
             
         }
@@ -513,7 +513,7 @@ class assets extends template {
      * @param array $options
      */
     public static function setInlineJs($js, $order = null, $options = array()){
-        if (config::getMainIni('cached_assets') && !isset($options['no_cache'])) {
+        if (conf::getMainIni('cached_assets') && !isset($options['no_cache'])) {
             self::cacheAsset ($js, $order, 'js', $options);
             return;
         }
@@ -557,7 +557,7 @@ class assets extends template {
      */
     public static function setInlineCss($css, $order = null, $options = array()){
 
-        if (config::getMainIni('cached_assets') && !isset($options['no_cache'])) {
+        if (conf::getMainIni('cached_assets') && !isset($options['no_cache'])) {
             self::cacheAsset ($css, $order, 'css');
             return;
         }
@@ -663,14 +663,14 @@ EOF;
      */
     public static function loadTemplateIniAssets () {
         
-        $css = config::getModuleIni('template_rel_css');
+        $css = conf::getModuleIni('template_rel_css');
         if ($css) {
             foreach ($css as $val) {
                 self::setRelAsset('css', $val);
             }
         }
         
-        $js = config::getModuleIni('template_rel_js');
+        $js = conf::getModuleIni('template_rel_js');
         if ($js) {
             foreach ($js as $val) {
                 self::setRelAsset('js', $val);
@@ -678,7 +678,7 @@ EOF;
         }
         
         
-        $js = config::getModuleIni('template_js');
+        $js = conf::getModuleIni('template_js');
         if ($js) {
             foreach ($js as $val) {
                 self::setJs($val);
@@ -697,7 +697,7 @@ EOF;
      */
     public static function setTemplateCss ($template = '', $order = 0, $version = 0){
 
-        $css = config::getMainIni('css');
+        $css = conf::getMainIni('css');
         if (!$css) {
             // no css set use default/default.css
             //self::setCss("/templates/$template/default/default.css?version=$version", $order);
@@ -729,9 +729,9 @@ EOF;
         $ini_file = _COS_HTDOCS . "/templates/$template/$css/$css.ini";
         if (file_exists($ini_file)) {
             
-            $ary = config::getIniFileArray($ini_file, true);
-            config::$vars['coscms_main']['module'] = 
-                    array_merge_recursive(config::$vars['coscms_main']['module'], $ary);
+            $ary = conf::getIniFileArray($ini_file, true);
+            conf::$vars['coscms_main']['module'] = 
+                    array_merge_recursive(conf::$vars['coscms_main']['module'], $ary);
         }        
     }
 }

@@ -2,7 +2,7 @@
 
 namespace diversen;
 use diversen\file\path as file_path;
-use diversen\conf as config;
+use diversen\conf as conf;
 
 /**
  * package contains file class for doing common file tasks
@@ -197,7 +197,7 @@ class file {
      * @param string $dir
      */
     public static function mkdir($dir, $perms = 0777) {
-        $full_path = config::getFullFilesPath();
+        $full_path = conf::getFullFilesPath();
         $dir = $full_path . "$dir";
 
         if (file_exists($dir)) {

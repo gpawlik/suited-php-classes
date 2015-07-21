@@ -1,10 +1,10 @@
 <?php
 
 namespace diversen;
-use diversen\conf as config;
+use diversen\conf as conf;
 use diversen\moduleloader;
 use diversen\cache;
-use diversen\db\q as db_q;
+use diversen\db\q as q;
 use diversen\db;
 /**
  * File contains contains class creating simple translation
@@ -60,7 +60,7 @@ class lang {
         }
         
         // in cli mode there is no option for loading users individual language
-        if (!config::isCli()) {
+        if (!conf::isCli()) {
             self::$userLanguage = cache::get('account_locales_language', \session::getUserId());
         }
         
@@ -68,7 +68,7 @@ class lang {
         if (isset(self::$userLanguage)) {
             self::$language = self::$userLanguage;
         } else {
-            self::$language = config::getMainIni('language');
+            self::$language = conf::getMainIni('language');
         }
         
         return self::$language;
@@ -79,7 +79,7 @@ class lang {
      * from database)
      */
     public static function loadLanguage ($language = null) {
-        $lang_all = config::getMainIni('language_all');
+        $lang_all = conf::getMainIni('language_all');
         if ($lang_all) {
             self::loadTemplateAllLanguage($language);       
         } else {
@@ -95,7 +95,7 @@ class lang {
      */
     public static function loadMainLanguage () {
         self::$allLoaded = false;
-        $language = config::getMainIni('language');
+        $language = conf::getMainIni('language');
         self::loadLanguage($language);
         self::$loadedModules = array ();
         foreach (moduleloader::$loadedModules['base'] as $key => $val) {
@@ -115,7 +115,7 @@ class lang {
         }
         $system_lang = array();
         $db = new db();
-        $system_language = db_q::select('language')->
+        $system_language = q::select('language')->
                 filter('language =', $language)->
                 condition('AND')->
                 filter('module_name != ', 'language_all')->
@@ -173,7 +173,7 @@ class lang {
                 }
             }
             // don't add NT
-            if (isset(config::$vars['coscms_main']['translate_ignore'])) {
+            if (isset(conf::$vars['coscms_main']['translate_ignore'])) {
                 return $sentence;
             } else {
                 return "NT: $sentence";
@@ -287,7 +287,7 @@ class lang {
     public static function loadTemplateAllLanguage($language = null){
 
         //  template which we load from
-        $template = config::getMainIni('language_all');
+        $template = conf::getMainIni('language_all');
         self::$allLoaded = true;
         
 

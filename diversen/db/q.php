@@ -2,7 +2,7 @@
 
 namespace diversen\db;
 use diversen\db;
-use diversen\conf as config;
+use diversen\conf as conf;
 use diversen\log;
 /**
  * contains db_q class fro creating db queries fairly simply
@@ -157,7 +157,7 @@ class q  {
     /**
      * sets select statement for numrows
      * @param type $table
-     * @return \db_q 
+     * @return \q 
      */
     public static function setSelectNumRows ($table){
         self::$method = 'num_rows';
@@ -542,7 +542,7 @@ class q  {
      * set conditions as a array 
      * @param array $ary array('user_id =' => 20, 'username =' => 'myname); 
      * @param string $condition e.g. 'AND', 'OR' 
-     * @return \db_q object
+     * @return \q object
      */
     public static function filterArray ($ary, $condition = 'AND') {
         $i = count($ary);
@@ -561,7 +561,7 @@ class q  {
      * @param string $ary array('user_id' => 20, 'username' => 'myname);
      * @param string $condition e.g. 'AND', 'OR' 
      * @param string $operator e.g. (=)
-     * @return \db_q object
+     * @return \q object
      */
     public static function filterArrayDirect ($ary, $condition = 'AND', $operator = '=') {
         $i = count($ary);
@@ -614,7 +614,7 @@ class q  {
      * method for unsetting static vars when an operation is compleate.
      */
     public static function unsetVars (){
-        if (isset(config::$vars['coscms_main']['debug'])) {
+        if (isset(conf::$vars['coscms_main']['debug'])) {
             //cos_debug(self::$query);
         }
         self::$query = self::$isset = self::$bind = self::$where = self::$stmt = null;

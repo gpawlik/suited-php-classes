@@ -3,7 +3,7 @@
 namespace diversen\template;
 
 use diversen\html;
-use diversen\conf as config;
+use diversen\conf as conf;
 use diversen\template;
 use diversen\strings;
 use diversen\template\assets;
@@ -72,7 +72,7 @@ class meta extends template {
 
         // description
         if (empty($description)) {
-            $description = config::getMainIni('meta_desc');
+            $description = conf::getMainIni('meta_desc');
         }
         
         
@@ -96,7 +96,7 @@ class meta extends template {
         
         // keywords
         if (empty($keywords)) {
-            $keywords = config::getMainIni('meta_meywords');
+            $keywords = conf::getMainIni('meta_meywords');
         }
         
         if (!empty($keywords)) {
@@ -106,7 +106,7 @@ class meta extends template {
                    
         // image
         if (!empty($image)) {
-            $server = config::getSchemeWithServerName();
+            $server = conf::getSchemeWithServerName();
             $image = $server . $image;
         }
 
@@ -127,7 +127,7 @@ class meta extends template {
      * @param string $canon path without server scheme and name
      */
     public static function setCanonical ($canon) {
-        $canon = config::getSchemeWithServerName() . $canon;
+        $canon = conf::getSchemeWithServerName() . $canon;
         $str = "<link rel=\"canonical\" href=\"$canon\" />\n";
         self::setMetaAsStr($str);
     }
@@ -151,23 +151,23 @@ class meta extends template {
     public static function getMeta() {
 
         if (!isset(self::$meta['keywords'])) {
-            $str = config::getMainIni('meta_keywords');
+            $str = conf::getMainIni('meta_keywords');
             if (!empty($str)) {
                 self::$meta['keywords'] = $str;
             }
         }
 
         // master domains are allow visible for robots
-        $master = config::getMainIni('master');
+        $master = conf::getMainIni('master');
         if (!isset(self::$meta['robots']) && $master) {
-            $str = config::getMainIni('meta_robots');
+            $str = conf::getMainIni('meta_robots');
             if (!empty($str)) {
                 self::$meta['robots'] = $str;
             }
         }
 
         if (empty(self::$meta['description'])) {
-            $str = config::getMainIni('meta_desc');
+            $str = conf::getMainIni('meta_desc');
             if (!empty($str)) {
                 self::$meta['description'] = $str;
             }

@@ -3,7 +3,7 @@
 namespace diversen;
 use diversen\moduleloader;
 use diversen\html;
-use diversen\conf as config;
+use diversen\conf as conf;
 use diversen\lang;
 /**
  * File contains very simple captcha class
@@ -28,7 +28,7 @@ class captcha {
             moduleloader::includeModule('image');
         }
         
-        $method = config::getModuleIni ('image_captcha_method');
+        $method = conf::getModuleIni ('image_captcha_method');
         if ($method) {
             return self::$method ();
         } else {
@@ -52,7 +52,7 @@ class captcha {
         
         $_SESSION['ctries']++;
         if (isset($_SESSION['cstr']) && $_SESSION['ctries'] != '3'){
-            if (config::getMainIni('captcha_image_module')) {
+            if (conf::getMainIni('captcha_image_module')) {
                 return self::createCaptchaImage();
             }
             return "* " . lang::system('captcha_numbers') . $_SESSION['cstr'];
@@ -64,7 +64,7 @@ class captcha {
         $_SESSION['cstr'] = $str;
         $_SESSION['ckey'] = md5($res);
         
-        if (config::getMainIni('captcha_image_module')) {
+        if (conf::getMainIni('captcha_image_module')) {
             return self::createCaptchaImage();
         }
         return "* " . lang::system('captcha_numbers') . $str;
@@ -85,7 +85,7 @@ class captcha {
         
         $_SESSION['ctries']++;
         if (isset($_SESSION['cstr']) && $_SESSION['ctries'] != '3'){
-            if (config::getMainIni('captcha_image_module')) {
+            if (conf::getMainIni('captcha_image_module')) {
                 return self::createCaptchaImage();
             }
             return "* " . lang::system('captcha_numbers') . MENU_SUB_SEPARATOR_SEC . $_SESSION['cstr'];
@@ -94,7 +94,7 @@ class captcha {
         $_SESSION['cstr'] = $str = self::genRandomString();
         $_SESSION['ckey'] = md5($str);
         
-        if (config::getMainIni('captcha_image_module')) {
+        if (conf::getMainIni('captcha_image_module')) {
             return self::createCaptchaImage();
         }
         return "* " . lang::system('captcha_numbers') . MENU_SUB_SEPARATOR_SEC  . $str;
@@ -105,7 +105,7 @@ class captcha {
      * @return string $str
      */
     public static function genRandomString() {
-        $length = config::getMainIni('captcha_image_chars');
+        $length = conf::getMainIni('captcha_image_chars');
         if (!$length) { 
             $length = 4;
         }

@@ -2,12 +2,12 @@
 
 namespace diversen;
 use diversen\user\profile;
-use diversen\db\q as db_q;
+use diversen\db\q as q;
 use diversen\db;
 use diversen\moduleloader;
 use diversen\lang;
 use diversen\session;
-use diversen\conf as config;
+use diversen\conf as conf;
 
 /**
  * File containing methods for getting a user profile connected to the 
@@ -41,7 +41,7 @@ class user {
      * @return array|false $row if row was found else false
      */
     public static function ownID ($table, $id, $user_id) {
-        $row = db_q::setSelect($table)->
+        $row = q::setSelect($table)->
                 filter('id =', $id)->
                 condition('AND')->
                 filter('user_id = ', $user_id)->
@@ -105,7 +105,7 @@ class user {
     public static function initProfile () {
         if (!isset(self::$profile_object)){
 
-            $profile_system = config::getMainIni('profile_module');
+            $profile_system = conf::getMainIni('profile_module');
             if (!isset($profile_system) || !moduleloader::isInstalledModule($profile_system)){
                 self::$profile_object = new profile();
                 return;

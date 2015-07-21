@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen;
-use diversen\db\q as db_q;
+use diversen\db\q as q;
 /**
  * File contains a simple class for caching content to database table. 
  * @package cache
@@ -103,7 +103,7 @@ class cache {
      */
     private static function getDb($module, $id, $max_life_time = null) {
         $id = self::generateId($module, $id);
-        $row = db_q::select(self::$table)->filter('id =', $id)->fetchSingle();
+        $row = q::select(self::$table)->filter('id =', $id)->fetchSingle();
 
         if (!$row) {
             return null;
@@ -134,7 +134,7 @@ class cache {
         $id = self::generateId($module, $id);
         $values = array('id' => $id, 'unix_ts' => time());
         $values['data'] = serialize($data);
-        return db_q::insert(self::$table)->values($values)->exec();
+        return q::insert(self::$table)->values($values)->exec();
         
     }
 
@@ -146,11 +146,11 @@ class cache {
      */
     private static function deleteDb($module, $id) {
         $id = self::generateId($module, $id);
-        $row = db_q::select(self::$table)->
+        $row = q::select(self::$table)->
                 filter('id =', $id)->
                 fetchSingle();
         if (!empty($row)) {
-            return db_q::delete(self::$table)->
+            return q::delete(self::$table)->
                     filter('id =', $id)->
                     exec();
         }

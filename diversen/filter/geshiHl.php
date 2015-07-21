@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen\filter;
-use diversen\conf as config;
+use diversen\conf as conf;
 
 /**
  * file contains filter for higlighting using geshi
@@ -44,7 +44,7 @@ class geshiHl {
      */
     public function filter($article){
         
-        if (config::getMainIni('filters_allow_files')) {
+        if (conf::getMainIni('filters_allow_files')) {
             $article = self::filterGeshiFile($article);
         }
         $article = self::filterGeshiInline($article);

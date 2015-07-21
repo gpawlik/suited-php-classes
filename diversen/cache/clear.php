@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen\cache;
-use diversen\db\q as db_q;
+use diversen\db\q as q;
 use diversen\file;
 /**
  * File contains methods for clearing all or some of the cached assets
@@ -19,7 +19,7 @@ class clear {
      * @return int  
      */
     public static function db () {
-        $res = db_q::delete('system_cache')->filter('1 =', 1)->exec();
+        $res = q::delete('system_cache')->filter('1 =', 1)->exec();
         return $res;
     }
 

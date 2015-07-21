@@ -2,7 +2,7 @@
 
 namespace diversen\db;
 use diversen\db;
-use diversen\conf as config;
+use diversen\conf as conf;
 /**
  * File contains comon methods when working in db adin mode. 
  * @package db 
@@ -33,7 +33,7 @@ class admin extends db {
      */
     public static function getDbInfo($url = null) {
         if (!$url) {
-            $url = config::$vars['coscms_main']['url']; ;
+            $url = conf::$vars['coscms_main']['url']; ;
         }
         
         $url = parse_url($url);

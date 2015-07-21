@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen\filter;
-use diversen\conf as config;
+use diversen\conf as conf;
 /**
  * File containing media filter
  * @package filters
@@ -41,7 +41,7 @@ class media {
      * @return int $ratio the ratio
      */
     public static function videoRatio($default = 600) {
-        $width = config::getMainIni('media_width');
+        $width = conf::getMainIni('media_width');
         if ($width) {
             return $ratio = $width / $default;
         } else {
