@@ -333,8 +333,11 @@ EOF;
         $locale_path = _COS_PATH . '/coslib/shell/locale';     
         $locale_list = file::getFileList($locale_path, array ('search' => '.inc'));
         
-        foreach ($locale_list as $val){
-            include_once $val;
+        if ($locale_list) {
+
+            foreach ($locale_list as $val) {
+                include_once $val;
+            }
         }
     }
 }
