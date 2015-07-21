@@ -2,6 +2,7 @@
 
 namespace diversen;
 use diversen\moduleinstaller;
+use diversen\conf as config;
 
 /**
  * *
