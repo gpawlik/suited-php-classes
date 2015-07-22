@@ -880,24 +880,6 @@ class moduleloader {
     }
     
     /**
-     * inits a filter. Loads it and set ini settings.
-     * @param type $filter
-     */
-    public static function initFilter ($filter) {
-        
-        // check for filter in coslib first. 
-        if (!$filter) { 
-            return;
-        }
-        
-        $file_path = _COS_PATH . "/coslib/filters/$filter.php";
-        if (file_exists($file_path)) {
-            include_once "coslib/filters/$filter.php";
-            return;
-        }
-    }
-    
-    /**
      * method for including filters
      * @param array|string $filters
      */
@@ -960,9 +942,8 @@ class moduleloader {
         
         if (!is_array($filter)){
 
-            self::includeFilters($filter);
-            $class = $filter;
-            $filter_class = new $class;
+            $class_name = "diversen\filter" . $filter;
+            $filter_class = new $class_name;
 
             if (is_array($content)){
                 foreach ($content as $key => $val){
@@ -978,9 +959,9 @@ class moduleloader {
         if (!empty ($filter)){
 
             foreach($filter as $key => $val){
-                self::includeFilters($val);
-                $class = $val; 
-                $filter_class = new $class;
+                
+                $class_name = 'diversen\filter' . "\\$val"; 
+                $filter_class = new $class_name;
                 if (is_array($content)){
                     foreach ($content as $key => $val){
                         $content[$key] = $filter_class->filter($val);

@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen\filter;
-use diversen\conf as conf;
+use diversen\conf;
 
 /**
  * file contains filter for higlighting using geshi
