@@ -45,6 +45,7 @@ class media {
         if ($width) {
             return $ratio = $width / $default;
         } else {
+            // default ration is 1
             return 1;
         }
     }

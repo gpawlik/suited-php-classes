@@ -16,6 +16,7 @@ class alias {
         class_alias('diversen\template\meta', 'meta');
         class_alias('diversen\strings', 'strings');
         class_alias('diversen\moduleloader', 'moduleloader');
+        class_alias('diversen\moduleinstaller', 'moduleinstaller');
         class_alias('diversen\layout', 'layout');
         class_alias('diversen\lang', 'lang');
         class_alias('diversen\view', 'view');
