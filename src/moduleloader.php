@@ -942,7 +942,7 @@ class moduleloader {
         
         if (!is_array($filter)){
 
-            $class_name = "diversen\filter" . $filter;
+            $class_name = "diversen\filter\\" . $filter;
             $filter_class = new $class_name;
 
             if (is_array($content)){
@@ -975,4 +975,3 @@ class moduleloader {
     return '';
     }
 }
-
