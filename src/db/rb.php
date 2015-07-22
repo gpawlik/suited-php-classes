@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen\db;
-use \diversen\conf as conf;
+use \diversen\conf;
 /**
  * File contains RB (Redbeans) helpers for easy connecting to CosCMS 
  * DB using Redbeans

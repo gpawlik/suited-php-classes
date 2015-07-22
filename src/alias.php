@@ -2,8 +2,6 @@
 
 namespace diversen;
 
-use diversen\template\assets as template_assets;
-
 class alias {
     public static function set () {
         class_alias('diversen\conf', 'config');
