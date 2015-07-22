@@ -467,14 +467,6 @@ class conf {
         } else {
             define('_COS_HTDOCS', _COS_PATH);
         }
-        
-        
-
-        // if coslib path is the same as the cos htdocs path
-        /*
-        if ($htdocs_path == '_COS_PATH') {
-            define('_COS_HTDOCS', _COS_PATH);
-        }*/
 
         /**
          * define path to modules

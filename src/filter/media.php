@@ -71,7 +71,7 @@ class media {
      * @return type
      */
     public static function linkifySoundcloud($text) {
-        include_once "soundcloud.php";
+        include_once "diversen/simple-php-classes/src/filter/soundcloud.php";
         $regex = '~https?://soundcloud\.com/[\-a-z0-9_]+/[\-a-z0-9_]+~ix';
         $text = preg_replace_callback($regex, array('self', 'soundcloudCallback'), $text);
         return $text;
