@@ -3,7 +3,7 @@
 namespace diversen;
 
 use diversen\random;
-use diversen\conf as conf;
+use diversen\conf;
 use diversen\db;
 use diversen\db\q;
 use diversen\date;
