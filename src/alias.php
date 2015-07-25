@@ -4,7 +4,7 @@ namespace diversen;
 
 class alias {
     public static function set () {
-        class_alias('diversen\conf', 'config');
+        class_alias('\diversen\conf', 'config');
         class_alias('diversen\session', 'session');
         class_alias('diversen\db', 'db');
         class_alias('diversen\db\q', 'q');
