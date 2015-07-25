@@ -33,10 +33,10 @@ class mailsmtp {
      * @return \PHPMailer
      */
     public static function getPHPMailer () {
-        $config = conf::get('smtp');
+        $config = config::get('smtp');
 
         $mail = new \PHPMailer;
-        $mail->SMTPDebug = 3;
+        $mail->SMTPDebug = $config['SMTPDebug'];
         $mail->isSMTP();
         $mail->Host = $config['Host'];
         $mail->SMTPAuth = $config['SMTPAuth'];
