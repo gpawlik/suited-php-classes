@@ -4,8 +4,9 @@ namespace diversen;
 use diversen\conf as conf;
 use diversen\moduleloader;
 use diversen\cache;
-use diversen\db\q as q;
+use diversen\db\q;
 use diversen\db;
+use diversen\session;
 /**
  * File contains contains class creating simple translation
  *
@@ -61,7 +62,7 @@ class lang {
         
         // in cli mode there is no option for loading users individual language
         if (!conf::isCli()) {
-            self::$userLanguage = cache::get('account_locales_language', \session::getUserId());
+            self::$userLanguage = cache::get('account_locales_language', session::getUserId());
         }
         
         // if user language is loaded we will use user language
