@@ -677,7 +677,7 @@ EOF;
     }
         
     /**
-     * sets a file field with info about max size
+     * sets a file field with info about max file size
      * @param string $filename 
      * @param int $max_bytes
      * @param array $options
