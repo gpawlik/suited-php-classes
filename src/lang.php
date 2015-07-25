@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen;
-use diversen\conf as conf;
+use diversen\conf;
 use diversen\moduleloader;
 use diversen\cache;
 use diversen\db\q;
