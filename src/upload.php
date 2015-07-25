@@ -2,8 +2,9 @@
 
 namespace diversen;
 use diversen\lang;
-use diversen\conf as conf;
-//use diversen\conf as confi;
+use diversen\conf;
+use diversen\log;
+
 /**
  * file with class for doing uploads and a couple of helper functions
  *
@@ -211,7 +212,9 @@ class upload {
             // check maxsize. Note: Will overrule php ini settings
             if (isset(self::$options['maxsize'])) {
                 $res = self::checkMaxSize($filename);
-                if (!$res) return false;
+                if (!$res) { 
+                    return false;
+                }
             }
             
             // sets a new filename to save the file as or use the 

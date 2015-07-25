@@ -2,9 +2,9 @@
 
 namespace diversen;
 
-use diversen\conf;
 use diversen\upload;
 use diversen\lang;
+use diversen\html\helpers;
 
 /**
  * File containing class for building forms and common methods used 
@@ -12,11 +12,6 @@ use diversen\lang;
  * 
  * @package html 
  */
-
-/**
- * @ignore
- */
-//include_once "coslib/upload.php";
 
 /**
  * Class used when building forms and various methods used when creating forms
@@ -219,17 +214,6 @@ class html {
      * @return string $action
      */
     public static function getActionFromAry ($options = null) {
-        
-        // check any special storage
-        $storage = conf::getMainIni('file_storage');
-        
-        // google cloud storage
-        if ($storage == 'gcs' && self::$doUpload == true) {
-            $gcs = new upload_gcs();
-            $action = $gcs->createUploadUrl($options);
-            return "action =\"$action\"";
-            
-        }
         
         if (!isset($options['action'])) {
             $action = "action =\"#!\"";
@@ -1058,7 +1042,7 @@ $(document).ready(function() {
      * with element for day, month and year
      */
     public static function selectBirthday () {        
-        $date = html_helpers::birthdayDropdown();
+        $date = helpers::birthdayDropdown();
         self::$fields[] = array ('value' => $date['day']);
         self::$fields[] = array ('value' => $date['month']);
         $year = $date['year'] . self::$br . "\n";

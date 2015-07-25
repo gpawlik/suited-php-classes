@@ -7,6 +7,7 @@ use diversen\csspacker;
 use diversen\moduleloader;
 use diversen\conf as conf;
 use diversen\file;
+use diversen\layout;
 
 /**
  * File containing class for parsing template assets. 
@@ -587,7 +588,7 @@ class assets extends template {
         
         $module_css = _COS_MOD_PATH . "/$module/$css";
         
-        $template_name = \layout::getTemplateName();
+        $template_name = layout::getTemplateName();
         $template_override =  "/templates/$template_name/$module$css";
         
         if (file_exists(_COS_HTDOCS . $template_override) ) {
