@@ -24,7 +24,6 @@ class alias {
         class_alias('diversen\file', 'file');
         class_alias('diversen\http', 'http');
         class_alias('diversen\intl', 'intl');
-        class_alias('diversen\imagescale', 'imagescale');
         class_alias('diversen\log', 'log');
         class_alias('diversen\profile', 'profile');
         class_alias('diversen\user', 'user');
