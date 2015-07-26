@@ -10,7 +10,7 @@
  * @ignore
  */
 
-include_once "vendor/diversen/simple-php-classes/src/shell/module.inc";
+include_once "vendor/diversen/simple-php-classes/src/shell/module.php";
 
 /**
  * wrapper function for loading a profile

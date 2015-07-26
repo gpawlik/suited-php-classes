@@ -342,15 +342,6 @@ EOF;
         foreach ($base_list as $val){
             include_once $command_path . "/$val";
         }
-        
-        $locale_path = _COS_PATH . '/vendor/diversen/simple-php-classes/src/shell/locale';     
-        $locale_list = file::getFileList($locale_path, array ('search' => '.php'));
-        
-        if ($locale_list) {
 
-            foreach ($locale_list as $val) {
-                include_once $val;
-            }
-        }
     }
 }

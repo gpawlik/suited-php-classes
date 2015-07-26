@@ -4,7 +4,7 @@
  * @package shell
  *
  */
-include_once "vendor/diversen/simple-php-classes/src/shell/useradd.inc";
+include_once "vendor/diversen/simple-php-classes/src/shell/useradd.php";
 /**
  * Adds a super user directly. Password have to be the md5 of the real password. 
  * @param array $options
