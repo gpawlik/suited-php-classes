@@ -739,13 +739,13 @@ class layout {
             
             // numeric is custom block added to database
             if (is_numeric($val)) {
-                moduleloader::includeModule('block_manip');
-                $row = \block_manip::getOne($val); 
+                moduleloader::includeModule('blocks');
+                $row = \blocks::getOne($val); 
                 $row['content_block'] = moduleloader::getFilteredContent(
-                    conf::getModuleIni('block_manip_filters'), $row['content_block']
+                    conf::getModuleIni('blocks_filters'), $row['content_block']
                 );
                 $row['title'] = htmlspecialchars($row['title']);
-                $content = view::get('block_manip', 'block_html', $row);
+                $content = view::get('blocks', 'block_html', $row);
                 $ret_blocks[] = $content;
                 continue;
             }
