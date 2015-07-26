@@ -12,7 +12,7 @@ use diversen\conf as conf;
 /**
  * used for add newline definiton, when doing web - or shell install of modules.
  */
-include_once "coslib/shell/common.inc";
+include_once _COS_PATH . "/vendor/diversen/simple-php-classes/src/shell/common.inc";
 
 /**
  * class for installing a module or upgrading it.

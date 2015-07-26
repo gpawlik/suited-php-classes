@@ -1,9 +1,6 @@
 <?php
 
 namespace diversen;
-
-
-
 class alias {
     public static function set () {
         class_alias('diversen\conf', 'conf');
@@ -32,5 +29,6 @@ class alias {
         class_alias('diversen\time', 'time');
         class_alias('diversen\filter\markdown', 'cosmarkdown');
         class_alias('diversen\filter\media', 'cosmedia');
+        class_alias('diversen\uri\dispatch', 'dispatch');
     }
 }

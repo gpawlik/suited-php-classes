@@ -329,6 +329,16 @@ class conf {
             self::loadMainCli();
         }
     }
+    
+    public static function setIncludePath() {
+
+        $ini_path = ini_get('include_path');
+        ini_set('include_path', 
+                _COS_PATH . PATH_SEPARATOR .
+                _COS_MOD_PATH . PATH_SEPARATOR .
+
+                $ini_path . PATH_SEPARATOR);
+    }
 
     /**
      * Function for loading the main config file

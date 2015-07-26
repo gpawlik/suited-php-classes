@@ -69,15 +69,28 @@ class cli {
      */
     static function init (){
         
-        include_once "coslib/head.php";
-        include_once "coslib/shell/common.inc";
+        // define all constant - based on _COS_PATH and config.ini
+        conf::defineCommon();
+
+        // load config file 
+        conf::load();
+
+        // set include path - based on config.ini
+        conf::setIncludePath();
+
+        // set log level - based on config.ini
+        log::setLogLevel();
+        
+        // Important!
+        //include_once "coslib/shell/common.inc";
 
         // set locales
         intl::setLocale();
+        
         // set default timezone
         intl::setTimezone();
         
-        
+        // init parser
         self::$parser = new \Console_CommandLine();
         self::$parser->description = <<<EOF
                     _ _       _     
@@ -323,15 +336,15 @@ EOF;
      */
     public static function loadBaseModules () {
         
-        $command_path = _COS_PATH . '/coslib/shell';
+        $command_path = 'vendor/diversen/simple-php-classes/src/shell';
  
-        $base_list = file::getFileList($command_path, array ('search' => '.inc'));
+        $base_list = file::getFileList($command_path, array ('search' => '.php'));
         foreach ($base_list as $val){
             include_once $command_path . "/$val";
         }
         
-        $locale_path = _COS_PATH . '/coslib/shell/locale';     
-        $locale_list = file::getFileList($locale_path, array ('search' => '.inc'));
+        $locale_path = _COS_PATH . '/vendor/diversen/simple-php-classes/src/shell/locale';     
+        $locale_list = file::getFileList($locale_path, array ('search' => '.php'));
         
         if ($locale_list) {
 
