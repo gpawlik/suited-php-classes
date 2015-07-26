@@ -62,8 +62,6 @@ function create_module_skeleton($args){
     }
 }
 
-
-
 self::setCommand('skeleton', array(
     'description' => 'Create skeleton for a module',
 ));
@@ -76,6 +74,3 @@ self::setOption('create_module_skeleton', array(
 
 
 self::setArgument('module', array('description'=> 'Specify the module to create skeleton for'));
-
-
-?>

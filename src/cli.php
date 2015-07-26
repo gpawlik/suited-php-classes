@@ -335,9 +335,7 @@ EOF;
      * base modules are placed in coslib/shell
      */
     public static function loadBaseModules () {
-        
         $command_path = 'vendor/diversen/simple-php-classes/src/shell';
- 
         $base_list = file::getFileList($command_path, array ('search' => '.php'));
         foreach ($base_list as $val){
             include_once $command_path . "/$val";
