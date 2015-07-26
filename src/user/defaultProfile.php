@@ -14,7 +14,7 @@ use diversen\html;
  * @package user
  */
 
-class profile {
+class defaultProfile {
     
     /**
      * return empty string 

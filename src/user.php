@@ -1,12 +1,13 @@
 <?php
 
 namespace diversen;
-//use diversen\user\profile as user_profile;
+use diversen\user\defaultProfile;
 use diversen\db;
 use diversen\moduleloader;
 use diversen\lang;
 use diversen\session;
-use diversen\conf as conf;
+use diversen\conf;
+use diversen\db\q;
 
 /**
  * File containing methods for getting a user profile connected to the 
@@ -40,7 +41,7 @@ class user {
      * @return array|false $row if row was found else false
      */
     public static function ownID ($table, $id, $user_id) {
-        $row = \q::setSelect($table)->
+        $row = q::setSelect($table)->
                 filter('id =', $id)->
                 condition('AND')->
                 filter('user_id = ', $user_id)->
@@ -106,7 +107,7 @@ class user {
 
             $profile_system = conf::getMainIni('profile_module');
             if (!isset($profile_system) || !moduleloader::isInstalledModule($profile_system)){
-                self::$profile_object = new profile();
+                self::$profile_object = new defaultProfile();
                 return;
             } else {
                 moduleloader::includeModule ($profile_system);
