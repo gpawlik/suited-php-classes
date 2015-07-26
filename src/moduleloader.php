@@ -449,6 +449,15 @@ class moduleloader {
         return str_replace('/', '_', $path);
     }
     
+    /**
+     * reference to table name e.g. content/article to content_article
+     * @param string $reference
+     * @return string $table_name
+     */
+    public static function moduleReferenceToTable ($reference) {
+        return str_replace('/', '_', $reference);
+    }
+    
 
     
     /**
