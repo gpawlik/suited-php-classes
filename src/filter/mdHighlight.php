@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen\filter;
-use diversen\conf as config;
+use diversen\conf as conf;
 /**
  *
  * file contains method for rewriting language highlights in markdown
@@ -45,7 +45,7 @@ class mdHighlight {
      */
     public function filter($article) {
 
-        if (config::getMainIni('filters_allow_files')) {
+        if (conf::getMainIni('filters_allow_files')) {
             $article = self::filterFile($article);
         }
         $article = self::filterInline($article);

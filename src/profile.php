@@ -2,7 +2,7 @@
 
 namespace diversen;
 use diversen\moduleinstaller;
-use diversen\conf as config;
+use diversen\conf as conf;
 
 /**
  * *
@@ -335,7 +335,7 @@ class profile  {
         $ini_file = _COS_HTDOCS . "/templates/$this->profileTemplate/$this->profileTemplate.ini";
         $ini_file_dist = $ini_file . "-dist";
 
-        if (config::isCli()) {
+        if (conf::isCli()) {
             if (file_exists($ini_file_dist)){
                 copy($ini_file_dist, $ini_file);
             }
@@ -384,9 +384,9 @@ class profile  {
             // if no ini we just skip           
             if (!file_exists($source)) continue;
             
-            $ary = config::getIniFileArray($source, true);
+            $ary = conf::getIniFileArray($source, true);
             $ary = $this->iniArrayPrepare($ary);               
-            $config_str = config::arrayToIniFile($ary);
+            $config_str = conf::arrayToIniFile($ary);
 
             $dest = $profile_dir . "/$val[module_name].ini-dist";
             file_put_contents($dest, $config_str);
@@ -425,9 +425,9 @@ class profile  {
     private function createConfigIni($profile){
         $profile_dir = _COS_PATH . "/profiles/$profile";
         $source = _COS_PATH . "/config/config.ini";  
-        $ary = config::getIniFileArray($source, true);
+        $ary = conf::getIniFileArray($source, true);
         $ary = $this->iniArrayPrepare($ary);  
-        $config_str = config::arrayToIniFile($ary);     
+        $config_str = conf::arrayToIniFile($ary);     
         file_put_contents($profile_dir . "/config.ini-dist", $config_str);
 
     }

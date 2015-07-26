@@ -2,7 +2,7 @@
 
 namespace diversen;
 use diversen\moduleinstaller;
-use diversen\conf as config;
+use diversen\conf as conf;
 /**
  * file contains the template installer
  * @package installer
@@ -66,10 +66,10 @@ class templateinstaller extends moduleinstaller {
         if (!file_exists($ini_file)){
             if (file_exists($ini_file_dist)){
                 copy ($ini_file_dist, $ini_file);
-                config::$vars['coscms_main']['template'] = config::getIniFileArray($ini_file);
+                conf::$vars['coscms_main']['template'] = conf::getIniFileArray($ini_file);
             } 
         } else {
-            config::$vars['coscms_main']['template'] = config::getIniFileArray($ini_file);
+            conf::$vars['coscms_main']['template'] = conf::getIniFileArray($ini_file);
         }
 
         if (file_exists($template_dir)){

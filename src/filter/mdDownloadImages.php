@@ -7,7 +7,7 @@ namespace diversen\filter;
  */
 use diversen\uri\direct as uri_direct;
 use Michelf\Markdown as mark;
-use diversen\conf as config;
+use diversen\conf as conf;
 use diversen\file;
 
 /**
@@ -154,9 +154,9 @@ class mdDownloadImages extends mark {
         $title = uri_direct::fragment(3, $url);
 
         $path = "/images/$id/$title";
-        $save_path = config::getFullFilesPath($path);
-        $web_path = config::getWebFilesPath($path);
-        $image_url = config::getSchemeWithServerName() . $url;
+        $save_path = conf::getFullFilesPath($path);
+        $web_path = conf::getWebFilesPath($path);
+        $image_url = conf::getSchemeWithServerName() . $url;
 
         $file = @file_get_contents($image_url);
         if ($file === false) {

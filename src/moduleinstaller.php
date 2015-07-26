@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen;
-use diversen\conf as config;
+use diversen\conf as conf;
 /**
  * *
  * File which contains class for installing modules
@@ -103,20 +103,20 @@ class moduleinstaller extends db {
             if (!file_exists($ini_file)){
                 if (file_exists($ini_file_dist)){
                     copy ($ini_file_dist, $ini_file);
-                    config::$vars['coscms_main']['module'] = config::getIniFileArray($ini_file);
+                    conf::$vars['coscms_main']['module'] = conf::getIniFileArray($ini_file);
                 } 
             } else {
-                config::$vars['coscms_main']['module'] = config::getIniFileArray($ini_file);
+                conf::$vars['coscms_main']['module'] = conf::getIniFileArray($ini_file);
             }
             
             // check for a locale ini file which only
             // can be added by end user. 
             $ini_locale = $module_dir . "/locale.ini";
             if (file_exists($ini_locale)) {
-                $locale = config::getIniFileArray($ini_locale, true);
-                config::$vars['coscms_main']['module'] =
+                $locale = conf::getIniFileArray($ini_locale, true);
+                conf::$vars['coscms_main']['module'] =
                     array_merge(
-                    config::$vars['coscms_main']['module'],
+                    conf::$vars['coscms_main']['module'],
                     $locale
                 );
             }
