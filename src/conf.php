@@ -193,7 +193,7 @@ class conf {
         // this is set with the domain flag in ./coscli.sh
         if (self::isCli()){
             if (isset(self::$vars['domain']) && self::$vars['domain'] != 'default'){
-                $config_file = _COS_PATH . "/config/multi/". config::$vars['domain'] . "/config.ini";
+                $config_file = _COS_PATH . "/config/multi/". self::$vars['domain'] . "/config.ini";
             } else {
                 $config_file = _COS_PATH . "/config/config.ini";
             }
@@ -315,6 +315,22 @@ class conf {
     }
     
     /**
+     * load config based on env (cli or server)
+     */
+    public static function load() {
+        // Note: If Cli mode there is no runLevels
+        // Therefore: config from database which are merged with config settings
+        // from file is NOT loaded in Cli mode: You will need to set these
+        // settings in config.ini
+
+        if (!self::isCli()) {
+            self::loadMain();
+        } else {
+            self::loadMainCli();
+        }
+    }
+
+    /**
      * Function for loading the main config file
      * found in config/config.ini
      * 
@@ -388,14 +404,14 @@ class conf {
     /**
      * load main cli configuration
      */
-    public static function loadMainCli () {
+    public static function loadMainCli() {
         $config_file = self::getConfigFileName();
-        
-        if (!file_exists($config_file)){
+
+        if (!file_exists($config_file)) {
             return;
         } else {
             self::$vars['coscms_main'] = self::getIniFileArray($config_file, true);
-            
+
             // AS 'production' often is on the same server as 'stage', we 
             // need to set: 
             // 
@@ -405,46 +421,40 @@ class conf {
             // stage. 
             // 
             self::mergeSharedIni();
-            
-            if (self::getMainIni('production') == 1){
-                    // We are on REAL server and exists without
-                    // If this is set. 
-                    // adding additional settings for stage or development
-                    // or CLI mode
-                    return; 
+
+            if (self::getMainIni('production') == 1) {
+                // We are on REAL server and exists without
+                // If this is set. 
+                // adding additional settings for stage or development
+                // or CLI mode
+                return;
             }
 
             // Test if we are on stage server. 
             // Overwrite register settings with stage settings
             // Note that ini settings for development will
             // NOT take effect on CLI ini settings
-            if (self::getEnv() == 'stage'){
+            if (self::getEnv() == 'stage') {
 
-                    // we are on development, merge and overwrite normal settings with
-                    // development settings and return
-                    self::$vars['coscms_main'] =
-                    array_merge(
-                        self::$vars['coscms_main'],
-                        self::$vars['coscms_main']['stage']
-                    );
-                    return;
-                //}
+                // we are on development, merge and overwrite normal settings with
+                // development settings and return
+                self::$vars['coscms_main'] = array_merge(
+                        self::$vars['coscms_main'], self::$vars['coscms_main']['stage']
+                );
+                return;
             }
             // We are on development server. 
             // Overwrite register settings with development settings
             // Development settings will ALSO be added to CLI
             // ini settings
-            if (self::getEnv() =='development') {
-                    self::$vars['coscms_main'] =
-                    array_merge(
-                        self::$vars['coscms_main'],
-                        self::$vars['coscms_main']['development']
-                    );
-                //}
+            if (self::getEnv() == 'development') {
+                self::$vars['coscms_main'] = array_merge(
+                        self::$vars['coscms_main'], self::$vars['coscms_main']['development']
+                );
             }
         }
     }
-    
+
     /**
      * defines all common constants after loading main ini file. 
      * 

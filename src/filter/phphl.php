@@ -44,7 +44,7 @@ class phphl {
         
         self::init();
         
-        if (config::getMainIni('filters_allow_files')) {
+        if (conf::getMainIni('filters_allow_files')) {
             $article = self::filterPhpFile($article);
         }
         $article = self::filterPhpInline($article);

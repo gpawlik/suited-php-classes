@@ -4,7 +4,7 @@
  * dummy file for code completion in netbeans
  * @ignore
  */
-class config extends diversen\conf {}
+class conf extends diversen\conf {}
 class session extends diversen\session {}
 class db extends diversen\db {}
 class q extends diversen\db\q {}

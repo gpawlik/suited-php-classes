@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen;
-use diversen\conf as conf;
+use diversen\conf;
 /**
  * File contains methods for logging
  * @package    log
@@ -75,5 +75,18 @@ class log {
             }
         }
     }
-}
+    
+    public static function setLogLevel() {
+        $env = conf::getEnv();
+        if ($env == 'development') {
+            error_reporting(E_ALL);
+        }
 
+
+        // check if we are in debug mode and display errors
+        if (conf::getMainIni('debug')) {
+            ini_set('display_errors', 1);
+        }
+    }
+
+}
