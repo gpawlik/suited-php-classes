@@ -168,5 +168,4 @@ class boot {
         $ml->runLevel(8);
         echo conf::$vars['final_output'];
     }
-
 }

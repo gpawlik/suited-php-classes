@@ -23,6 +23,13 @@ class conf {
      */
     public static $vars = array ();
     
+        
+    /**
+     * var holding which env we live in
+     * @var string 
+     */
+    public static $env = null;
+    
     
     /**
      * method for getting a module ini settings
@@ -187,7 +194,6 @@ class conf {
      */
     
     public static function getConfigFileName () {
-        //return get_config_file();
         // determine host and see if we use virtual hosting
         // where one code base can be used for more virtual hosts.
         // this is set with the domain flag in ./coscli.sh
@@ -207,12 +213,6 @@ class conf {
         }
         return $config_file;
     }
-    
-    /**
-     * var holding which env we live in
-     * @var string 
-     */
-    public static $env = null;
     
     /**
      * try to match ini settings server name with $_SERVER['SERVER_NAME']
@@ -330,14 +330,14 @@ class conf {
         }
     }
     
+    /**
+     * set default include paths. modules/ and base_path
+     */
     public static function setIncludePath() {
-
-        
         $ini_path = ini_get('include_path');
         ini_set('include_path', 
                 _COS_PATH . PATH_SEPARATOR .
                 _COS_MOD_PATH . PATH_SEPARATOR .
-
                 $ini_path . PATH_SEPARATOR);
     }
 
