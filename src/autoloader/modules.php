@@ -3,7 +3,9 @@
 namespace diversen\autoloader;
 
 class modules {
-        
+
+    
+    
     public function moduleAutoLoader($classname) {
 
         $classname = ltrim($classname, '\\');

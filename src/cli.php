@@ -348,6 +348,5 @@ EOF;
         foreach ($base_list as $val){
             include_once $command_path . "/$val";
         }
-
     }
 }

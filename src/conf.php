@@ -2,7 +2,6 @@
 
 namespace diversen;
 use diversen\moduleloader;
-use diversen\log;
 
 /**
  * contains methods for getting and setting configuration. 
@@ -338,7 +337,8 @@ class conf {
     public static function setIncludePath() {
         
         $ini_path = get_include_path();
-        set_include_path( 
+        set_include_path(
+                '.' . PATH_SEPARATOR .
                 _COS_PATH . PATH_SEPARATOR .
                 _COS_MOD_PATH . PATH_SEPARATOR .
                 $ini_path . PATH_SEPARATOR);
@@ -492,7 +492,7 @@ class conf {
     
     public static function defineCommon () {
         
-        //$htdocs_path = self::getMainIni('htdocs_path');
+
         $htdocs_path = _COS_PATH . "/htdocs";
         // default htdocs path
         if (file_exists($htdocs_path)) {
@@ -512,7 +512,6 @@ class conf {
 
         define ('_COS_MOD_DIR', $mod_dir);
         define ('_COS_MOD_PATH', _COS_PATH . '/' . _COS_MOD_DIR);
-        
         /**
          * define path to htdocs files (uploads)
          */

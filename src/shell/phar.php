@@ -101,7 +101,10 @@ function cos_phar_web_create() {
     $ini_settings = conf::arrayToIniFile($ary);
     file_put_contents("$build_from_dir/tmp/.config.ini", $ini_settings);
     
-    $output = "$build_phar_dir/$base-web.phar";
+    chdir($build_phar_dir);
+    //$output = "$build_phar_dir/$base-web.phar";
+    
+    $output = "$base-web.phar";
     $phar = new Phar($output);
 
     $phar->buildFromDirectory($build_from_dir);
