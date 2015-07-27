@@ -337,14 +337,11 @@ class conf {
      */
     public static function setIncludePath() {
         
-        echo realpath('.');
-        //die;
         $ini_path = get_include_path();
         set_include_path( 
                 _COS_PATH . PATH_SEPARATOR .
                 _COS_MOD_PATH . PATH_SEPARATOR .
                 $ini_path . PATH_SEPARATOR);
-        echo get_include_path();
     }
 
     /**
