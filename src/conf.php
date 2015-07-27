@@ -363,7 +363,7 @@ class conf {
      */    
     public static function loadMain () {
         
-        echo $config_file = self::getConfigFileName();    
+        $config_file = self::getConfigFileName();    
 
         if (!file_exists($config_file)){
             return;
