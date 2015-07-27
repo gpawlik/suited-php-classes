@@ -5,6 +5,7 @@ namespace diversen;
 use diversen\alias;
 use diversen\uri\dispatch;
 use diversen\autoloader\modules;
+use diversen\moduleloader;
 
 // set aliases
 
@@ -12,21 +13,24 @@ class boot {
 
     public function run() {
 
-        alias::set();
+       
         $m = new modules();
         $m->autoloadRegister();
 
         // define all constant - based on _COS_PATH and config.ini
         conf::defineCommon();
 
+        // set include path - based on config.ini
+        conf::setIncludePath();
+        
         // load config file 
         conf::load();
 
-        // set include path - based on config.ini
-        conf::setIncludePath();
-
         // set log level - based on config.ini
         log::setLogLevel();
+        
+        // set alias    
+        alias::set();
 
         // utf-8
         ini_set('default_charset', 'UTF-8');

@@ -103,13 +103,14 @@ function cos_phar_web_create() {
     
     $output = "$build_phar_dir/$base-web.phar";
     $phar = new Phar($output);
+
     $phar->buildFromDirectory($build_from_dir);
     $stub = $phar->createDefaultStub('phar-web.php', 'phar-web.php');
     $phar->setStub($stub);
     $phar->stopBuffering();
 
     echo "Web phar executable file created from current source ($output)\n";
-    echo "Server it with built-in server like this:\n";
+    echo "Serve it e.g. with the built-in server. Like this:\n";
     echo "cd $build_phar_dir\n";
     echo "php -S localhost:8080 $base-web.phar\n";
     exit(0);

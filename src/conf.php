@@ -2,6 +2,8 @@
 
 namespace diversen;
 use diversen\moduleloader;
+use diversen\log;
+
 /**
  * contains methods for getting and setting configuration. 
  * @package config
@@ -334,11 +336,15 @@ class conf {
      * set default include paths. modules/ and base_path
      */
     public static function setIncludePath() {
-        $ini_path = ini_get('include_path');
-        ini_set('include_path', 
+        
+        echo realpath('.');
+        //die;
+        $ini_path = get_include_path();
+        set_include_path( 
                 _COS_PATH . PATH_SEPARATOR .
                 _COS_MOD_PATH . PATH_SEPARATOR .
                 $ini_path . PATH_SEPARATOR);
+        echo get_include_path();
     }
 
     /**
@@ -360,7 +366,8 @@ class conf {
      */    
     public static function loadMain () {
         
-        $config_file = self::getConfigFileName();    
+        echo $config_file = self::getConfigFileName();    
+
         if (!file_exists($config_file)){
             return;
         } else {

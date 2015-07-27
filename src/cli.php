@@ -69,26 +69,7 @@ class cli {
      */
     static function init (){
         
-        // define all constant - based on _COS_PATH and config.ini
-        conf::defineCommon();
-
-        // load config file 
-        conf::load();
-
-        // set include path - based on config.ini
-        conf::setIncludePath();
-
-        // set log level - based on config.ini
-        log::setLogLevel();
         
-        // Important!
-        //include_once "coslib/shell/common.inc";
-
-        // set locales
-        intl::setLocale();
-        
-        // set default timezone
-        intl::setTimezone();
         
         // init parser
         self::$parser = new \Console_CommandLine();
