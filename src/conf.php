@@ -365,9 +365,17 @@ class conf {
         
         $config_file = self::getConfigFileName();    
 
+        
         if (!file_exists($config_file)){
+            $config_file = 'config/config.ini';
+        } 
+        
+        if (!file_exists($config_file)) {
             return;
-        } else {
+        
+        }
+            //return;
+        //} else {
             self::$vars['coscms_main'] = self::getIniFileArray($config_file, true);
             
             // set them in coscms_main_file, so it is possbile
@@ -412,7 +420,7 @@ class conf {
                     self::$vars['coscms_main']['development'] = 'development';
 
             }
-        }
+        //}
     }
     
         

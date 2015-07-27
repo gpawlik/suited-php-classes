@@ -13,11 +13,13 @@ namespace diversen;
 
 use diversen\strings\ext as strings_ext;
 use diversen\db;
-use diversen\conf as conf;
 use diversen\db\admin as db_admin;
 use diversen\lang; 
 use diversen\moduleloader;
-use diversen\file;
+use diversen\file;        
+use diversen\alias;
+use diversen\autoloader\modules;
+use diversen\conf;
 
 
 
@@ -67,10 +69,35 @@ class cli {
      * static function for initing command parser
      * creates parser and sets version and description
      */
-    static function init (){
-        
-        
-        
+    static function init() {
+
+
+        $m = new modules();
+        $m->autoloadRegister();
+
+
+        alias::set();
+
+        // define all constant - based on _COS_PATH and config.ini
+        conf::defineCommon();
+
+        // load config file 
+        conf::load();
+
+        // set include path - based on config.ini
+        conf::setIncludePath();
+
+        // set log level - based on config.ini
+        log::setLogLevel();
+
+        // set locales
+        intl::setLocale();
+
+        // set default timezone
+        intl::setTimezone();
+
+
+
         // init parser
         self::$parser = new \Console_CommandLine();
         self::$parser->description = <<<EOF
