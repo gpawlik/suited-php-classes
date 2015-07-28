@@ -10,7 +10,6 @@
  * @package webinstall
  * 
  */
-
 use diversen\conf;
 use diversen\db;
 /**

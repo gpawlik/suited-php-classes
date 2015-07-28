@@ -13,7 +13,7 @@ use diversen\conf as conf;
  * XXX: Most be moved.
  * used for add newline definiton, when doing web - or shell install of modules.
  */
-include_once _COS_PATH . "/vendor/diversen/simple-php-classes/src/shell/common.php";
+include_once "shell/common.php";
 
 /**
  * class for installing a module or upgrading it.
