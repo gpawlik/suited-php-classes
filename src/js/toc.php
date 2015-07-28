@@ -19,7 +19,7 @@ class toc {
      * @param array $options e.g. array ('exclude' => 'h1', 'content' => '#content_article'); 
      */
     public static function set ($options = array ()) {
-        template::setJs('/js/js-toc/jquery.toc-1.1.4.js');
+        template::setJs('/bower_components/toc/dist/toc.min.js');
         if (!isset($options['exclude'])) {
             $options['exclude'] = 'h4,h5,h6';
         }
@@ -28,7 +28,7 @@ class toc {
         }
         $str = <<<EOF
     $(document).ready(function() {
-        $('#toc').toc({exclude: '{$options['exclude']}' , context: '{$options['context']}', autoId: true, numerate: true});
+        $('#toc').toc({exclude: '{$options['exclude']}' , context: '{$options['context']}', autoId: true, numerate: true, 'smoothScrolling': false});
     });
 EOF;
         template::setStringJs($str);
