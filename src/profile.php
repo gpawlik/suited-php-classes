@@ -2,7 +2,7 @@
 
 namespace diversen;
 use diversen\moduleinstaller;
-use diversen\conf as conf;
+use diversen\conf;
 
 /**
  * *
@@ -482,6 +482,11 @@ class profile  {
      */
     public function setProfileInfo($profile){
         $profile_dir = _COS_PATH . "/profiles/$profile";
+        if (!file_exists($profile_dir)) {
+            //echo;
+            cos_cli_abort( "No such path to profiles: $profile_dir");
+        } 
+        
         include $profile_dir . "/profile.inc";
         $this->profileModules = $_PROFILE_MODULES;
         $this->profileTemplates = $_PROFILE_TEMPLATES;
