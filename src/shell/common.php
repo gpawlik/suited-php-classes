@@ -1,5 +1,6 @@
 <?php
 
+use diversen\conf;
 /**
  * Some helper functions to use with shell.php
  *

@@ -1,6 +1,6 @@
 <?php
 
-include_once "coslib/git.php";
+include_once "vendor/diversen/simple-php-classes/src/git.php";
 
 
 /**
