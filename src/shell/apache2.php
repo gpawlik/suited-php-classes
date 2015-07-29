@@ -23,7 +23,6 @@ function cos_a2_enable_site($options){
 
 function cos_a2_disable_site($options){
     apache2::disableSite($options);
-
 }
 
 function cos_a2_use_ssl ($options) {
