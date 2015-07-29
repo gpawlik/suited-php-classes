@@ -3,6 +3,7 @@
 namespace diversen;
 
 use diversen\strings\version as strings_version;
+
 /**
  * file contains class for doing insall, removal of apache2 virtual hosts
  * @package apache2
@@ -13,12 +14,139 @@ use diversen\strings\version as strings_version;
  * @package apache2
  */
 class apache2 {
-    
+
+    /**
+     * sets a flag indicating to use apache2 with SSL
+     * @param array $options
+     */
+    public static function setUseSSL($options) {
+        //conf::$vars['a2_use_ssl'] = true;
+        conf::setMainIni('as_use_ssl', true);
+    }
+
+    /**
+     * create apache log files
+     */
+    public static function createLogs() {
+        touch(_COS_PATH . '/logs/access.log');
+        touch(_COS_PATH . '/logs/error.log');
+    }
+
+    /**
+     * create apache2 configuration string
+     * Note: we don't use the _COS_HTDOCS path. 
+     * @param   string  $server_name the host to enable
+     * @return  string  $config an apache2 configuration string.
+     */
+    public static function getA2Conf($SERVER_NAME) {
+        $current_dir = getcwd();
+        $DOCUMENT_ROOT = $current_dir . '/htdocs';
+        $APACHE_LOG_ROOT = $current_dir . '/logs';
+
+        if (isset(conf::$vars['a2_use_ssl'])) {
+            $apache_str = apache2::getConf($SERVER_NAME, $DOCUMENT_ROOT, $APACHE_LOG_ROOT);
+        } else {
+            $apache_str = apache2::getConfSSL($SERVER_NAME, $DOCUMENT_ROOT, $APACHE_LOG_ROOT);
+        }
+        return $apache_str;
+    }
+
+    /**
+     * function for enabling a aapche2 site
+     * the script does the following:
+     *
+     * - create access.log and error.log in ./logs
+     * - create virtual configuration and put it in sites-available
+     * - enable new site
+     * - create new /etc/hosts file
+     *
+     * @param array $options only options is $options[sitename] 
+     */
+    public static function enableSite($options) {
+        $hostname = trim($options['hostname']);
+
+        cos_needs_root();
+        cos_create_logs();
+
+        // create apache2 conf and enable site
+        $apache2_conf = cos_create_a2_conf($hostname);
+        $tmp_file = _COS_PATH . "/tmp/$hostname";
+        file_put_contents($tmp_file, $apache2_conf);
+        $apache2_conf_file = "/etc/apache2/sites-available/$hostname";
+
+        // some changes in apache 2.4.x from apache 2.2.x
+        // se http://httpd.apache.org/docs/current/upgrading.html
+
+        $version = apache2::getVersion();
+        $version = strings_version::getSemanticAry($version);
+
+        if ($version['minor'] >= 4) {
+            $apache2_conf_file.= ".conf";
+        }
+
+        cos_exec("cp -f tmp/$hostname $apache2_conf_file");
+        cos_exec("a2ensite $hostname");
+
+        // create new hosts file and reload server
+        // not very exact match
+
+        $hosts_file_str = file_get_contents("/etc/hosts");
+        $host_str = "127.0.0.1\t$hostname\n";
+        if (!strstr($hosts_file_str, $host_str)) {
+            $new_hosts_file_str = $host_str . $hosts_file_str;
+            file_put_contents("tmp/hosts", $new_hosts_file_str);
+            cos_exec("cp -f tmp/hosts /etc/hosts");
+        }
+        cos_exec("/etc/init.d/apache2 reload");
+    }
+
+    /**
+     * function for disabling an apache2 site
+     * @param array $options only options is $options[sitename] 
+     */
+    public static function disableSite($options) {
+
+        cos_needs_root();
+        $hostname = trim($options['hostname']);
+
+        $apache2_conf_file = "/etc/apache2/sites-available/$hostname";
+        $ret = cos_exec("a2dissite $hostname");
+        if ($ret) {
+            return false;
+        }
+
+        $version = apache2::getVersion();
+        $version = strings_version::getSemanticAry($version);
+
+        if ($version['minor'] >= 4) {
+            $apache2_conf_file.= ".conf";
+        }
+
+        $ret = cos_exec("rm -f $apache2_conf_file");
+
+        // create new hosts file and reload server
+        $host_file_str = '';
+        $hosts_file_str = file("/etc/hosts");
+
+        $host_search = "127.0.0.1\t$hostname\n";
+        $str = "";
+        foreach ($hosts_file_str as $key => $val) {
+            if (strstr($val, $host_search)) {
+                continue;
+            } else {
+                $host_file_str.=$val;
+            }
+        }
+        file_put_contents("tmp/hosts", $host_file_str);
+        cos_exec("cp -f tmp/hosts /etc/hosts");
+        cos_exec("/etc/init.d/apache2 reload");
+    }
+
     /**
      * 
      * @return int $ret 0 if exists 1 if not exits
      */
-    public static function isInstalled() {    
+    public static function isInstalled() {
         exec("which apache2", $ary, $ret);
         if ($ret == 0) {
             return true;
@@ -37,9 +165,9 @@ class apache2 {
         $ary[1];
         $ary = explode('/', $ary[1]);
         preg_match("/\d+(\.\d+)+/", $ary[1], $matches);
-        return $matches[0];  
+        return $matches[0];
     }
-    
+
     /**
      * gets a configuration file
      * it knows about apache2 changes in 2_4_x
@@ -49,10 +177,10 @@ class apache2 {
      * @param string $APACHE_LOG_ROOT
      * @return string $conf a apache2 conf file
      */
-    public static function getConf ($SERVER_NAME, $DOCUMENT_ROOT, $APACHE_LOG_ROOT) {
+    public static function getConf($SERVER_NAME, $DOCUMENT_ROOT, $APACHE_LOG_ROOT) {
         $version = self::getVersion();
         $version = strings_version::getSemanticAry($version);
-        
+
         if ($version['minor'] >= 4) {
             $VERSION_2_4_x = <<<EOF
         Options FollowSymLinks
@@ -62,7 +190,7 @@ EOF;
         } else {
             $VERSION_2_4_x = '';
         }
-        
+
         return $apache_str = <<<EOD
 <VirtualHost *:80>
     ServerAdmin webmaster@example.com
@@ -103,12 +231,12 @@ deny from all
 </VirtualHost>
 EOD;
     }
-    
+
     /**
      * difference in conf files in version 2.4.x
      * @return string
      */
-    public static function get2_4_conf () {
+    public static function get2_4_conf() {
         $str = <<<EOF
     Options FollowSymLinks
     AllowOverride All
@@ -116,7 +244,7 @@ EOD;
 EOF;
         return $str;
     }
-    
+
     /**
      * get apache2 with ssl configuration
      * @param string $SERVER_NAME
@@ -124,10 +252,10 @@ EOF;
      * @param string $APACHE_LOG_ROOT
      * @return string $conf apache2 ssl configuration
      */
-    public static function getConfSSL ($SERVER_NAME, $DOCUMENT_ROOT, $APACHE_LOG_ROOT) {
+    public static function getConfSSL($SERVER_NAME, $DOCUMENT_ROOT, $APACHE_LOG_ROOT) {
         $version = apache2::getVersion();
         $version = strings_version::getSemanticAry($version);
-        
+
         if ($version['minor'] >= 4) {
             $VERSION_2_4_x = <<<EOF
         Options FollowSymLinks
@@ -137,7 +265,7 @@ EOF;
         } else {
             $VERSION_2_4_x = '';
         }
-        
+
         return $apache_str = <<<EOD
 <VirtualHost *:80>
     ServerAdmin webmaster@example.com
@@ -188,6 +316,7 @@ deny from all
     DocumentRoot {$DOCUMENT_ROOT}
   
     <Directory {$DOCUMENT_ROOT}>
+        {$VERSION_2_4_x}
         RewriteEngine on
         RewriteBase /
         RewriteCond %{REQUEST_FILENAME} !-f
@@ -354,6 +483,5 @@ deny from all
 </VirtualHost>
 </IfModule>
 EOD;
-        
     }
 }
