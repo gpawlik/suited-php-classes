@@ -26,15 +26,7 @@ function db_show_con_info ($options) {
  * @return int $res  the executed commands shell status 0 on success.
  */
 function create_db($options = array()){
-
-    $db = db_admin::getDbInfo();
-    $command = 
-        "mysqladmin -u" . conf::$vars['coscms_main']['username'] .
-        " -p" . conf::$vars['coscms_main']['password'] . " -h$db[host] ";
-    
-    $command.= "--default-character-set=utf8 ";
-    $command.= "CREATE $db[dbname]";
-    return $ret = cos_exec($command, $options);
+    return db_admin::createDB();
 }
 
 /**

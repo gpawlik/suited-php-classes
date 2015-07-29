@@ -4,7 +4,7 @@ use diversen\apache2;
 
 /**
  * File contains shell commands for apache2 on Debian systems for fast
- * creating of apache2 web hosts
+ * creatiion of apache2 web hosts
  * 
  * @package     shell
  */

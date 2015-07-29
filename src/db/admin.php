@@ -12,7 +12,7 @@ use diversen\conf as conf;
  * dbadmin 
  * @package db
  */
-class admin extends db {
+class admin {
     
     /**
      * changes database we are working on
@@ -37,12 +37,9 @@ class admin extends db {
         }
         
         $url = parse_url($url);
-        //print_r($url);
         $ary = explode (';', $url['path']);
         foreach ($ary as $val) {
-            //print_r($val);
             $a = explode ("=", $val);
-            //print_r($a);
             if (isset($a[0], $a[1])) {
                 $url[$a[0]] = $a[1];
             }
@@ -66,7 +63,6 @@ class admin extends db {
                 return false;
             }
         }
-        
         $sql = "CREATE TABLE $dest LIKE $source; INSERT $dest SELECT * FROM $source";
         return self::rawQuery($sql);
     }
@@ -85,9 +81,9 @@ class admin extends db {
         }
         
         $cols = implode(',', $columns);
-        
         $sql = "ALTER TABLE $table ADD FULLTEXT($cols)";
-        return self::rawQuery($sql);
+        $db = new db();
+        return $db->rawQuery($sql);
     }
     
     /**
@@ -108,7 +104,8 @@ class admin extends db {
      */
     public static function getKeys ($table) {
         $q = "SHOW KEYS FROM $table";
-        $rows = self::selectQuery($q);
+        $db = new db();
+        $rows = $db->selectQuery($q);
         return $rows;
     }
     
@@ -117,11 +114,18 @@ class admin extends db {
      * 
      */
     public static function keyExists ($table, $key) {
+        $db = new db();
         $q = "SHOW KEYS FROM $table WHERE Key_name='$key'";
-        $rows = self::selectQueryOne($q);
+        $rows = $db->selectQueryOne($q);
         return $rows;
     }
     
+    /**
+     * clone a complete database
+     * @param string $database
+     * @param string $newDatabase
+     * @return boolean $res
+     */
     public static function cloneDB($database, $newDatabase){
         $db = new db();
         $rows = $db->selectQuery('show tables');
@@ -140,5 +144,22 @@ class admin extends db {
             $db->rawQuery("INSERT INTO $cTable SELECT * FROM ".$database.".".$cTable);
         }
         return !isset($error) ? true : false;
+    }
+    
+    /**
+     * creates a database from config params (url, password, username)
+     * @param array $options
+     * @return int $res result from exec operation
+     */
+    public static function createDB ($options = array()) {
+        
+        $db = self::getDbInfo();
+        $command = 
+            "mysqladmin -u" . conf::$vars['coscms_main']['username'] .
+            " -p" . conf::$vars['coscms_main']['password'] . " -h$db[host] ";
+
+        $command.= "--default-character-set=utf8 ";
+        $command.= "CREATE $db[dbname]";
+        return $ret = cos_exec($command, $options);
     }
 }
