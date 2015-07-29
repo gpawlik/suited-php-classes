@@ -1,6 +1,7 @@
 <?php
 
 use diversen\conf;
+use diversen\cli;
 /**
  * Some helper functions to use with shell.php
  *
@@ -129,18 +130,17 @@ function cos_get_color_status ($status) {
  * @param char $color_code (e.g. 'g', 'y', 'r')
  * @return string $colorered output
  */
-function color_output ($output, $color_code = 'g') {
+function color_output($output, $color_code = 'g') {
     static $color = null;
     if (!conf::isCli()) {
         return $output;
     }
-    
-    //if (!isset(config::$vars['coscms_main']['color_shell_disable'])) {
-        if (!$color) {
-            $color = new \Console_Color();
-        }
-        $ret = $color->convert("%$color_code$output%n");    
-    //} 
+
+    if (!$color) {
+        $color = new \Console_Color();
+    }
+    $ret = $color->convert("%$color_code$output%n");
+
     return $ret;
 }
 
@@ -254,7 +254,7 @@ function cos_needs_root ($str = '') {
 
     if (!cos_is_root()) {
         echo $output . PHP_EOL;
-        mainCli::exitInt(128);
+        cli::exitInt(128);
     }
     return 0;
 }

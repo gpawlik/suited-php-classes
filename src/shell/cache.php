@@ -55,4 +55,3 @@ self::setOption('cache_clear_all', array(
     'description' => 'Will clear all cached assets, and db cache',
     'action'      => 'StoreTrue'
 ));
-

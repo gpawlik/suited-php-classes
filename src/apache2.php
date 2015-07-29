@@ -20,7 +20,6 @@ class apache2 {
      * @param array $options
      */
     public static function setUseSSL($options) {
-        //conf::$vars['a2_use_ssl'] = true;
         conf::setMainIni('as_use_ssl', true);
     }
 
