@@ -20,15 +20,15 @@ class toc {
      */
     public static function set ($options = array ()) {
         template::setJs('/bower_components/toc/dist/toc.min.js');
-        if (!isset($options['exclude'])) {
-            $options['exclude'] = 'h4,h5,h6';
+        if (!isset($options['selectors'])) {
+            $options['selectors'] = 'h1,h2,h3,h4';
         }
-        if (!isset($options['context'])) {
-            $options['context'] = '#content';
+        if (!isset($options['container'])) {
+            $options['container'] = '#content';
         }
         $str = <<<EOF
     $(document).ready(function() {
-        $('#toc').toc({exclude: '{$options['exclude']}' , context: '{$options['context']}', autoId: true, numerate: true, 'smoothScrolling': false});
+        $('#toc').toc({selectors: '{$options['selectors']}' , container: '{$options['container']}', prefix: 'toc', 'smoothScrolling': false});
     });
 EOF;
         template::setStringJs($str);
