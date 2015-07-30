@@ -46,7 +46,7 @@ class layout {
      * construtor method
      * checks for a admin template. 
      * loads a template from _COS_HTODCS . '/templates'
-     * loads a template's common file _COS_HTDOCS . /templates/template/common.inc
+     * loads a template's common file conf::pathHtdocs() . /templates/template/common.inc
      * @param string $template
      */
     function __construct($template = null){
@@ -119,7 +119,7 @@ class layout {
         }
         // load template. This is done before parsing the modules. Then the 
         // modules still can effect the template. Set header, css, js etc. 
-        $template_path = _COS_HTDOCS. "/templates/" .
+        $template_path = conf::pathHtdocs(). "/templates/" .
             $template;
         
         $common = $template_path . "/common.php";
@@ -328,7 +328,7 @@ class layout {
      * @return array $templates
      */
     public static function getAllTemplates () {
-        return file::getFileList(_COS_HTDOCS . "/templates", array ('dir_only' => true));
+        return file::getFileList(conf::pathHtdocs() . "/templates", array ('dir_only' => true));
     }
     
     /**
@@ -367,7 +367,7 @@ class layout {
      * @return array    $menu as array
      */
     public static function getMenuFromFile ($module){
-        $module_menu = _COS_PATH . '/' . _COS_MOD_DIR . '/' . $module . '/menu.inc';
+        $module_menu = conf::pathModules() . '/' . $module . '/menu.inc';
 
         if (file_exists($module_menu)){
             include $module_menu;
@@ -416,7 +416,7 @@ class layout {
         $children_menu = self::getChildrenMenus($module);
         $module_menu = array_merge($module_menu, $children_menu);  
         
-        $db_config_file = _COS_PATH . '/' . _COS_MOD_DIR . "/$module/configdb.inc";
+        $db_config_file = conf::pathModules() . "/$module/configdb.inc";
         
         if (file_exists($db_config_file)) {
             include $db_config_file;
@@ -758,7 +758,7 @@ class layout {
             $num = count($func) -1;
             $func = explode ('.', $func[$num]);
             $func = 'block_' . $func[0];
-            $path_to_function = _COS_PATH . '/' . _COS_MOD_DIR . "/$val";
+            $path_to_function = conf::pathModules() . "/$val";
             include_once $path_to_function;
             ob_start();
             $ret = $func();

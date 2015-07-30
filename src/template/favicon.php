@@ -27,7 +27,7 @@ class favicon {
         $favicon = conf::getMainIni('favicon');
         $domain = conf::getDomain();
         $rel_path = "/files/$domain/favicon/$favicon";
-        $full_path = _COS_HTDOCS . "/$rel_path"; 
+        $full_path = conf::pathHtdocs() . "/$rel_path"; 
         if (!is_file($full_path)) {
             $rel_path = '/favicon.ico';
         }

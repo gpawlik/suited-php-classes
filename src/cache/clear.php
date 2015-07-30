@@ -25,7 +25,7 @@ class clear {
 
     public static function assets ($options = null) {
 
-        $path = _COS_PATH . "/htdocs/files/default/cached_assets";
+        $path = conf::pathBase() . "/htdocs/files/default/cached_assets";
         if (file_exists($path)) {
             file::rrmdir($path);
         }

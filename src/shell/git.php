@@ -40,11 +40,11 @@ function cos_git_install ($options, $type = 'module'){
 function cos_get_repo_path ($module_name, $type = 'module'){
     // set repo_dir according to module type.
     if($type == 'template'){
-        $repo_dir = _COS_PATH . "/htdocs/templates/$module_name";
+        $repo_dir = conf::pathBase() . "/htdocs/templates/$module_name";
     } else if ($type == 'profile'){
-        $repo_dir = _COS_PATH . "/profiles/$module_name";
+        $repo_dir = conf::pathBase() . "/profiles/$module_name";
     } else {
-        $repo_dir = _COS_MOD_PATH . "/$module_name";
+        $repo_dir = conf::pathModules() . "/$module_name";
     }
     return $repo_dir;
 }
@@ -96,11 +96,11 @@ function cos_git_clone($options, $type){
 
     // set dir according to module type. Template, profile or module.
     if ($type == 'template'){
-        $clone_path = _COS_HTDOCS . "/templates";
+        $clone_path = conf::pathHtdocs() . "/templates";
     } else if ($type == 'profile'){
-        $clone_path = _COS_PATH . "/profiles";
+        $clone_path = conf::pathBase() . "/profiles";
     } else {
-        $clone_path = _COS_MOD_PATH;
+        $clone_path = conf::pathModules();
     }
 
     // create path if it does not exists
@@ -157,7 +157,7 @@ function cos_git_use_master ($options){
  */
 function cos_git_upgrade_template_single($options) {
     
-    $path = _COS_HTDOCS . "/templates/$options[repo]";
+    $path = conf::pathHtdocs() . "/templates/$options[repo]";
     $p = new profile();
     if (cos_git_is_repo($path)) {
         $mod = $p->getTemplate($options['repo']);
@@ -174,7 +174,7 @@ function cos_git_upgrade_template_single($options) {
  */
 function cos_git_upgrade_module_single($options) {
     
-    $path = _COS_MOD_PATH . "/$options[repo]";
+    $path = conf::pathModules() . "/$options[repo]";
     $p = new profile();
     if (cos_git_is_repo($path)) {
         $mod = $p->getModule($options['repo']);        
@@ -268,7 +268,7 @@ function cos_git_commit_all ($options){
  */
 function cos_git_commit_module_single ($options){
 
-    $path = _COS_MOD_PATH . "/$options[repo]";
+    $path = conf::pathModules() . "/$options[repo]";
     if (!cos_git_is_repo($path)) {
         cos_cli_abort("Module: $options[repo] is not a git repo. Specify installed module name (e.g. 'settings') when commiting");
     }
@@ -283,7 +283,7 @@ function cos_git_commit_module_single ($options){
  * @param array $options array ('repo')
  */
 function cos_git_commit_template_single ($options){
-    $path = _COS_HTDOCS . "/templates/$options[repo]";
+    $path = conf::pathHtdocs() . "/templates/$options[repo]";
     if (!cos_git_is_repo($path)) {
         cos_cli_abort("Template: $options[repo] is not a git repo. Specify installed template (e.g. 'clean') name when commiting");
     }

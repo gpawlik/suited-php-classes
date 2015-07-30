@@ -116,7 +116,7 @@ class profile  {
                 // try to find public clone url
                 $status = "module $val[module_name] has no public clone url set. We try to guess it.";
                 cos_cli_print_status('NOTICE', 'y', $status);
-                $module_path = _COS_MOD_PATH . "/$val[module_name]";
+                $module_path = conf::pathModules() . "/$val[module_name]";
                 if (!file_exists($module_path)) {
                     cos_cli_print_status('NOTICE', 'y', "module $val[module_name] has no module source");
                     continue;
@@ -207,11 +207,11 @@ class profile  {
     
     
     /**
-     * method for getting all templates located in _COS_HTDOCS/template
+     * method for getting all templates located in conf::pathHtdocs()/template
      * used for settings current templates in profiles/profile/profile.inc file
      */
     public function getTemplates (){
-        $dir = _COS_HTDOCS . "/templates";
+        $dir = conf::pathHtdocs() . "/templates";
         $templates = file::getFileList($dir, array('dir_only' => true));
 
         foreach ($templates as $key => $val){
@@ -232,7 +232,7 @@ class profile  {
                 $templates[$key] = array ();
                 
                 // check if this a git repo
-                $path = _COS_HTDOCS . "/templates/$val";
+                $path = conf::pathHtdocs() . "/templates/$val";
                 $command = "cd $path && git config --get remote.origin.url";
                 $ret = null;
                 exec($command, $output, $ret);
@@ -285,7 +285,7 @@ class profile  {
         $profile_str.= "\n\n";
         $profile_str.= '$_PROFILE_USE_HOME = ' . $this->getProfileUseHome() . ';';
         $profile_str.= "\n\n";
-        $file = _COS_PATH . "/profiles/$profile/profile.inc";
+        $file = conf::pathBase() . "/profiles/$profile/profile.inc";
         if (!file_put_contents($file, $profile_str)){
             print "Could not write to $file";
         }
@@ -332,7 +332,7 @@ class profile  {
             $this->profileTemplate = $template;
         }
 
-        $ini_file = _COS_HTDOCS . "/templates/$this->profileTemplate/$this->profileTemplate.ini";
+        $ini_file = conf::pathHtdocs() . "/templates/$this->profileTemplate/$this->profileTemplate.ini";
         $ini_file_dist = $ini_file . "-dist";
 
         if (conf::isCli()) {
@@ -364,7 +364,7 @@ class profile  {
     private function createProfileFiles($profile){
         
         $modules = $this->getModules();
-        $profile_dir = _COS_PATH . "/profiles/$profile";
+        $profile_dir = conf::pathBase() . "/profiles/$profile";
         
         if (!file_exists($profile_dir) || !is_dir($profile_dir)) {
             $mkdir = @mkdir($profile_dir);
@@ -379,7 +379,7 @@ class profile  {
         //$secrets = array ('remote');
         foreach ($modules as $key => $val){
 
-            $source = _COS_MOD_PATH . "/$val[module_name]/$val[module_name].ini";
+            $source = conf::pathModules() . "/$val[module_name]/$val[module_name].ini";
 
             // if no ini we just skip           
             if (!file_exists($source)) continue;
@@ -392,7 +392,7 @@ class profile  {
             file_put_contents($dest, $config_str);
 
             // if php ini file exists copy that to.
-            $source = _COS_MOD_PATH . "/$val[module_name]/config.php";
+            $source = conf::pathModules() . "/$val[module_name]/config.php";
             $dest = $profile_dir . "/$val[module_name].php-dist";
 
             if (file_exists($source)){
@@ -403,8 +403,8 @@ class profile  {
         
         $templates = $this->getTemplates();
         foreach ($templates as $key => $val){
-            //$template_ini_file = _COS_PATH . "/templates/$val[module_name]/$val[module_name].ini";
-            $source = _COS_HTDOCS . "/templates/$val[module_name]/$val[module_name].ini";
+            //$template_ini_file = conf::pathBase() . "/templates/$val[module_name]/$val[module_name].ini";
+            $source = conf::pathHtdocs() . "/templates/$val[module_name]/$val[module_name].ini";
             $dest = $profile_dir . "/$val[module_name].ini-dist";
             
             // templates does not need to have an ini file
@@ -423,8 +423,8 @@ class profile  {
      * @param   string   name of the profile
      */
     private function createConfigIni($profile){
-        $profile_dir = _COS_PATH . "/profiles/$profile";
-        $source = _COS_PATH . "/config/config.ini";  
+        $profile_dir = conf::pathBase() . "/profiles/$profile";
+        $source = conf::pathBase() . "/config/config.ini";  
         $ary = conf::getIniFileArray($source, true);
         $ary = $this->iniArrayPrepare($ary);  
         $config_str = conf::arrayToIniFile($ary);     
@@ -481,7 +481,7 @@ class profile  {
      * @param string    profile name
      */
     public function setProfileInfo($profile){
-        $profile_dir = _COS_PATH . "/profiles/$profile";
+        $profile_dir = conf::pathBase() . "/profiles/$profile";
         if (!file_exists($profile_dir)) {
             //echo;
             cos_cli_abort( "No such path to profiles: $profile_dir");
@@ -539,11 +539,11 @@ class profile  {
      * @param   string    name of profile to be installed
      */
     public function loadProfileFiles($profile){
-        $profile_dir = _COS_PATH . "/profiles/$profile";
+        $profile_dir = conf::pathBase() . "/profiles/$profile";
         
         foreach ($this->profileModules as $key => $val){
             $source = $profile_dir . "/$val[module_name].ini-dist";
-            $dest = _COS_MOD_PATH . "/$val[module_name]/$val[module_name].ini";
+            $dest = conf::pathModules() . "/$val[module_name]/$val[module_name].ini";
     
             if (copy($source, $dest)){
                 $this->confirm[] = "Copy $source to $dest";
@@ -552,7 +552,7 @@ class profile  {
             }
 
             // if php ini file exists copy that to.
-            $dest = _COS_MOD_PATH . "/$val[module_name]/$val[module_name].php.ini";
+            $dest = conf::pathModules() . "/$val[module_name]/$val[module_name].php.ini";
             $source = $profile_dir . "/$val[module_name].php.ini-dist";
 
             if (file_exists($source)){
@@ -562,7 +562,7 @@ class profile  {
         
         foreach ($this->profileTemplates as $key => $val){
             $source = $profile_dir . "/$val[module_name].ini-dist";
-            $dest = _COS_HTDOCS . "/templates/$val[module_name]/$val[module_name].ini";
+            $dest = conf::pathHtdocs() . "/templates/$val[module_name]/$val[module_name].ini";
     
             if (file_exists($source)) {
                 if (copy($source, $dest)){
@@ -581,8 +581,8 @@ class profile  {
      */
     public function loadConfigIni($profile){
         // copy config,ini
-        $profile_dir = _COS_PATH . "/profiles/$profile";
-        $dest = _COS_PATH . "/config/config.ini";
+        $profile_dir = conf::pathBase() . "/profiles/$profile";
+        $dest = conf::pathBase() . "/config/config.ini";
         $source = $profile_dir . "/config.ini-dist";
         if (copy($source, $dest)){
             $this->confirm[] = "Copy $source to $dest";

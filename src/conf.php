@@ -200,16 +200,16 @@ class conf {
         // this is set with the domain flag in ./coscli.sh
         if (self::isCli()){
             if (isset(self::$vars['domain']) && self::$vars['domain'] != 'default'){
-                $config_file = _COS_PATH . "/config/multi/". self::$vars['domain'] . "/config.ini";
+                $config_file = self::pathBase() . "/config/multi/". self::$vars['domain'] . "/config.ini";
             } else {
-                $config_file = _COS_PATH . "/config/config.ini";
+                $config_file = self::pathBase() . "/config/config.ini";
             }
         } else {
-            $virtual_host_dir = _COS_PATH . "/config/multi/$_SERVER[SERVER_NAME]";
+            $virtual_host_dir = self::pathBase() . "/config/multi/$_SERVER[SERVER_NAME]";
             if (file_exists($virtual_host_dir)){
                 $config_file = $virtual_host_dir . "/config.ini";
             } else {
-                $config_file = _COS_PATH . "/config/config.ini";
+                $config_file = self::pathBase() . "/config/config.ini";
             }
         }
         return $config_file;
@@ -339,8 +339,8 @@ class conf {
         $ini_path = get_include_path();
         set_include_path(
                 '.' . PATH_SEPARATOR .
-                _COS_PATH . PATH_SEPARATOR .
-                _COS_MOD_PATH . PATH_SEPARATOR .
+                self::pathBase() . PATH_SEPARATOR .
+                self::pathModules() . PATH_SEPARATOR .
                 $ini_path . PATH_SEPARATOR);
     }
 
@@ -364,20 +364,13 @@ class conf {
     public static function loadMain () {
         
         $config_file = self::getConfigFileName();    
-
-        
         if (!file_exists($config_file)){
             $config_file = 'config/config.ini';
         } 
         
-        if (!file_exists($config_file)) {
-            return;
-        
-        }
-            //return;
-        //} else {
-            self::$vars['coscms_main'] = self::getIniFileArray($config_file, true);
-            
+
+            //self::$vars['coscms_main'] = self::getIniFileArray($config_file, true);
+            self::$vars['coscms_main'] = array_merge(self::$vars['coscms_main'], self::getIniFileArray($config_file, true));
             // set them in coscms_main_file, so it is possbile
             // to get original value without db viewing e.g. db override. 
             self::$vars['coscms_main_file'] = self::$vars['coscms_main'];
@@ -433,7 +426,7 @@ class conf {
         if (!file_exists($config_file)) {
             return;
         } else {
-            self::$vars['coscms_main'] = self::getIniFileArray($config_file, true);
+            self::$vars['coscms_main'] = array_merge(self::$vars['coscms_main'], self::getIniFileArray($config_file, true));
 
             // AS 'production' often is on the same server as 'stage', we 
             // need to set: 
@@ -477,50 +470,67 @@ class conf {
             }
         }
     }
+    
+    /**
+     * return base path
+     * @return string
+     */
+    public static function pathBase () {
+        return self::getMainIni('base_path');
+    }
+    
+    /**
+     * returns htdocs (public) path
+     * @return string
+     */
+    public static function pathHtdocs () {
+        return self::getMainIni('htdocs_path');
+    }
+    
+    /**
+     * return modules path
+     * @return string
+     */
+    public static function pathModules () {
+        return self::getMainIni('modules_path');
+    }
+    
+    /**
+     * return dir name of files
+     * @return type
+     */
+    public static function dirFiles () {
+        return self::getMainIni('files_dir');
+    }
 
     /**
      * defines all common constants after loading main ini file. 
      * 
-     * _COS_HTDOCS
-     * _COS_MOD_DIR
-     * _COS_MOD_PATH
-     * 
-     *  Except: 
-     * 
-     *  _COS_PATH which all other defines are based on
      */
     
     public static function defineCommon () {
         
-
-        $htdocs_path = _COS_PATH . "/htdocs";
-        // default htdocs path
+        $htdocs_path = conf::pathBase() . "/htdocs";
         if (file_exists($htdocs_path)) {
-            define('_COS_HTDOCS', _COS_PATH . '/htdocs');
+            conf::setMainIni('htdocs_path', self::pathBase() . '/htdocs');
         } else {
-            define('_COS_HTDOCS', _COS_PATH);
+            conf::setMainIni('htdocs_path', self::pathBase());
         }
 
-        /**
-         * define path to modules
-         */
+        // module dir
         $mod_dir = self::getMainIni('module_dir');
-
         if (!$mod_dir) {
             $mod_dir = 'modules';
         }
+        
+        self::setMainIni('modules_dir', $mod_dir);
+        
+        // module path
+        self::setMainIni('modules_path', self::pathBase() . "/" . $mod_dir);
+        
+        // files dir
+        self::setMainIni('files_dir', 'files');
 
-        define ('_COS_MOD_DIR', $mod_dir);
-        define ('_COS_MOD_PATH', _COS_PATH . '/' . _COS_MOD_DIR);
-        /**
-         * define path to htdocs files (uploads)
-         */
-        $files_dir = self::getMainIni('htdocs_files');
-        if (!$files_dir) {
-            define('_COS_FILES',  'files');
-        } else {
-            define('_COS_FILES',  $files_dir);
-        }
     }
     
     /**
@@ -565,7 +575,7 @@ class conf {
      * production and stage. 
      */
     public static function mergeSharedIni () {
-        $shared_ini = _COS_PATH . "/config/shared.ini";
+        $shared_ini = self::pathBase() . "/config/shared.ini";
         if (file_exists($shared_ini)) {
             $shared = self::getIniFileArray($shared_ini);
             self::$vars['coscms_main'] =
@@ -632,7 +642,7 @@ class conf {
      * @return  string  $path the module path
      */
     public static function getModulePath ($module) {
-        return _COS_PATH . '/' . _COS_MOD_DIR . '/' . $module;
+        return self::pathModules() . '/' . $module;
     }
     
     /**
@@ -641,7 +651,7 @@ class conf {
      * @return  string  $path the template path
      */
     public static function getTemplatePath ($template) {
-        return _COS_HTDOCS . '/templates/' . $template;
+        return self::pathHtdocs() . '/templates/' . $template;
     }
     
    /**
@@ -657,7 +667,7 @@ class conf {
         if ($storage) {
             $files_path = $storage;
         } else {
-            $files_path = _COS_HTDOCS . "/files";
+            $files_path = self::pathHtdocs() . "/files";
         }
         
         if ($domain == 'default') {

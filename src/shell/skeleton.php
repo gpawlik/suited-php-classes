@@ -18,7 +18,7 @@
 function create_module_skeleton($args){
     $module_name = $args['module'];
     $ary = explode('/', $module_name);
-    $module_path = _COS_MOD_PATH . '/' . $module_name;
+    $module_path = conf::pathModules() . '/' . $module_name;
     
     cos_exec('mkdir ' . $module_path);
 

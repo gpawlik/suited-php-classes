@@ -66,7 +66,7 @@ class captcha {
 
         $this->_capTextColor = $f_color;
         $this->_capBgColor = $b_color;
-        $this->_capFont = _COS_HTDOCS . '/' . $font;
+        $this->_capFont = conf::pathHtdocs() . '/' . $font;
         $this->SendHeader();
         $this->setStr($str);
         $this->MakeCaptcha();

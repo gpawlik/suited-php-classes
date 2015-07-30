@@ -2,7 +2,7 @@
 
 namespace diversen\html\table;
 use diversen\db\q as q;
-use diversen\pagination as paginate;
+use diversen\pagination as pagination;
 
 /**
  * File containing class for building a simple table from db
@@ -37,7 +37,7 @@ class db {
      */
     public function getTable($table, $from, $limit = 100) {
         $total = q::numRows('account')->fetch();
-        $p = new paginate($total);
+        $p = new pagination($total);
         $rows = q::select($table)->limit($p->from, $limit)->fetch();
         $str = "<table border =1><tr>";
         $str.= $this->getTableHeaders($table);

@@ -14,11 +14,11 @@ use diversen\mycurl;
  */
 function dev_test_access($options = null){
     
-    $files = file::getFileListRecursive(_COS_MOD_PATH, "*.php");
+    $files = file::getFileListRecursive(conf::pathModules(), "*.php");
    
     $base_url = "http://" . conf::getMainIni('server_name');
     foreach ($files as $val) {
-        $url = str_replace(_COS_MOD_PATH, '', $val);
+        $url = str_replace(conf::pathModules(), '', $val);
         $url = substr($url, 0, -4);
        
         $url = $base_url . $url;

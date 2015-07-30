@@ -101,7 +101,7 @@ function cos_build_simple($options = null) {
     $phar_web = "cp -rf phar-web.php ./build/$name/";
     cos_exec($phar_web);
 
-    $module_dir = _COS_MOD_DIR;
+    $module_dir = conf::pathModules();
     $modules = "cp -rf $module_dir ./build/$name";
     cos_exec($modules);
 

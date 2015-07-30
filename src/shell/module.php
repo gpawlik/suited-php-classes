@@ -98,7 +98,7 @@ function purge_module($options){
     }
 
     // check if module exists
-    $module_path = _COS_MOD_PATH . '/' . $options['module'];
+    $module_path = conf::pathModules() . '/' . $options['module'];
     if (!file_exists($module_path)){
         cos_cli_print("module already purged: No such module path: $module_path");
         cos_cli_abort();
@@ -160,7 +160,7 @@ function update_ini_file ($options){
         exit(1);
     }
     
-    $ini_file_path = _COS_MOD_PATH . "/$options[module]/$options[module].ini";
+    $ini_file_path = conf::pathModules() . "/$options[module]/$options[module].ini";
     $ini_dist_path = $ini_file_path . "-dist";
 
     $ini_file = conf::getIniFileArray($ini_file_path);

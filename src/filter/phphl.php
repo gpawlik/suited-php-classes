@@ -26,7 +26,7 @@ class phphl {
             $template = layout::getTemplateName();
             $css_override = "/templates/$template/assets/phphl.css";
         
-            if (file_exists(_COS_HTDOCS . $css_override )) {
+            if (file_exists(conf::pathHtdocs() . $css_override )) {
                 template::setCss($css_override);
             } else {
                 template::setCss('/css/assets/phphl.css');

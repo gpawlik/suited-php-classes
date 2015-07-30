@@ -1,11 +1,11 @@
 <?php
 
-use diversen\db\admin as db_admin;
+use diversen\db\admin as admin;
 /**
  * dumps entire structure
  */
 function cos_structure_dump () {
-    $ary = db_admin::getDbInfo();
+    $ary = admin::getDbInfo();
     $user = conf::getMainIni('username');
     $password = conf::getMainIni('password');
     $command = "mysqldump -d -h $ary[host] -u $user -p$password $ary[dbname]";
@@ -17,7 +17,7 @@ function cos_structure_dump () {
  * @param array $options
  */
 function cos_structure_dump_table ($options) {
-    $ary = db_admin::getDbInfo();
+    $ary = admin::getDbInfo();
     $user = conf::getMainIni('username');
     $password = conf::getMainIni('password');
     
@@ -54,7 +54,7 @@ function cos_db_dump_table ($options = null){
     
     $dump_name = "backup/sql/$options[table]/" . time() . ".sql";
     
-    $db = db_admin::getDbInfo();
+    $db = admin::getDbInfo();
     $command = 
         "mysqldump --opt -u" . conf::$vars['coscms_main']['username'] .
         " -p" . conf::$vars['coscms_main']['password'];
@@ -81,7 +81,7 @@ function cos_db_load_table($options){
         cos_cli_abort('Yet no backups');
     }
     
-    $search = _COS_PATH . "/backup/sql/$options[table]";
+    $search = conf::pathBase() . "/backup/sql/$options[table]";
     $latest = get_latest_db_dump($search);
     if ($latest == 0) {
         cos_cli_abort('Yet no database dumps');
@@ -89,7 +89,7 @@ function cos_db_load_table($options){
         
     $latest = "backup/sql/$options[table]/" . $latest . ".sql";
     
-    $db = db_admin::getDbInfo();
+    $db = admin::getDbInfo();
     $command = 
         "mysql --default-character-set=utf8  -u" . conf::$vars['coscms_main']['username'] .
         " -p" . conf::$vars['coscms_main']['password'] . " $db[dbname] < $latest";

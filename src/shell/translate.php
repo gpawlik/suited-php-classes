@@ -66,11 +66,11 @@ function translate($options){
     $strings_all[] = '';
 
     if (isset($options['template'])) {
-        $module_dir = _COS_HTDOCS . '/templates/' . $options['module'];
-        $lang_dir = _COS_HTDOCS . "/templates/$options[module]/lang/$options[language]";
+        $module_dir = conf::pathHtdocs() . '/templates/' . $options['module'];
+        $lang_dir = conf::pathHtdocs() . "/templates/$options[module]/lang/$options[language]";
     } else {
-        $module_dir = _COS_MOD_PATH . "/$options[module]";
-        $lang_dir = _COS_MOD_PATH . "/$options[module]/lang/$options[language]";
+        $module_dir = conf::pathModules() . "/$options[module]";
+        $lang_dir = conf::pathModules() . "/$options[module]/lang/$options[language]";
     }
         
     if (!file_exists($module_dir)){
@@ -108,7 +108,7 @@ function translate($options){
         if (strstr($val, 'menu.inc') || strstr($val, 'install.inc') ||  strstr($val, 'system_lang.inc') ){
             // system translation
             // we add the file info to translation as comment
-            $file = str_replace(_COS_PATH, '', $val);
+            $file = str_replace(conf::pathBase(), '', $val);
             $sys_str.="// Translation of file $file\n\n";
 
             // and we add all strings in that file
@@ -118,7 +118,7 @@ function translate($options){
         } else {
 
             // we add the file info to translation as comment
-            $file = str_replace(_COS_PATH, '', $val);
+            $file = str_replace(conf::pathBase(), '', $val);
             $str.="// Translation of file $file\n\n";
 
             // and we add all strings in that file
@@ -227,11 +227,11 @@ function translate_is_text ($file) {
 function translate_update($options){
    
     if (isset($options['template'])) {
-        $module_dir = _COS_HTDOCS . '/templates/' . $options['module'];
-        $lang_dir = _COS_HTDOCS . "/templates/$options[module]/lang/$options[language]";
+        $module_dir = conf::pathHtdocs() . '/templates/' . $options['module'];
+        $lang_dir = conf::pathHtdocs() . "/templates/$options[module]/lang/$options[language]";
     } else {
-        $module_dir = _COS_MOD_PATH . "/$options[module]";
-        $lang_dir = _COS_MOD_PATH . "/$options[module]/lang/$options[language]";
+        $module_dir = conf::pathModules() . "/$options[module]";
+        $lang_dir = conf::pathModules() . "/$options[module]/lang/$options[language]";
     }
     
     if (!file_exists($module_dir)){
@@ -288,7 +288,7 @@ function translate_update($options){
         
         if (strstr($val, 'menu.inc') || strstr($val, 'install.inc') ||  strstr($val, 'system_lang.inc') ){
             
-            $file = str_replace(_COS_PATH, '', $val);
+            $file = str_replace(conf::pathBase(), '', $val);
             $translation_sys_str.="\n// Translation of file $file\n\n";
             
             foreach ($strings as $trans){
@@ -305,7 +305,7 @@ function translate_update($options){
             }
         } else {
             
-            $file = str_replace(_COS_PATH, '', $val);
+            $file = str_replace(conf::pathBase(), '', $val);
             $translation_str.="\n// Translation of file $file\n\n";
             
             foreach ($strings as $trans){
@@ -354,12 +354,12 @@ function translate_collect ($options) {
     $str = "<?php\n\n";
     foreach ($mods as $mod) {
         
-        $mod_lang = _COS_MOD_PATH . "/$mod[module_name]/lang/$options[language]";
+        $mod_lang = conf::pathModules() . "/$mod[module_name]/lang/$options[language]";
         $system_file = $mod_lang . "/system.inc";
         $language_file = $mod_lang . "/language.inc";
         if (file_exists($system_file)) {
             
-            $file = str_replace(_COS_PATH, '', $system_file);
+            $file = str_replace(conf::pathBase(), '', $system_file);
             $str.="\n// Translation of file $file\n\n";
             
             include $system_file;
@@ -373,7 +373,7 @@ function translate_collect ($options) {
         
         if (file_exists($language_file)) {
             
-            $file = str_replace(_COS_PATH, '', $language_file);
+            $file = str_replace(conf::pathBase(), '', $language_file);
             $str.="\n// Translation of file $file\n\n";
             
             include $language_file;
@@ -389,13 +389,13 @@ function translate_collect ($options) {
 
     $temps = layout::getAllTemplates();
     foreach ($temps as $temp) {
-        $mod_lang = _COS_HTDOCS . "/templates/$temp/lang/$options[language]";
+        $mod_lang = conf::pathHtdocs() . "/templates/$temp/lang/$options[language]";
         $system_file = $mod_lang . "/system.inc";
         $language_file = $mod_lang . "/language.inc";
         
         if (file_exists($system_file)) {
             
-            $file = str_replace(_COS_HTDOCS, '', $system_file);
+            $file = str_replace(conf::pathHtdocs(), '', $system_file);
             $str.="\n// Translation of file $file\n\n";
             
             include $system_file;
@@ -407,7 +407,7 @@ function translate_collect ($options) {
         
         if (file_exists($language_file)) {
             
-            $file = str_replace(_COS_HTDOCS, '', $language_file);
+            $file = str_replace(conf::pathHtdocs(), '', $language_file);
             $str.="\n// Translation of file $file\n\n";
             
             include $language_file;
@@ -419,7 +419,7 @@ function translate_collect ($options) {
     }
 
     
-    $mod_lang = _COS_HTDOCS . "/templates/$options[module]/lang/$options[language]";
+    $mod_lang = conf::pathHtdocs() . "/templates/$options[module]/lang/$options[language]";
     $lang_all = $mod_lang . "/language-all.inc";
     
     file_put_contents($lang_all, $str);

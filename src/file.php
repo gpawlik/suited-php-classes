@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen;
-use diversen\file\path as file_path;
+use diversen\file\path as path;
 use diversen\conf as conf;
 
 /**
@@ -136,7 +136,7 @@ class file {
      */
     public static function getFilename($file, $options = array()) {
         if (isset($options['utf8'])) {
-            $info = file_path::utf8($file);
+            $info = path::utf8($file);
         } else {
             $info = pathinfo($file);
         }
@@ -192,7 +192,7 @@ class file {
     }
 
     /**
-     * method for creating a directory in the _COS_HTDOCS/files directory
+     * method for creating a directory in the conf::pathHtdocs()/files directory
      * It will know if we are using a multi domain setup
      * @param string $dir
      */

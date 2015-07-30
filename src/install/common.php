@@ -27,7 +27,7 @@ class installDb extends db {
     }
 
     function readSql(){
-        $file = _COS_PATH . '/scripts/default.sql';
+        $file = conf::pathBase() . '/scripts/default.sql';
         $this->sql = file_get_contents($file);
         return $this->sql;
     }
@@ -85,7 +85,7 @@ function cos_check_magic_gpc () {
  */
 function cos_check_files_dir () {
     clearstatcache();
-    $files_dir = _COS_HTDOCS . "/files";
+    $files_dir = conf::pathHtdocs() . "/files";
     $domain = conf::getMainIni('domain');
     $files_dir.="/$domain";
     

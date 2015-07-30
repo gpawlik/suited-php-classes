@@ -175,8 +175,8 @@ function cos_purge_from_profile ($options) {
  */
 function upgrade_config_ini_file ($options){
     
-    $ini_file_path = _COS_PATH . "/config/config.ini";
-    $ini_dist_path = _COS_PATH . "/profiles/$options[profile]/config.ini-dist";
+    $ini_file_path = conf::pathBase() . "/config/config.ini";
+    $ini_dist_path = conf::pathBase() . "/profiles/$options[profile]/config.ini-dist";
 
     $ini_file = conf::getIniFileArray($ini_file_path, true);
     $ini_dist = conf::getIniFileArray($ini_dist_path, true);

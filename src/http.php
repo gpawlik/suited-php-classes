@@ -193,7 +193,7 @@ class http {
         header('HTTP/1.1 503 Service Temporarily Unavailable');
         header('Status: 503 Service Temporarily Unavailable');
         header('Retry-After: 300'); // 5 minutes in seconds
-        include_once _COS_HTDOCS . "/temporarily_unavailable.php";
+        include_once conf::pathHtdocs() . "/temporarily_unavailable.php";
         die();
     }
 }

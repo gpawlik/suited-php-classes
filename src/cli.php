@@ -13,7 +13,7 @@ namespace diversen;
 
 use diversen\strings\ext as strings_ext;
 use diversen\db;
-use diversen\db\admin as db_admin;
+use diversen\db\admin as admin;
 use diversen\lang; 
 use diversen\moduleloader;
 use diversen\file;        
@@ -54,7 +54,7 @@ class cli {
      * var holding ini settings for modules
      * @var array $ini
      */
-    public static $ini = array();
+    //public static $ini = array();
 
         
     /**
@@ -69,7 +69,7 @@ class cli {
      * static function for initing command parser
      * creates parser and sets version and description
      */
-    static function init() {
+    public static function init() {
 
 
         $m = new modules();
@@ -78,14 +78,14 @@ class cli {
 
         alias::set();
 
-        // define all constant - based on _COS_PATH and config.ini
+        // define all constant - based on base_path and config.ini
         conf::defineCommon();
-
-        // load config file 
-        conf::load();
 
         // set include path - based on config.ini
         conf::setIncludePath();
+        
+        // load config file 
+        conf::load();
 
         // set log level - based on config.ini
         log::setLogLevel();
@@ -95,8 +95,6 @@ class cli {
 
         // set default timezone
         intl::setTimezone();
-
-
 
         // init parser
         self::$parser = new \Console_CommandLine();
@@ -143,7 +141,7 @@ EOF;
      * @param string command
      * @param array options
      */
-    static function setCommand ($command, $options){
+    public static function setCommand ($command, $options){
         if (isset($options['description'])) {
             $options['description'] = strings_ext::removeNewlines($options['description']);
         }
@@ -158,7 +156,7 @@ EOF;
      * @param array     options
      */
 
-    static function setOption ($command, $options){
+    public static function setOption ($command, $options){
         self::$command->addOption($command, $options);
     }
 
@@ -168,7 +166,7 @@ EOF;
      * @param string argument
      * @param array  options
      */
-    static function setArgument($argument, $options){
+    public static function setArgument($argument, $options){
         self::$command->addArgument($argument, $options);
     }
 
@@ -182,15 +180,9 @@ EOF;
      *                              
      * @return  int     0 on success any other int is failure
      */
-    static function run($options = array ()){
+    public static function run($options = array ()){
         try {
             $ret = 0;
-            
-            // load config file
-            // Note: First time loaded we only load it order to load any
-            // base modules which may be set
-            
-            conf::loadMainCli();
             
             // load all modules
             if (!isset($options['disable_base_modules'])) {
@@ -199,9 +191,7 @@ EOF;
             
             if (!isset($options['disable_db_modules'])) {
                 self::loadDbModules();
-            }
-            
-                     
+            }       
             
             try {
                 $result = self::$parser->parse();
@@ -223,7 +213,7 @@ EOF;
         
             
             if ($domain != 'default' || empty($domain)) {
-                $domain_ini = _COS_PATH . "/config/multi/$domain/config.ini";
+                $domain_ini = conf::pathBase() . "/config/multi/$domain/config.ini";
                 if (!file_exists($domain_ini)) {
                     cos_cli_abort("No such domain - no configuration found: It should be placed here $domain_ini");
                 } else {
@@ -288,18 +278,16 @@ EOF;
         $mod_loader = new moduleloader();
         $modules = moduleloader::getAllModules();
               
-        foreach ($modules as $val){     
+        foreach ($modules as $val){
+            
             if (isset($val['is_shell']) && $val['is_shell'] == 1){
-                moduleloader::includeModule($val['module_name']);
-                
-                $path =  _COS_PATH . "/" . _COS_MOD_DIR.  "/$val[module_name]/$val[module_name].inc";
+
+                moduleloader::includeModule($val['module_name']);               
+                $path =  conf::pathModules() . "/$val[module_name]/$val[module_name].inc";
                 
                 if (file_exists($path)) {
                     include_once $path;
-                }
-
-                $ini = _COS_PATH . "/" . _COS_MOD_DIR  . "/$val[module_name]/$val[module_name].ini";
-                self::$ini[$val['module_name']] = conf::getIniFileArray($ini);                
+                }             
             }
         }
     }
@@ -317,7 +305,7 @@ EOF;
             return;
         }
         
-        $info = db_admin::getDbInfo();
+        $info = admin::getDbInfo();
         if ($info['scheme'] == 'mysql' || $info['scheme'] == 'mysqli') {
             $rows = $db->selectQuery("SHOW TABLES");
             if (empty($rows)){

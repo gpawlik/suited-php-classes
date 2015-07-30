@@ -55,12 +55,12 @@ class templateinstaller extends moduleinstaller {
             $template_name = $options['template'];
         }
         
-        $template_dir = _COS_HTDOCS  . "/templates/$template_name";
+        $template_dir = conf::pathHtdocs()  . "/templates/$template_name";
         $ini_file = $template_dir . "/$template_name.ini";
         $ini_file_dist = $template_dir . "/$template_name.ini-dist";
 
         if (isset($options['profile'])){
-            $ini_file_dist = _COS_PATH . "/profiles/$options[profile]/$template_name.ini-dist";
+            $ini_file_dist = conf::pathBase() . "/profiles/$options[profile]/$template_name.ini-dist";
         }
 
         if (!file_exists($ini_file)){
@@ -83,7 +83,7 @@ class templateinstaller extends moduleinstaller {
              // if no version we check if this is a git repo
             if (!isset($this->installInfo['VERSION'])) {
 
-                $command = "cd " . _COS_HTDOCS . "/templates/"; 
+                $command = "cd " . conf::pathHtdocs() . "/templates/"; 
                 $command.= $this->installInfo['NAME'] . " ";
                 $command.= "&& git config --get remote.origin.url";
 
@@ -136,10 +136,10 @@ class templateinstaller extends moduleinstaller {
 
         // create ini files for template
         $template = $this->installInfo['NAME'];
-        $ini_file = _COS_HTDOCS . "/templates/$template/$template.ini";
-        $ini_file_php = _COS_HTDOCS . "/templates/$template/$template.php.ini";
-        $ini_file_dist = _COS_HTDOCS . "/templates/$template/$template.ini-dist";
-        $ini_file_dist_php = _COS_HTDOCS . "/templates/$template/$template.php.ini-dist";
+        $ini_file = conf::pathHtdocs() . "/templates/$template/$template.ini";
+        $ini_file_php = conf::pathHtdocs() . "/templates/$template/$template.php.ini";
+        $ini_file_dist = conf::pathHtdocs() . "/templates/$template/$template.ini-dist";
+        $ini_file_dist_php = conf::pathHtdocs() . "/templates/$template/$template.php.ini-dist";
 
         if (!file_exists($ini_file)){
             if (file_exists($ini_file_dist)){

@@ -27,7 +27,7 @@ function create_docs(){
 
     $command = "phpdoc run ";
     $command.= "-d coslib ";
-    $command.= "--template abstract -t " . _COS_PATH . "/htdocs/phpdocs ";
+    $command.= "--template abstract -t " . conf::pathBase() . "/htdocs/phpdocs ";
     cos_system($command);
 }
 

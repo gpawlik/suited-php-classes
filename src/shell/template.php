@@ -31,7 +31,7 @@ function set_template($options){
  * @param   string   module_name to get install info about
  */
 function get_template_info($template_name){
-    $template_dir = _COS_PATH . "/htdocs/templates/$template_name";
+    $template_dir = conf::pathBase() . "/htdocs/templates/$template_name";
     $install_file = "$template_dir/install.inc";
     if (!file_exists($install_file)){
         die("No install file '$install_file' found in: '$template_dir'\n");
@@ -49,7 +49,7 @@ function install_template ($options, $return_val = null) {
         $template = $options['template'];
     }
     
-    //$template_path = _COS_PATH . "/htdocs/templates/$template";
+    //$template_path = conf::pathBase() . "/htdocs/templates/$template";
 
     $str = "Proceeding with install of template $template";
     $install = new templateinstaller();
@@ -79,7 +79,7 @@ function purge_template($options){
         cos_cli_print("No such template: $options[template]");
         cos_cli_abort();
     }
-    $template_path = _COS_PATH . '/htdocs/templates/' . $options['template'];
+    $template_path = conf::pathBase() . '/htdocs/templates/' . $options['template'];
     if (!file_exists($template_path)){
         cos_cli_print("Template already purged: No such template path: $template_path");
         cos_cli_abort();

@@ -1,6 +1,6 @@
 <?php
 
-use diversen\db\admin as db_admin;
+use diversen\db\admin as admin;
 /**
  * @package shell
  *
@@ -37,9 +37,9 @@ function useradd_add ($options = null){
  * @return  boolean $res
  */
 function useradd_db_insert ($values){
-    $database = db_admin::getDbInfo();
+    $database = admin::getDbInfo();
     
-    db_admin::changeDB($database['dbname']);
+    admin::changeDB($database['dbname']);
     $db = new db();
     $res = $db->insert('account', $values);
     return $res;

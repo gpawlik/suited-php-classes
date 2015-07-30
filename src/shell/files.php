@@ -23,10 +23,10 @@ function cos_chmod_files(){
     cos_needs_root();
     $owner = posix_getlogin();
 
-    $files_path = _COS_PATH . '/htdocs/files ';
-    $files_path.= _COS_PATH . '/logs ';
-    $files_path.= _COS_PATH . '/private ';
-    $files_path.= _COS_PATH . '/config/multi';
+    $files_path = conf::pathBase() . '/htdocs/files ';
+    $files_path.= conf::pathBase() . '/logs ';
+    $files_path.= conf::pathBase() . '/private ';
+    $files_path.= conf::pathBase() . '/config/multi';
     $command = "chown -R $owner:$group $files_path";
     cos_exec($command);
     $command = "chmod -R 770 $files_path";
@@ -44,10 +44,10 @@ function cos_chmod_files(){
 function cos_chmod_files_owner(){
     cos_needs_root();
     $owner = posix_getlogin();
-    $files_path = _COS_PATH . '/htdocs/files ';
-    $files_path.= _COS_PATH . '/logs ';
-    $files_path.= _COS_PATH . '/private ';
-    $files_path.= _COS_PATH . '/config/multi';
+    $files_path = conf::pathBase() . '/htdocs/files ';
+    $files_path.= conf::pathBase() . '/logs ';
+    $files_path.= conf::pathBase() . '/private ';
+    $files_path.= conf::pathBase() . '/config/multi';
     $command = "chown -R $owner:$owner $files_path";
     cos_exec($command);
     $command = "chmod -R 770 $files_path";
@@ -62,7 +62,7 @@ function cos_chmod_files_owner(){
  */
 function cos_rm_files(){
     cos_needs_root();
-    $files_path = _COS_PATH . '/htdocs/files/* ';
+    $files_path = conf::pathBase() . '/htdocs/files/* ';
     $command = "rm -Rf $files_path";
     cos_exec($command);
 }
@@ -74,20 +74,20 @@ function cos_rm_files(){
  * @return int  value from exec command
  */
 function cos_create_files(){
-    $files_path = _COS_PATH . '/logs/coscms.log';
+    $files_path = conf::pathBase() . '/logs/coscms.log';
     if (!file_exists($files_path)){
         $command = "touch $files_path";
         cos_exec($command);
     }
 
-    $files_path = _COS_PATH . '/htdocs/files';
+    $files_path = conf::pathBase() . '/htdocs/files';
     if (!file_exists($files_path)){
         $command = "mkdir $files_path";
         cos_exec($command);
     }
     
     $domain = conf::getDomain();
-    $files_path = _COS_PATH . "/htdocs/files/$domain";
+    $files_path = conf::pathBase() . "/htdocs/files/$domain";
     
     if (!file_exists($files_path)){
         $command = "mkdir $files_path";

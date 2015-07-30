@@ -254,7 +254,7 @@ class assets extends template {
             if (!$cached_assets_inline) {
                 $str.= "<link rel=\"stylesheet\" type=\"text/css\" href=\"$val\" />\n";
             } else {
-                $str.= file_get_contents(_COS_HTDOCS . "/$val") . "\n";
+                $str.= file_get_contents(conf::pathHtdocs() . "/$val") . "\n";
             }
             unset(self::$css[$key]);
         }
@@ -279,7 +279,7 @@ class assets extends template {
             if (!preg_match('/^(http|https):/', $val) AND !preg_match('#^(//)#', $val) ) {
                 unset(self::$css[$key]);
                     
-                $file = _COS_HTDOCS . "$val";
+                $file = conf::pathHtdocs() . "$val";
                     
                 $str.= "\n/* Caching $file*/\n";
                 if (!conf::getMainIni('cache_disable')) {
@@ -313,7 +313,7 @@ class assets extends template {
         $web_path = "/files/$domain/cached_assets"; 
         $file = "/css_all-$md5.css";
            
-        $full_path = _COS_HTDOCS . "/$web_path";
+        $full_path = conf::pathHtdocs() . "/$web_path";
         $full_file_path = $full_path . $file;
             
         // create file if it does not exist
@@ -413,7 +413,7 @@ class assets extends template {
             if (!$cached_assets_inline) {
                 $str.= "<script src=\"$val\" type=\"text/javascript\"></script>\n";
             } else {
-                $str.= file_get_contents(_COS_HTDOCS . "/$val");
+                $str.= file_get_contents(conf::pathHtdocs() . "/$val");
             }
         }
         if ($cached_assets_inline) {
@@ -431,7 +431,7 @@ class assets extends template {
         foreach (self::$js as $key => $val){
             if (!preg_match('#^(http|https)://#', $val) AND !preg_match('#^(//)#', $val) ) {
                 unset(self::$js[$key]);
-                $str.= file::getCachedFile(_COS_HTDOCS . "/$val") ."\n\n\n";
+                $str.= file::getCachedFile(conf::pathHtdocs() . "/$val") ."\n\n\n";
             }
         }
             
@@ -450,7 +450,7 @@ class assets extends template {
         $web_path = "/files/$domain/cached_assets"; 
         $file = "/js_all-$md5.js";
            
-        $full_path = _COS_HTDOCS . "/$web_path";
+        $full_path = conf::pathHtdocs() . "/$web_path";
         $full_file_path = $full_path . $file;
             
         // create file if it does not exist
@@ -586,12 +586,12 @@ class assets extends template {
      */
     public static function setModuleInlineCss($module, $css, $order = null, $options = array()){
         
-        $module_css = _COS_MOD_PATH . "/$module/$css";
+        $module_css = conf::pathModules() . "/$module/$css";
         
         $template_name = layout::getTemplateName();
         $template_override =  "/templates/$template_name/$module$css";
         
-        if (file_exists(_COS_HTDOCS . $template_override) ) {
+        if (file_exists(conf::pathHtdocs() . $template_override) ) {
             self::setCss($template_override);
             return;
         }
@@ -707,7 +707,7 @@ EOF;
         }
         
         $base_path = "/templates/$template/$css";
-        $css_path = _COS_HTDOCS . "/$base_path/$css.css";
+        $css_path = conf::pathHtdocs() . "/$base_path/$css.css";
         $css_web_path = $base_path . "/$css.css";
         if (file_exists($css_path)) {
 
@@ -727,7 +727,7 @@ EOF;
      * @param string $css
      */
     public static function setTemplateCssIni ($template, $css) {
-        $ini_file = _COS_HTDOCS . "/templates/$template/$css/$css.ini";
+        $ini_file = conf::pathHtdocs() . "/templates/$template/$css/$css.ini";
         if (file_exists($ini_file)) {
             
             $ary = conf::getIniFileArray($ini_file, true);

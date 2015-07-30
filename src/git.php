@@ -39,11 +39,11 @@ function git_coscms_tags_local (){
 function git_get_local_tags ($module, $type = 'module'){
     
     if ($type == 'module') {
-        $path = _COS_MOD_PATH . "/$module"; 
+        $path = conf::pathModules() . "/$module"; 
     }
     
     if ($type == 'template') {
-        $path = _COS_HTDOCS . "/templates/$module";
+        $path = conf::pathHtdocs() . "/templates/$module";
     }
     
     $command = "cd $path && git tag -l";

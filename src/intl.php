@@ -2,8 +2,9 @@
 
 namespace diversen;
 
-use diversen\conf as conf;
+use diversen\conf;
 use diversen\cache;
+use diversen\session;
 /**
  * File containing method for getting lanugage and countries. 
  * @package intl
@@ -35,7 +36,7 @@ class intl {
 
         // set user timezone - only in web mode
         if (!conf::isCli()) {
-            $timezone = cache::get('account_timezone', \session::getUserId());
+            $timezone = cache::get('account_timezone', session::getUserId());
             if ($timezone) { 
                 date_default_timezone_set($timezone);
             } else {

@@ -38,7 +38,7 @@ class log {
         if ($write_file){
             $message = strftime(conf::getMainIni('date_format_long')) . ": " . $message;
             if (conf::isCli()) {
-                $path = _COS_PATH . "/logs/coscms.log";
+                $path = conf::pathBase() . "/logs/coscms.log";
                 error_log($message . PHP_EOL, 3, $path);
             } else {
                 error_log($message);
@@ -63,11 +63,8 @@ class log {
      * create log file 
      */
     public static function createLog () {
-        if (!defined('_COS_PATH')) {
-            die('No _COS_PATH defined');
-        }
         
-        $file = _COS_PATH . "/logs/error.log";
+        $file = conf::pathBase() . "/logs/error.log";
         if (!file_exists($file)) {
             $res = @file_put_contents($file, '');
             if ($res === false) {

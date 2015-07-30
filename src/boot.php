@@ -6,6 +6,7 @@ use diversen\alias;
 use diversen\uri\dispatch;
 use diversen\autoloader\modules;
 use diversen\moduleloader;
+use diversen\conf;
 
 // set aliases
 
@@ -17,7 +18,7 @@ class boot {
         $m = new modules();
         $m->autoloadRegister();
 
-        // define all constant - based on _COS_PATH and config.ini
+        // define all constant - based on base path and config.ini
         conf::defineCommon();
 
         // set include path - based on config.ini
@@ -138,7 +139,7 @@ class boot {
         // load module
         $ml->initModule();
 
-        // include template class found in _COS_HTDOCS . '/templates'
+        // include template class found in conf::pathHtdocs() . '/templates'
         // only from here we should use template class. 
         // template translation will override module translations
         $layout = new layout();

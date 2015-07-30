@@ -115,7 +115,7 @@ class template {
      * @return boolean $res true if exists else false
      */
     public static function templateCommonExists ($template) {
-        if (file_exists( _COS_HTDOCS . "/templates/$template/common.inc")) {
+        if (file_exists( conf::pathHtdocs() . "/templates/$template/common.inc")) {
             return true;
         }
         return false;

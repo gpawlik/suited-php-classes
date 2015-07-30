@@ -223,7 +223,7 @@ class lang {
             $language = self::getLanguage();
         }
 
-        $base = _COS_PATH . '/' . _COS_MOD_DIR;
+        $base = conf::pathModules();
         $language_file =
             $base . "/$module" . '/lang/' .
             $language .
@@ -261,7 +261,7 @@ class lang {
         
         $language = self::getLanguage();
 
-        $base = _COS_HTDOCS . '/templates';
+        $base = conf::pathHtdocs() . '/templates';
         $language_file =
             $base . "/$template" . '/lang/' .
             $language .
@@ -303,7 +303,7 @@ class lang {
             return;
         }
         
-        $base = _COS_HTDOCS . '/templates';
+        $base = conf::pathHtdocs() . '/templates';
         $language_file =
             $base . "/$template" . '/lang/' .
             $language .
@@ -330,7 +330,7 @@ class lang {
         }
         
         $language = self::getLanguage();
-        $base = _COS_PATH . "/modules";
+        $base = conf::pathBase() . "/modules";
 
         $language_file =
             $base . "/$module" . '/lang/' .

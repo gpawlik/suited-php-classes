@@ -27,13 +27,13 @@ class apache2 {
      * create apache log files
      */
     public static function createLogs() {
-        touch(_COS_PATH . '/logs/access.log');
-        touch(_COS_PATH . '/logs/error.log');
+        touch(conf::pathBase() . '/logs/access.log');
+        touch(conf::pathBase() . '/logs/error.log');
     }
 
     /**
      * create apache2 configuration string
-     * Note: we don't use the _COS_HTDOCS path. 
+     * Note: we don't use the conf::pathHtdocs() path. 
      * @param   string  $server_name the host to enable
      * @return  string  $config an apache2 configuration string.
      */
@@ -69,7 +69,7 @@ class apache2 {
 
         // create apache2 conf and enable site
         $apache2_conf = cos_create_a2_conf($hostname);
-        $tmp_file = _COS_PATH . "/tmp/$hostname";
+        $tmp_file = conf::pathBase() . "/tmp/$hostname";
         file_put_contents($tmp_file, $apache2_conf);
         $apache2_conf_file = "/etc/apache2/sites-available/$hostname";
 

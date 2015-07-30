@@ -87,13 +87,13 @@ class moduleinstaller extends db {
         // set ini dist
         
         $module_name = $options['module'];
-        $module_dir = _COS_MOD_PATH . "/$module_name";
+        $module_dir = conf::pathModules() . "/$module_name";
         $ini_file = $module_dir . "/$module_name.ini";
         $ini_file_dist = $module_dir . "/$module_name.ini-dist";
 
         // if profile we use profile's module ini-dist
         if (isset($options['profile'])){
-            $ini_file_dist = _COS_PATH . "/profiles/$options[profile]/$module_name.ini-dist";
+            $ini_file_dist = conf::pathBase() . "/profiles/$options[profile]/$module_name.ini-dist";
         }
 
         // check if module dir exists 
@@ -157,7 +157,7 @@ class moduleinstaller extends db {
             // we always just use the latest tag
             if (!isset($this->installInfo['VERSION']) && defined('_COS_CLI')) {
                 
-                $command = "cd " . _COS_MOD_PATH . "/"; 
+                $command = "cd " . conf::pathModules() . "/"; 
                 $command.= $this->installInfo['NAME'] . " ";
                 $command.= "&& git config --get remote.origin.url";
 
@@ -184,7 +184,7 @@ class moduleinstaller extends db {
      * @return boolean $res true if exists else false
      */
     public function sourceExists ($module) {
-        $module_path = _COS_MOD_PATH . "/$module";
+        $module_path = conf::pathModules() . "/$module";
         if (file_exists($module_path)) {
             return true;
         }
@@ -263,7 +263,7 @@ class moduleinstaller extends db {
     }
     
     public function getTemplates () {
-        $dir = _COS_HTDOCS . "/templates";
+        $dir = conf::pathHtdocs() . "/templates";
         $templates = file::getFileList($dir, array('dir_only' => true));
         return $templates;
     }
@@ -275,7 +275,7 @@ class moduleinstaller extends db {
      * @deprecated since 2.42 all language files in lang/ are now in system module
      */
     public function reloadCosLanguages(){        
-        $modules = file::getFileList(_COS_PATH . "/lang/", array ('dir_only' => true));
+        $modules = file::getFileList(conf::pathBase() . "/lang/", array ('dir_only' => true));
         foreach ($modules as $val){
             $this->insertLanguage($val);
         }
@@ -370,13 +370,12 @@ class moduleinstaller extends db {
 
         if ($type == 'module') {
             $language_path =
-                _COS_PATH .
-                '/' . _COS_MOD_DIR . '/' .
+                conf::pathModules() . '/' .
                 $module .
                 '/lang';
         } else {
             $language_path =
-                _COS_HTDOCS . '/templates/' .
+                conf::pathHtdocs() . '/templates/' .
                 $module .
                 '/lang';
         }
@@ -416,7 +415,7 @@ class moduleinstaller extends db {
      * @return string   sql filename
      */
     public function getSqlFileName($module, $version, $action){
-        $sql_file = _COS_PATH . '/' . _COS_MOD_DIR . "/$module/mysql/$action/$version.sql";
+        $sql_file = conf::pathModules() . "/$module/mysql/$action/$version.sql";
         return $sql_file;
     }
 
@@ -442,7 +441,7 @@ class moduleinstaller extends db {
      * @return  array    array with file list
      */
     public function getSqlFileList($module, $action){
-        $sql_dir = _COS_PATH . "/" . _COS_MOD_DIR . "/$module/mysql/$action";
+        $sql_dir = conf::pathModules() . "/$module/mysql/$action";
         $file_list = file::getFileList($sql_dir);
         if (is_array($file_list)){
             return $file_list;
@@ -637,7 +636,7 @@ class moduleinstaller extends db {
 
         $module = $this->installInfo['NAME'];
         
-        $module_path = _COS_PATH . '/' . _COS_MOD_DIR;
+        $module_path = conf::pathModules();
         
         $ini_file = "$module_path/$module/$module.ini";
         $ini_file_php = "$module_path/$module/$module.ini.php";

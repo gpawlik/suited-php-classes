@@ -133,9 +133,9 @@ function backup_files_restore($options){
  */
 function backup_get_latest_backup($type = null){
     if ($type == 'files') {
-        $dir = _COS_PATH . "/backup/files";
+        $dir = conf::pathBase() . "/backup/files";
     } else {
-        $dir = _COS_PATH . "/backup/full";
+        $dir = conf::pathBase() . "/backup/full";
     }
     $list = file::getFileList($dir);
     $time_stamp = 0;

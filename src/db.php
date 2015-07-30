@@ -2,7 +2,7 @@
 
 namespace diversen;
 use diversen\conf as conf;
-use diversen\db\admin as db_admin;
+use diversen\db\admin as admin;
 /**
  * File contains contains class for connecting to a mysql database
  * with PDO and doing basic crud operations and simple search operations. 
@@ -185,7 +185,7 @@ class db {
     public function fieldExists($table, $field) {
         
         
-        $info = db_admin::getDbInfo();
+        $info = admin::getDbInfo();
         
         if ($info['scheme'] == 'mysql' || $info['scheme'] == 'mysqli') {
             $sql = "SHOW COLUMNS FROM `$table` LIKE '$field'";

@@ -1,6 +1,6 @@
 <?php
 
-use diversen\db\admin as db_admin;
+use diversen\db\admin as admin;
 /**
  * File containing database functions for shell mode
  *
@@ -17,7 +17,7 @@ use diversen\db\admin as db_admin;
  * @param type $options
  */
 function db_show_con_info ($options) {
-    $info = db_admin::getDbInfo();
+    $info = admin::getDbInfo();
     print_r($info);
 }
 
@@ -26,7 +26,7 @@ function db_show_con_info ($options) {
  * @return int $res  the executed commands shell status 0 on success.
  */
 function create_db($options = array()){
-    return db_admin::createDB();
+    return admin::createDB();
 }
 
 /**
@@ -35,7 +35,7 @@ function create_db($options = array()){
  */
 function drop_db_default($options = array()){
     define ('NO_DB', 1);    
-    $db = db_admin::getDbInfo();
+    $db = admin::getDbInfo();
     $command = 
         "mysqladmin -f -u" . conf::$vars['coscms_main']['username'] .
         " -p" . conf::$vars['coscms_main']['password'] . " -h$db[host] ";
@@ -51,7 +51,7 @@ function drop_db_default($options = array()){
  */
 function load_db_default(){
 
-    $db = db_admin::getDbInfo();
+    $db = admin::getDbInfo();
     $command = 
         "mysql -u" . conf::$vars['coscms_main']['username'] . ' ' .
         "-p" . conf::$vars['coscms_main']['password'] . ' ' .
@@ -68,7 +68,7 @@ function load_db_default(){
  * @return  int     the executed commands shell status 0 on success.
  */
 function connect_db(){
-    $db = db_admin::getDbInfo();
+    $db = admin::getDbInfo();
 
     $command = 
         "mysql --default-character-set=utf8 -u" . conf::$vars['coscms_main']['username'] .
@@ -97,7 +97,7 @@ function dump_db_file ($options = null){
         $dump_name = $options['File'];
     }
     
-    $db = db_admin::getDbInfo();
+    $db = admin::getDbInfo();
     $command = 
         "mysqldump --opt -u" . conf::$vars['coscms_main']['username'] .
         " -p" . conf::$vars['coscms_main']['password'] . 
@@ -129,7 +129,7 @@ function load_db_file($options){
             cos_cli_abort("No such file: $file");
         }
     }
-    $db = db_admin::getDbInfo();
+    $db = admin::getDbInfo();
     $command = 
         "mysql --default-character-set=utf8  -u" . conf::$vars['coscms_main']['username'] .
         " -p" . conf::$vars['coscms_main']['password'] . " -h$db[host]  $db[dbname] < $file";
@@ -146,7 +146,7 @@ function load_db_file($options){
  */
 function get_latest_db_dump($dir = null, $num_files = null){
     if (!$dir){
-        $dir = _COS_PATH . "/backup/sql";
+        $dir = conf::pathBase() . "/backup/sql";
     }
     $list = file::getFileList($dir);
     $time_stamp = 0;
@@ -165,10 +165,10 @@ function clone_db ($options = array ()) {
     if (!isset($options['File'])){
         cos_cli_abort('Specify new database name');
     }
-    $db = db_admin::getDbInfo();
+    $db = admin::getDbInfo();
     $old = $db['dbname'];
     $new_name = $options['File'];
-    db_admin::cloneDB($old, $new_name);
+    admin::cloneDB($old, $new_name);
 }
 
 if (conf::isCli()){

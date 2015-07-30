@@ -43,7 +43,7 @@ function heroku_set_cleardb_conf () {
         conf::$vars['coscms_main']['password'] = $url['pass'];
         
         $content = conf::arrayToIniFile(conf::$vars['coscms_main'], false);
-        $path = _COS_PATH . "/config/config.ini";
+        $path = conf::pathBase() . "/config/config.ini";
         file_put_contents($path, $content);
     }
 }
@@ -53,9 +53,9 @@ function heroku_set_cleardb_conf () {
  * @return string
  */
 function heroku_get_config_filename () {
-    $config_file = _COS_PATH . "/config/config.ini";
+    $config_file = conf::pathBase() . "/config/config.ini";
     if (!file_exists($config_file)) {
-        $config_file = _COS_PATH . "/config/config.ini-dist";
+        $config_file = conf::pathBase() . "/config/config.ini-dist";
     }
     return $config_file;
 }
@@ -82,7 +82,7 @@ function heroku_set_sendgrid_conf () {
         conf::$vars['coscms_main']['smtp_params_auth'] = "true";
         conf::$vars['coscms_main']['smtp_params_port'] = 587;
         $content = conf::arrayToIniFile(conf::$vars['coscms_main'], false);
-        $path = _COS_PATH . "/config/config.ini";
+        $path = conf::pathBase() . "/config/config.ini";
         file_put_contents($path, $content);
     }
 }

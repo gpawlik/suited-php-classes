@@ -183,9 +183,9 @@ class upload {
         }
         
         // We can give both just the /htdocs/files ... path 
-        // then we add _COS_PATH
-        if (!strstr(self::$options['upload_dir'], _COS_PATH)) {
-            self::$options ['upload_dir'] = _COS_PATH . self::$options['upload_dir'];
+        // then we add conf::pathBase()
+        if (!strstr(self::$options['upload_dir'], conf::pathBase())) {
+            self::$options ['upload_dir'] = conf::pathBase() . self::$options['upload_dir'];
         } 
         
         // check if dir exists
@@ -249,7 +249,7 @@ class upload {
                 self::$errors[] = 'Could not move file. Doh!';
                 return false;
             }
-            $savefile = str_replace(_COS_HTDOCS, '', $savefile);
+            $savefile = str_replace(conf::pathHtdocs(), '', $savefile);
             return $savefile;
             
         } 

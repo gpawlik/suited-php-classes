@@ -231,6 +231,7 @@ class moduleloader {
     public function runLevel($level){
         if (!isset($this->levels[$level])) return;
         foreach($this->levels[$level] as $val){
+
             $this->includeModule($val);
             $class = new $val;
             $class->runLevel($level);
@@ -248,11 +249,10 @@ class moduleloader {
         $this->info['is_frontpage'] = true;
         $this->info['module_name'] = $frontpage_module;
         $this->info['module_base_name'] = $frontpage_module;
-        $this->info['base'] = $base = _COS_MOD_PATH;
-        $this->info['language_file'] = $base . "/$frontpage_module" . '/lang/' . conf::getMainIni('language') . '/language.inc';
-        $this->info['ini_file'] =  $base . "/$frontpage_module"  . "/$frontpage_module" . '.ini';
+        $this->info['language_file'] = conf::pathModules() . "/$frontpage_module" . '/lang/' . conf::getMainIni('language') . '/language.inc';
+        $this->info['ini_file'] =  conf::pathModules() . "/$frontpage_module"  . "/$frontpage_module" . '.ini';
         
-        $controller_dir = $base . "/$frontpage_module/";
+        $controller_dir = conf::pathModules() . "/$frontpage_module/";
         $first = uri::fragment(0);
         
         if (!empty($first)){
@@ -283,16 +283,15 @@ class moduleloader {
         }
         $this->info['module_name'] = $error_module;
         $this->info['module_base_name'] = $error_module;
-        $this->info['base'] = $base = _COS_MOD_PATH;
         
-        $this->info['language_file'] = $base . "/$error_module" . '/lang/' . conf::getMainIni('language'). '/language.inc';
-        $this->info['ini_file'] =  $base . "/$error_module"  . "/$error_module" . '.ini';
+        $this->info['language_file'] = conf::pathModules() . "/$error_module" . '/lang/' . conf::getMainIni('language'). '/language.inc';
+        $this->info['ini_file'] =  conf::pathModules()  . "/$error_module"  . "/$error_module" . '.ini';
         
         if (isset(self::$status[404])){
-            $controller_file = $base . "/$error_module". '/404.php';
+            $controller_file = conf::pathModules() . "/$error_module". '/404.php';
         }
         if (isset(self::$status[403])){           
-            $controller_file = $base . "/$error_module". '/403.php';
+            $controller_file = conf::pathModules() . "/$error_module". '/403.php';
         }
 
         $this->info['controller_file'] = $controller_file;
@@ -331,24 +330,24 @@ class moduleloader {
         if ($uri->numFragments() == 1){         
             $this->info['module_base_name'] = $frontpage_module;
             $this->info['module_class'] = $this->info['module_name'];
-            $this->info['base'] = $base = _COS_MOD_PATH . "/$frontpage_module";
+            $this->info['base'] = conf::pathModules() . "/$frontpage_module";
         } else {
             $this->info['module_base_name'] = $info['module_base_name'];
             $this->info['module_class'] = str_replace('/', '_', $this->info['module_name']);
-            $this->info['base'] = $base = _COS_MOD_PATH;
+            $this->info['base'] = conf::pathModules();
         }
 
-        $this->info['language_file'] = $base . $info['module_base'] . '/lang/' . conf::getMainIni('language'). '/language.inc';
-        $this->info['ini_file'] =  $base . $info['module_base'] . $info['module_base'] . '.ini';
-        $this->info['ini_file_php'] =  $base . $info['module_base'] . $info['module_base'] . '.php.ini';
-        $controller_file = $base . $info['controller_path_str'] . '/' . $info['controller'] . '.php';
+        $this->info['language_file'] = conf::pathModules() . $info['module_base'] . '/lang/' . conf::getMainIni('language'). '/language.inc';
+        $this->info['ini_file'] =  conf::pathModules() . $info['module_base'] . $info['module_base'] . '.ini';
+        $this->info['ini_file_php'] =  conf::pathModules() . $info['module_base'] . $info['module_base'] . '.php.ini';
+        $controller_file = conf::pathModules() . $info['controller_path_str'] . '/' . $info['controller'] . '.php';
         
         $this->info['controller_file'] = $controller_file;
         $this->info['controller'] = $info['controller'];
         
         // set module class name from path e.g. content/admin will become contentAdmin 
         // But only if module path exists. In order to prevent clash with web file system. 
-        $module_full_path = _COS_MOD_PATH . "/" . $this->info['module_name'];
+        $module_full_path = conf::pathModules() . "/" . $this->info['module_name'];
         if (file_exists($module_full_path)) {
             $this->info['module_class'] = self::modulePathToClassName($this->info['module_name']);
         }
@@ -555,11 +554,11 @@ class moduleloader {
 
         $set[$module] = $module;
         if ($type == 'module') {
-            $ini_file = _COS_MOD_PATH . "/$module/$module.ini";
-            $ini_locale = _COS_MOD_PATH . "/$module/locale.ini";
+            $ini_file = conf::pathModules() . "/$module/$module.ini";
+            $ini_locale = conf::pathModules() . "/$module/locale.ini";
         } else {
-            $ini_file = _COS_HTDOCS . "/templates/$module/$module.ini";
-            $ini_locale = _COS_HTDOCS . "/templates/$module/locale.ini";
+            $ini_file = conf::pathHtdocs() . "/templates/$module/$module.ini";
+            $ini_locale = conf::pathHtdocs() . "/templates/$module/locale.ini";
         }
         
         if (!file_exists($ini_file)) {
@@ -844,7 +843,8 @@ class moduleloader {
         self::setModuleIniSettings($base_module);
         
         // new include style
-        $module_file = _COS_MOD_PATH . "/$module/module.php";
+
+        $module_file = conf::pathModules() . "/$module/module.php";
         if (file_exists($module_file)) {    
             self::$loadedModules['loaded'][$module] = true;
             include_once $module_file;
@@ -873,7 +873,7 @@ class moduleloader {
     public static function includeTemplateCommon ($template) {
         static $included = array ();
         if (!isset($included[$template])) {
-            include_once _COS_HTDOCS . "/templates/$template/common.php";
+            include_once conf::pathHtdocs() . "/templates/$template/common.php";
         }
         $included[$template] = true;
     }
@@ -883,7 +883,7 @@ class moduleloader {
      * @param string $controller
      */
     public static function includeController ($controller) {
-        $module_path = conf::$vars['coscms_base']  . '/' . _COS_MOD_DIR . '/' . $controller;
+        $module_path = conf::pathModules() . '/' . $controller;
         $controller_file = $module_path . '.php';
         include_once $controller_file;
     }

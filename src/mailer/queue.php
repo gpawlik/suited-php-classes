@@ -2,7 +2,7 @@
 
 namespace diversen\mailer;
 
-use diversen\db\rb as db_rb;
+use diversen\db\rb as rb;
 use diversen\mailer\helpers;
 /**
  * contains mail queue
@@ -63,8 +63,8 @@ class queue {
      * @return type
      */
     public static function add ($to, $mime_headers, $body) {
-        db_rb::connect();
-        $bean = db_rb::getBean('cosmail_queue');
+        rb::connect();
+        $bean = rb::getBean('cosmail_queue');
         $bean->to = $to;
         $bean->mimeheaders = serialize($mime_headers);
         $bean->body = $body;

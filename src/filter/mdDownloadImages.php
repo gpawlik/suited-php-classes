@@ -5,7 +5,7 @@ namespace diversen\filter;
  * markdown filter. use Michelf markdown
  * @package    filters
  */
-use diversen\uri\direct as uri_direct;
+use diversen\uri\direct as direct;
 use Michelf\Markdown as mark;
 use diversen\conf as conf;
 use diversen\file;
@@ -45,7 +45,7 @@ class mdDownloadImages extends mark {
             if (self::$download) {
                 $url = $this->saveImage($url);
                 if (self::$getRaw) {
-                    $url = _COS_HTDOCS . "$url";
+                    $url = conf::pathHtdocs() . "$url";
                     return "![$alt_text]($url)";
                 }
             }
@@ -79,7 +79,7 @@ class mdDownloadImages extends mark {
             
             if (self::$getRaw) {
                 
-                $url = _COS_HTDOCS . "$url";
+                $url = conf::pathHtdocs() . "$url";
                 
                 return "![$alt_text]($url)";
             }
@@ -150,8 +150,8 @@ class mdDownloadImages extends mark {
 
     protected function saveImage($url) {
 
-        $id = uri_direct::fragment(2, $url);
-        $title = uri_direct::fragment(3, $url);
+        $id = direct::fragment(2, $url);
+        $title = direct::fragment(3, $url);
 
         $path = "/images/$id/$title";
         $save_path = conf::getFullFilesPath($path);

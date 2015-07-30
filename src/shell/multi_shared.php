@@ -1,7 +1,7 @@
 <?php
 
 function multi_shared_all_up ($options = null) {
-    $path = _COS_PATH . "/config/multi/*";    
+    $path = conf::pathBase() . "/config/multi/*";    
     $dirs = file::getDirsGlob($path, array ('basename' => 1));
     //print_r($options); die;
     
@@ -24,7 +24,7 @@ function multi_shared_all_up ($options = null) {
 
 function multi_shared_exec_command ($options = null) {
     
-    $path = _COS_PATH . "/config/multi/*";  
+    $path = conf::pathBase() . "/config/multi/*";  
     if (!isset($options['command'])) {
         cos_cli_abort('Specify a command');
         return 1;

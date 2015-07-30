@@ -68,11 +68,11 @@ class view {
     public static function getOverrideFilename () {
         
         if (isset(self::$options['template'])) {
-            $filename = _COS_HTDOCS . "/template/" . self::$options[template];
+            $filename = conf::pathHtdocs() . "/template/" . self::$options[template];
         } 
         
         if (isset(self::$options['module'])) {
-            $filename = _COS_PATH . '/' . _COS_MOD_DIR . '/' . self::$options['module'];
+            $filename = conf::pathModules() . '/' . self::$options['module'];
         }
         
         $filename.= '/' . self::$options['folder'];
@@ -108,7 +108,7 @@ class view {
         if (self::$override) {
             $filename = self::getOverrideFilename();
         } else {
-            $filename = _COS_MOD_PATH . "/$module/" . self::$options['folder'] . "/$view.inc";
+            $filename = conf::pathModules() . "/$module/" . self::$options['folder'] . "/$view.inc";
         }
         
         if (is_file($filename)) {
@@ -155,12 +155,12 @@ class view {
         // only template who has set name will be able to override this way
         $template = conf::getMainIni('template');
         if ($template) {
-            $override = _COS_HTDOCS . "/templates/$template/$module/$view";
+            $override = conf::pathHtdocs() . "/templates/$template/$module/$view";
             if (is_file($override)) {
                 return self::getFileView($override, $vars);
             }
         }
-        $file = _COS_MOD_PATH . "/$module/views/$view";
+        $file = conf::pathModules() . "/$module/views/$view";
         return self::getFileView($file, $vars);
     }
     
@@ -177,13 +177,13 @@ class view {
         // templage_name = 'clean'
         $template = layout::getTemplateName();
         if ($template) {
-            $override = _COS_HTDOCS . "/templates/$template/$module/$file";
+            $override = conf::pathHtdocs() . "/templates/$template/$module/$file";
             if (is_file($override)) {
                 include_once $override;
                 return;
             }
         }
-        include_once _COS_MOD_PATH .  "/$module/$file";
+        include_once conf::pathModules() .  "/$module/$file";
     }
     
     

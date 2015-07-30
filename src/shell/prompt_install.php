@@ -40,7 +40,7 @@ function prompt_install(){
     cos_cli_print("Main config file (config/config.ini) for $profile is loaded");
 
     // load profile.
-    conf::$vars['coscms_main'] = conf::getIniFileArray(_COS_PATH . '/config/config.ini', true);
+    conf::$vars['coscms_main'] = conf::getIniFileArray(conf::pathBase() . '/config/config.ini', true);
     
     // get configuration info
     $host = cos_readline('Enter mysql host, and hit return: ');
@@ -58,7 +58,7 @@ function prompt_install(){
 
     // write it to ini file
     $content = conf::arrayToIniFile(conf::$vars['coscms_main'], false);
-    $path = _COS_PATH . "/config/config.ini";
+    $path = conf::pathBase() . "/config/config.ini";
     file_put_contents($path, $content);
 
     // install profile.

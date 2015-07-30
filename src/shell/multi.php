@@ -8,7 +8,7 @@
  */
 function multi_exec_command ($options = null) {
     
-    $path = _COS_PATH . "/../";  
+    $path = conf::pathBase() . "/../";  
     if (!isset($options['command'])) {
         cos_cli_abort('Specify a command');
         return 1;
@@ -44,7 +44,7 @@ function multi_passthru ($command) {
  * @return int $ret
  */
 function multi_exec_shell_command ($options = array ()) {
-    $path = _COS_PATH . "/../";  
+    $path = conf::pathBase() . "/../";  
     if (!isset($options['command'])) {
         cos_cli_abort('Specify a command');
         return 1;

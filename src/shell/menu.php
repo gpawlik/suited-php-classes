@@ -62,7 +62,7 @@ function cos_menu_uninstall_all (){
  */
 function cos_menu_uninstall_menu($options){
     // check if module exists in modules dir
-    $module_path = _COS_MOD_PATH . '/' . $options['module'];
+    $module_path = conf::pathModules() . '/' . $options['module'];
     if (!file_exists($module_path)){
         cos_cli_print("module $options[module] does not exists in modules dir. ");
     }
