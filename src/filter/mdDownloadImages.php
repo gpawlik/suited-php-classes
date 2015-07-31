@@ -9,6 +9,7 @@ use diversen\uri\direct as direct;
 use Michelf\Markdown as mark;
 use diversen\conf as conf;
 use diversen\file;
+use diversen\log;
 
 /**
  * markdown filter.
