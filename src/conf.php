@@ -707,6 +707,9 @@ class conf {
      */
     public static function getDomain () {
         $domain = self::getMainIni('domain');
+        if (!$domain) {
+            $domain = 'default';
+        }
         return $domain;       
     }
     

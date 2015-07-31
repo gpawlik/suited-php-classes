@@ -19,12 +19,13 @@ class admin {
      * @param string $database
      */
     public static function changeDB ($database = null) {
+        $db = new db();
         if (!$database) {
             $db_curr = self::getDbInfo(); 
             $database = $db_curr['dbname'];  
         }
         $sql = "USE `$database`";
-        self::rawQuery($sql);
+        $db->rawQuery($sql);
     }
     
     /**
@@ -56,6 +57,7 @@ class admin {
      * @return boolean $res result of query
      */
     public static function dublicateTable ($source, $dest, $drop = true) {
+        $db = new db();
         if ($drop) {
             $sql = "DROP TABLE IF EXISTS $dest";
             $res = self::rawQuery($sql);
@@ -64,7 +66,7 @@ class admin {
             }
         }
         $sql = "CREATE TABLE $dest LIKE $source; INSERT $dest SELECT * FROM $source";
-        return self::rawQuery($sql);
+        return $db->rawQuery($sql);
     }
     
     /**
@@ -74,15 +76,15 @@ class admin {
      * @return boolean $res result
      */
     public static function generateIndex($table, $columns) {
+        $db = new db();
         $sql = "ALTER TABLE $table ENGINE = MyISAM";
-        $res = self::rawQuery($sql);
+        $res =  $db->rawQuery($sql);
         if (!$res) {
             return false;
         }
         
         $cols = implode(',', $columns);
         $sql = "ALTER TABLE $table ADD FULLTEXT($cols)";
-        $db = new db();
         return $db->rawQuery($sql);
     }
     
@@ -92,8 +94,9 @@ class admin {
      * @return array $rows
      */
     public static function tableExists($table) {
+        $db = new db();
         $q = "SHOW TABLES LIKE '$table'";
-        $rows = self::selectQueryOne($q);
+        $rows = $db->selectQueryOne($q);
         return $rows;
     }
     

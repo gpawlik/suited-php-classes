@@ -20,7 +20,7 @@ class apache2 {
      * @param array $options
      */
     public static function setUseSSL($options) {
-        conf::setMainIni('as_use_ssl', true);
+        conf::setMainIni('a2_use_ssl', true);
     }
 
     /**
@@ -65,10 +65,10 @@ class apache2 {
         $hostname = trim($options['hostname']);
 
         cos_needs_root();
-        cos_create_logs();
+        self::createLogs();
 
         // create apache2 conf and enable site
-        $apache2_conf = cos_create_a2_conf($hostname);
+        $apache2_conf = self::getA2Conf($hostname);
         $tmp_file = conf::pathBase() . "/tmp/$hostname";
         file_put_contents($tmp_file, $apache2_conf);
         $apache2_conf_file = "/etc/apache2/sites-available/$hostname";

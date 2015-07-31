@@ -5,13 +5,7 @@ use diversen\apache2;
 /**
  * File contains shell commands for apache2 on Debian systems for fast
  * creatiion of apache2 web hosts
- * 
- * @package     shell
  */
-
-function cos_create_logs(){
-    apache2::createLogs();
-}
 
 function cos_create_a2_conf($SERVER_NAME){
     return apache2::getA2Conf($SERVER_NAME);
