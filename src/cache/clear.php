@@ -3,6 +3,7 @@
 namespace diversen\cache;
 use diversen\db\q;
 use diversen\file;
+use diversen\conf;
 /**
  * File contains methods for clearing all or some of the cached assets
  */

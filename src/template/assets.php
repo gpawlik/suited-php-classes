@@ -96,15 +96,16 @@ class assets extends template {
             return;
         }
         static $cacheChecked = false;
-        
-        if (!$cacheChecked) {
-            self::$cacheDirWeb = conf::getWebFilesPath(self::$cacheDir);
+     
+        if (!$cacheChecked) {            
             self::$cacheDir = conf::getFullFilesPath() . '/' . self::$cacheDir;
             if (!file_exists(self::$cacheDir)) {
                 mkdir(self::$cacheDir);
             }  
             $cacheChecked = true;
         }
+        
+        
         
         $md5 = md5($asset);        
         $cached_asset = conf::getFullFilesPath() . "/cached_assets/$md5.$type";
@@ -137,7 +138,7 @@ class assets extends template {
         }
     }
     
-        /**
+    /**
      * gets rel assets. assure that we only get every asset once.
      * @return string $assets 
      */

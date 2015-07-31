@@ -660,22 +660,10 @@ class conf {
     * @return string $files_path the full file path 
     */
     public static function getFullFilesPath ($file = null) {
-        $domain = self::getMainIni('domain');
         
-        // check if special files_storage self is set
-        $storage = self::getMainIni('files_storage');
-        if ($storage) {
-            $files_path = $storage;
-        } else {
-            $files_path = self::pathHtdocs() . "/files";
-        }
-        
-        if ($domain == 'default') {
-            $files_path.= "/default";
-        } else {
-            $files_path.= "/$domain";
-        }
-        
+        $base = self::pathHtdocs();
+        $domain = self::getDomain();
+        $files_path = $base . "/files/$domain";
         if ($file) {
             return $files_path . $file;
         }
