@@ -43,9 +43,9 @@ class apache2 {
         $APACHE_LOG_ROOT = $current_dir . '/logs';
 
         if (isset(conf::$vars['a2_use_ssl'])) {
-            $apache_str = apache2::getConf($SERVER_NAME, $DOCUMENT_ROOT, $APACHE_LOG_ROOT);
+            $apache_str = self::getConf($SERVER_NAME, $DOCUMENT_ROOT, $APACHE_LOG_ROOT);
         } else {
-            $apache_str = apache2::getConfSSL($SERVER_NAME, $DOCUMENT_ROOT, $APACHE_LOG_ROOT);
+            $apache_str = self::getConfSSL($SERVER_NAME, $DOCUMENT_ROOT, $APACHE_LOG_ROOT);
         }
         return $apache_str;
     }
@@ -76,7 +76,7 @@ class apache2 {
         // some changes in apache 2.4.x from apache 2.2.x
         // se http://httpd.apache.org/docs/current/upgrading.html
 
-        $version = apache2::getVersion();
+        $version = self::getVersion();
         $version = strings_version::getSemanticAry($version);
 
         if ($version['minor'] >= 4) {
@@ -114,7 +114,7 @@ class apache2 {
             return false;
         }
 
-        $version = apache2::getVersion();
+        $version = self::getVersion();
         $version = strings_version::getSemanticAry($version);
 
         if ($version['minor'] >= 4) {
@@ -252,7 +252,7 @@ EOF;
      * @return string $conf apache2 ssl configuration
      */
     public static function getConfSSL($SERVER_NAME, $DOCUMENT_ROOT, $APACHE_LOG_ROOT) {
-        $version = apache2::getVersion();
+        $version = self::getVersion();
         $version = strings_version::getSemanticAry($version);
 
         if ($version['minor'] >= 4) {

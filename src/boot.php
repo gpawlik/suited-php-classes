@@ -3,12 +3,13 @@
 namespace diversen;
 
 use diversen\alias;
-use diversen\uri\dispatch;
 use diversen\autoloader\modules;
-use diversen\moduleloader;
 use diversen\conf;
+use diversen\log;
+use diversen\moduleloader;
+use diversen\uri\dispatch;
+use mainTemplate;
 
-// set aliases
 
 class boot {
 
@@ -160,11 +161,11 @@ class boot {
             $str = $ml->getParsedModule();
         }
 
-        \mainTemplate::printHeader();
+        mainTemplate::printHeader();
         echo '<div id="content_module">' . $str . '</div>';
 
         $ml->runLevel(7);
-        \mainTemplate::printFooter();
+        mainTemplate::printFooter();
         conf::$vars['final_output'] = ob_get_contents();
         ob_end_clean();
 
