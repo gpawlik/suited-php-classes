@@ -373,11 +373,9 @@ class assets extends template {
     }
     
     /**
-     * method for setting js files to be used by user templates. This is
-     * used with javascripts which are placed in web space.
-     * @param   string   $js_url pointing to the path of the javascript
-     * @param   int      $order the loading order of javascript 0 is first > 0 is
-     *                   later.
+     * method for setting js files to be used in user templates.
+     * @param   string   $js_url /web/path/to/my.js 
+     * @param   int      $order loading order 0 = start e.g 10000 = late
      * @param   array    $options defaults: array ('head' => false)
      */
     public static function setJs($js_url, $order = null, $options = null){
@@ -550,12 +548,12 @@ class assets extends template {
     }
 
     /**
-     * method for setting user css used inline in user templates.
-     *
-     * @param   string   $css string file path of the css
+     * Set 'inline' CSS. This will add CSS files from outside of public HTML
+     * to be added to a template.
+     * @param   string   $css file path of the css
      * @param   int      $order the loading order of css 0 is first > 0 is
-     *                   later.
-     * @param array $options
+     *                   later
+     * @param array $options array ('no_cache' => 0)
      */
     public static function setInlineCss($css, $order = null, $options = array()){
 
@@ -564,12 +562,7 @@ class assets extends template {
             return;
         }
           
-        $str = file_get_contents($css);
-        /*
-        if (method_exists('mainTemplate', 'assetsReplace')) {
-            $str = mainTemplate::assetsReplace($str);
-        }*/
-                
+        $str = file_get_contents($css);                
         if (isset($order)){
             self::$inlineCss[$order] = $str;
         } else {
@@ -577,15 +570,15 @@ class assets extends template {
         }
     }
     
-        /**
-     * method for setting user css used inline in user templates.
-     *
-     * @param   string   $css string file path of the css
+    /**
+     * Set CSS from a module name and a CSS file. This can then be overridded
+     * in a template 
+     * @param   string   $module the module in context, e.g. account
+     * @param   string   $css the CSS file in context, e.g. /assets/style.css
      * @param   int      $order the loading order of css 0 is first > 0 is
      *                   later.
-     * @param array $options
      */
-    public static function setModuleInlineCss($module, $css, $order = null, $options = array()){
+    public static function setModuleInlineCss($module, $css, $order = null){
         
         $module_css = conf::pathModules() . "/$module/$css";
         
@@ -595,8 +588,7 @@ class assets extends template {
         if (file_exists(conf::pathHtdocs() . $template_override) ) {
             self::setCss($template_override);
             return;
-        }
-        
+        }        
         self::setInlineCss($module_css);
     }
     
