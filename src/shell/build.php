@@ -95,6 +95,6 @@ self::setCommand('build', array(
 
 self::setOption('cos_build_simple', array(
     'long_name' => '--build',
-    'description' => 'Will build a distribution from current source where coslib is placed outside htdocs',
+    'description' => 'Will build a distribution from current source where vendor is in base path',
     'action' => 'StoreTrue'
 ));
