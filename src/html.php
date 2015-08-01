@@ -1268,7 +1268,7 @@ $(document).ready(function() {
      * @param type $message
      * @param type $tag
      */
-    public static function headline ($message, $tag = 'h3') {
+    public static function headline ($message, $tag = 'h1') {
         echo self::getHeadline($message, $tag);
     }
     
@@ -1278,7 +1278,7 @@ $(document).ready(function() {
      * @param string $tag
      * @return string $html
      */
-    public static function getHeadline ($message, $tag = 'h3') {
+    public static function getHeadline ($message, $tag = 'h1') {
         if (method_exists('mainTemplate', 'getHeadline')) {
             return mainTemplate::getHeadline($message, $tag);
         }
