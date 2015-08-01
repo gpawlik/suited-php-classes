@@ -192,8 +192,19 @@ class http {
     public static function temporarilyUnavailable () {
         header('HTTP/1.1 503 Service Temporarily Unavailable');
         header('Status: 503 Service Temporarily Unavailable');
-        header('Retry-After: 300'); // 5 minutes in seconds
-        include_once conf::pathHtdocs() . "/temporarily_unavailable.php";
+        header('Retry-After: 300'); 
+    $html = <<<EOF
+<html>
+    <head>
+        <title>This page is temporarily unavailable</title>
+    </head>
+    <body>
+        <h1>This page is temporarily unavailable</h1>
+        <p>Try again in 5 minutes</p>
+    </body>
+</html>
+EOF;
+        echo $html;
         die();
     }
 }
