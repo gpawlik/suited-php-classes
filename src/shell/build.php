@@ -92,7 +92,7 @@ function cos_build_simple($options = null) {
     $coslib = "cp -rf coslib ./build/$name";
     cos_exec($coslib);
 
-    $index = "cp -rf misc/alt-index.php ./build/$name/index.php";
+    $index = "cp -rf htdocs/index.php ./build/$name/index.php";
     cos_exec($index);
 
     $phar_cli = "cp -rf phar-cli.php ./build/$name/";
