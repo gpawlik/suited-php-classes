@@ -1,23 +1,69 @@
 <?php
 
-use Symfony\Component\Filesystem\Filesystem;
-
 function cos_phar_cli_create() {
 
+    // move sources to build dir. 
+    // e.g. build/coscms
+    cos_build_simple();
+    
+    // some base values
     $dir = getcwd();
     $base = basename($dir);
     
-    // build from source
-    cos_build_simple();
-    $build_dir = "tmp/phar";
+    // dir we build phar from
+    $build_from_dir = "$dir/build/$base";
     
-    $fs = new Filesystem();
-    $fs->mkdir($build_dir, 0755);
+    // when creating a web phar we add 
+    // config.ini
+    // this is done so that on first exectution of the
+    // phar archive we will create this file and a .sqlite database. 
+    $build_phar_dir = "build/phar";
+    if (!file_exists($build_phar_dir)) {
+        cos_exec("mkdir $build_phar_dir");
+    }
+
+    // hidden .config file
+    $ary = conf::getIniFileArray("./config/config.ini");
+    $profile = new profile();
+
+    // rm secrets
+    $ary = $profile->iniArrayPrepare($ary);
     
-    $output = "$build_dir/$base-cli.phar";
+    // add sqlite database to build phar dir
+    if (conf::getMainIni('phar_sqlite')) {
+        db_to_sqlite();
+    
+        // mv sqlite database into hidden file
+        cos_exec("cp -R sqlite/database.sql $build_from_dir/tmp/.database.sql");
+        cos_exec("chmod 777 $build_from_dir/tmp/.database.sql");
+        cos_exec("mkdir $build_from_dir/sqlite");
+        
+        unset($ary['db_init']);
+        $ary['url'] = 'sqlite:.database.sql';
+        
+    }
+    
+    // no caching of assets. Place css and js in file
+    $ary['cached_assets'] = 0;
+    $ary['cashed_assets_reload'] = 0;
+    $ary['cached_assets_minify'] = 0;
+    $ary['cached_assets_compress'] = 0;
+    $ary['cached_assets_inline'] = 1;
+    
+    if (conf::getMainIni('phar_files')) {
+        cos_exec("cp -rf htdocs/files $build_from_dir");
+        cos_exec("sudo chown -R 777 $build_from_dir/files");
+    }
+    
+    $ini_settings = conf::arrayToIniFile($ary);
+    file_put_contents("$build_from_dir/tmp/.config.ini", $ini_settings);
+    
+    chdir($build_phar_dir);
+    
+    $output = "$base-cli.phar";
     $phar = new Phar($output);
-    $phar->interceptFileFuncs();
-    $phar->buildFromDirectory("$dir/build/$base");
+
+    $phar->buildFromDirectory($build_from_dir);
     $stub = $phar->createDefaultStub('phar-cli.php');
     $phar->setStub($stub);
     $stub = "#!/usr/bin/env php \n" . $stub;
@@ -25,16 +71,13 @@ function cos_phar_cli_create() {
     $phar->stopBuffering();
     
     cos_exec("chmod +x $output");
-    cos_exec("cp -R config $build_dir");
-    
-    if (conf::getMainIni('phar_sqlite')) {
-        db_to_sqlite();
-        cos_exec("cp -R sqlite $build_dir");
-        cos_exec("chmod -R 777 $build_dir/sqlite");    
-    }
-    
-    echo "CLI phar executable file created from current source ($output)\n";
+
+    echo "Web phar executable file created from current source ($output)\n";
+    echo "Serve it e.g. with the built-in server. Like this:\n";
+    echo "cd $build_phar_dir\n";
+    echo "./$base-cli.phar\n";
     exit(0);
+
 }
 
 function cos_phar_web_create() {
@@ -54,8 +97,6 @@ function cos_phar_web_create() {
     // config.ini
     // this is done so that on first exectution of the
     // phar archive we will create this file and a .sqlite database. 
-    
-    
     $build_phar_dir = "build/phar";
     if (!file_exists($build_phar_dir)) {
         cos_exec("mkdir $build_phar_dir");
@@ -83,7 +124,6 @@ function cos_phar_web_create() {
         $ary['url'] = 'sqlite:.database.sql';
         
     }
-    // template_assets::$cacheDir;
     
     // no caching of assets. Place css and js in file
     $ary['cached_assets'] = 0;
@@ -93,7 +133,6 @@ function cos_phar_web_create() {
     $ary['cached_assets_inline'] = 1;
     
     if (conf::getMainIni('phar_files')) {
-        //cos_needs_root();
         cos_exec("cp -rf htdocs/files $build_from_dir");
         cos_exec("sudo chown -R 777 $build_from_dir/files");
     }
@@ -102,7 +141,6 @@ function cos_phar_web_create() {
     file_put_contents("$build_from_dir/tmp/.config.ini", $ini_settings);
     
     chdir($build_phar_dir);
-    //$output = "$build_phar_dir/$base-web.phar";
     
     $output = "$base-web.phar";
     $phar = new Phar($output);

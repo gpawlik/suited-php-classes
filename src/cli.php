@@ -11,9 +11,9 @@ namespace diversen;
  * @ignore
  */
 
-use diversen\strings\ext as strings_ext;
+use diversen\strings\ext;
 use diversen\db;
-use diversen\db\admin as admin;
+use diversen\db\admin;
 use diversen\lang; 
 use diversen\moduleloader;
 use diversen\file;        
@@ -143,7 +143,7 @@ EOF;
      */
     public static function setCommand ($command, $options){
         if (isset($options['description'])) {
-            $options['description'] = strings_ext::removeNewlines($options['description']);
+            $options['description'] = ext::removeNewlines($options['description']);
         }
         
         self::$command = self::$parser->addCommand($command, $options);
@@ -313,7 +313,7 @@ EOF;
             }
             return true;
         }
-        
+
         if ($info['scheme'] == 'sqlite')  {
             $sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='modules'";
             $rows = $db->selectQuery($sql);
@@ -331,8 +331,10 @@ EOF;
      * base modules are placed in coslib/shell
      */
     public static function loadBaseModules () {
-        $command_path = 'vendor/diversen/simple-php-classes/src/shell';
+        $command_path = __DIR__ . "/shell";
+        //$command_path =  'vendor/diversen/simple-php-classes/src/shell'; 
         $base_list = file::getFileList($command_path, array ('search' => '.php'));
+        //print_r($base_list);
         foreach ($base_list as $val){
             include_once $command_path . "/$val";
         }

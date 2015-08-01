@@ -28,9 +28,11 @@ class file {
      * @return  array   entries of all files array (0 => 'file.txt', 1 => 'test.php')
      */
     public static function getFileList($dir, $options = null) {
+        
         if (!file_exists($dir)) {
             return false;
         }
+
         $d = dir($dir);
         $entries = array();
         while (false !== ($entry = $d->read())) {

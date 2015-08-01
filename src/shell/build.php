@@ -1,38 +1,6 @@
 <?php
 
 /**
- * File containing documentation functions for shell mode
- *
- * @package     shell
- */
-
-/**
- * build a distro where all placed is normal layout
- * @param array $options
- */
-function cos_build($options = null) {
-    $name = cos_readline("Enter name of build - usually name of profile. Command make take some time to execute - be patient\n");
-
-    if (file_exists("../$name")) {
-        die("File or dir with name $name exists\n");
-    }
-
-    $command = "cp -rf . ../$name";
-    cos_exec($command);
-
-    $command = "rm `find ../$name -name '.git'` -rf";
-    cos_exec($command);
-
-    $output = array();
-    exec('git tag -l', $output);
-
-    $version = array_pop($output);
-
-    $command = "cd  .. && tar -Pczf $name-$version.tar.gz  -v $name ";
-    cos_exec($command);
-}
-
-/**
  * build source package with more simple form of install. 
  * @param array $options
  */
@@ -42,7 +10,7 @@ function cos_build_simple($options = null) {
     $name = basename($dir);
 
     if (file_exists("./build/$name")) {
-        cos_exec("rm -rf ./build/$name*");
+        cos_exec("sudo rm -rf ./build/$name*");
     }
     cos_exec("mkdir ./build/$name");
 
@@ -53,7 +21,8 @@ function cos_build_simple($options = null) {
     if (!$domain) {
         $domain = 'default';
     }
-    $files_rm = "rm -rf ./build/$name/files/$domain/*";
+
+    $files_rm = "sudo rm -rf ./build/$name/files/$domain/*";
     cos_exec($files_rm);
 
     $config = "mkdir ./build/$name/config";
@@ -74,9 +43,6 @@ function cos_build_simple($options = null) {
     $composer = "cp -rf composer.json ./build/$name";
     cos_exec($composer);
 
-    $misc_scripts = "cp -rf misc ./build/$name";
-    cos_exec($misc_scripts);
-
     // reset database password
     $ary = conf::getIniFileArray("./config/config.ini");
     $profile = new profile();
@@ -88,9 +54,6 @@ function cos_build_simple($options = null) {
 
     // add ini dist file
     file_put_contents("./build/$name/config/config.ini-dist", $ini_settings);
-
-    $coslib = "cp -rf coslib ./build/$name";
-    cos_exec($coslib);
 
     $index = "cp -rf htdocs/index.php ./build/$name/index.php";
     cos_exec($index);
@@ -130,14 +93,8 @@ self::setCommand('build', array(
     'description' => 'Build distros',
 ));
 
-self::setOption('cos_build', array(
+self::setOption('cos_build_simple', array(
     'long_name' => '--build',
     'description' => 'Will build a distribution from current source where coslib is placed outside htdocs',
-    'action' => 'StoreTrue'
-));
-
-self::setOption('cos_build_simple', array(
-    'long_name' => '--build-simple',
-    'description' => 'Will build a distribution from current source where all files can placed in a single web directory (e.g. htdocs)',
     'action' => 'StoreTrue'
 ));
