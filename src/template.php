@@ -5,7 +5,7 @@ use diversen\html;
 use diversen\moduleloader;
 use diversen\conf as conf;
 use diversen\template\assets as assets;
-use diversen\template\meta as template_meta;
+use diversen\template\meta as meta;
 use diversen\template\favicon as template_favicon;
 use diversen\template\logo as template_logo;
 /**
@@ -98,7 +98,7 @@ class template {
      *                         
      */
     public static function setMeta($ary){
-        template_meta::setMeta($ary);
+        meta::setMeta($ary);
     }
     
     /**
@@ -106,7 +106,7 @@ class template {
      * @param string $str e.g. <code><meta name="description" content="test" /></code>
      */
     public static function setMetaAsStr ($str) {
-        template_meta::setMetaAsStr($str);
+        meta::setMetaAsStr($str);
     }
     
     /**
@@ -157,7 +157,7 @@ class template {
      *                     in your mainTemplate
      */
     public static function getMeta (){        
-        return template_meta::getMeta();
+        return meta::getMeta();
     }
     
 
