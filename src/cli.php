@@ -20,6 +20,7 @@ use diversen\file;
 use diversen\lang;
 use diversen\moduleloader;
 use diversen\strings\ext;
+use diversen\alias;
 use Exception;
 
 
@@ -79,7 +80,7 @@ class cli {
         $m->autoloadRegister();
 
 
-        // alias::set();
+        alias::set();
 
         // define all constant - based on base_path and config.ini
         conf::defineCommon();
