@@ -1,6 +1,11 @@
 <?php
 
-use diversen\db\admin as admin;
+use diversen\conf;
+use diversen\db\admin;
+use diversen\file;
+use diversen\time;
+
+
 /**
  * File containing database functions for shell mode
  *

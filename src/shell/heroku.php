@@ -1,5 +1,7 @@
 <?php
 
+use diversen\conf;
+
 /**
  * get a ini setting from heroku
  * @param string $setting

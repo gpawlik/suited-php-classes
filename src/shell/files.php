@@ -1,5 +1,7 @@
 <?php
 
+use diversen\conf;
+
 /**
  * File containing function for chown and chmod files to sane settings
  *

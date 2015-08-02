@@ -1,6 +1,10 @@
 <?php
 
+use diversen\conf;
+use diversen\file;
+use diversen\log;
 use diversen\mycurl;
+
 
 /**
  * File containing documentation functions for shell mode

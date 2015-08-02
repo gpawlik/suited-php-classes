@@ -1,5 +1,7 @@
 <?php
 
+use diversen\conf;
+
 /**
  * File containing documentation functions for shell mode
  *
@@ -7,7 +9,6 @@
  */
 
 
-// {{{ create_docs()
 /**
  * wrapper function for creating documention with phpdoc
  * hi! I'am created with this function :)

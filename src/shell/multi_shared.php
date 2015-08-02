@@ -1,5 +1,9 @@
 <?php
 
+use diversen\conf;
+use diversen\file;
+use diversen\moduleloader;
+
 function multi_shared_all_up ($options = null) {
     $path = conf::pathBase() . "/config/multi/*";    
     $dirs = file::getDirsGlob($path, array ('basename' => 1));

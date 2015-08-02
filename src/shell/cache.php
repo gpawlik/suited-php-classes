@@ -1,6 +1,9 @@
 <?php
 
 use diversen\cache\clear;
+use diversen\conf;
+
+
 /**
  * File containing documentation functions for shell mode
  *

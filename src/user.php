@@ -8,6 +8,7 @@ use diversen\lang;
 use diversen\session;
 use diversen\conf;
 use diversen\db\q;
+use diversen\db\columns;
 
 /**
  * File containing methods for getting a user profile connected to the 

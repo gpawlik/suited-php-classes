@@ -1,18 +1,14 @@
 <?php
 
-use diversen\templateinstaller;
 /**
  * File containing template functions for shell mode
  *
  * @package     shell
  */
 
-/**
- * @ignore
- */
-//include_once "coslib/moduleinstaller.php";
-//include_once "coslib/profile.php";
+use diversen\conf;
 use diversen\profile;
+use diversen\templateinstaller;
 
 /**
  * wrapper function for settings template

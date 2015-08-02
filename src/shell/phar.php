@@ -1,5 +1,8 @@
 <?php
 
+use diversen\conf;
+use diversen\profile;
+
 function cos_phar_cli_create() {
 
     // move sources to build dir. 

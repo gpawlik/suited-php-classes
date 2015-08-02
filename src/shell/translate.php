@@ -1,11 +1,19 @@
 <?php
 
+use diversen\conf;
+use diversen\file;
+use diversen\layout;
+use diversen\moduleloader;
+use diversen\translate;
+use Symfony\Component\Filesystem\Filesystem;
+
 /**
  * @package     translate
  */
 
 /**
- * find all lang::translate('sentences') in a string and returns them
+ * Find all lang::translate('Something to translate') or lang::translate("Another sentence") 
+ * in a string and returns matches as a array
  * @param string $str
  * @return array $strings
  */
@@ -25,12 +33,20 @@ function translate_match ($str) {
 }
 
 /**
+ * generates a line of the translation array
  * if a string uses '' we write the array with ""
  * if a string uses "" we write the array with ''
- * @param type $str
+ * @param string $key
+ * @param string $value
+ * @return string $str, e.g. $_COS_LANG_MODULE['This is a test'] = 'This is a test'
  */
 function translate_with_quote ($key, $value = '') {
-    if (empty($value)) $value = $key; $str = '';
+    
+    $str = '';
+    if (empty($value)) { 
+        $value = $key; 
+    }
+    
     
     // search for apostrophe (') somewhere 
     // in order to know how to write out the array
@@ -56,7 +72,6 @@ function translate_with_quote ($key, $value = '') {
  * function for creating a file with all strings
  * to be translated in a module by traversing all files
  * in the module.
- *
  *
  * @param array $options
  */
@@ -357,6 +372,7 @@ function translate_collect ($options) {
         $mod_lang = conf::pathModules() . "/$mod[module_name]/lang/$options[language]";
         $system_file = $mod_lang . "/system.inc";
         $language_file = $mod_lang . "/language.inc";
+        $_COS_LANG_MODULE = array ();
         if (file_exists($system_file)) {
             
             $file = str_replace(conf::pathBase(), '', $system_file);
@@ -386,13 +402,13 @@ function translate_collect ($options) {
         }
     }
 
-
     $temps = layout::getAllTemplates();
     foreach ($temps as $temp) {
         $mod_lang = conf::pathHtdocs() . "/templates/$temp/lang/$options[language]";
         $system_file = $mod_lang . "/system.inc";
         $language_file = $mod_lang . "/language.inc";
         
+        $_COS_LANG_MODULE = array ();
         if (file_exists($system_file)) {
             
             $file = str_replace(conf::pathHtdocs(), '', $system_file);
@@ -418,62 +434,68 @@ function translate_collect ($options) {
         }
     }
 
+    $mod_lang = conf::pathHtdocs() . "/templates/$options[module]";
+    if (!file_exists($mod_lang)) {
+        cos_cli_abort("No such template: $options[module]");
+    }
     
-    $mod_lang = conf::pathHtdocs() . "/templates/$options[module]/lang/$options[language]";
-    $lang_all = $mod_lang . "/language-all.inc";
-    
+    // generate path if it does not exist
+    $mod_lang.= "/lang/$options[language]";    
+    $fs = new Filesystem();
+    $fs->mkdir($mod_lang, 0755);
+    $lang_all = $mod_lang . "/language-all.inc"; 
     file_put_contents($lang_all, $str);
 
 }
 
 
 self::setCommand('translate', array(
-    'description' => 'Extract strings for translation.',
+    'description' => 'Extract strings to translation files.',
 ));
 
 self::setOption('translate', array(
     'long_name'   => '--translate',
     'short_name'   => '-t',
-    'description' => 'Create a translation file from all strings that should be translated.',
+    'description' => 'Create a translation file from all strings found in a module.',
     'action'      => 'StoreTrue'
 ));
 
 self::setOption('translate_update', array(
     'long_name'   => '--update',
     'short_name'   => '-u',
-    'description' => 'Updates a translation file from all strings that should be translated.',
+    'description' => 'Update a translation file with all new strings found in a module.',
     'action'      => 'StoreTrue'
 ));
 
 self::setOption('translate_temp', array(
     'long_name'   => '--temp',
-    'description' => 'Create a translation file for a template from all strings that can be translated.',
+    'description' => 'Create a translation file from all strings found in a template.',
     'action'      => 'StoreTrue'
 ));
 
 self::setOption('translate_temp_update', array(
     'long_name'   => '--temp-up',
-    'description' => 'Update a translation file for a template with new strings found.',
+    'description' => 'Update a translation file with all new strings found in a template.',
     'action'      => 'StoreTrue'
 ));
 
 self::setOption('translate_all_update', array(
     'long_name'   => '--all-up',
-    'description' => 'Update a translation file for a template with new strings found. Set a dummy module arg e.g. all',
+    'description' => 'Update all translation files for all modules and templates.',
     'action'      => 'StoreTrue'
 ));
 
 self::setOption('translate_collect', array(
     'long_name'   => '--collect',
-    'description' => 'Collected all translations for a language in a single file in a specified module',
+    'description' => 'Collect all translations for a language into a single file into the enabled template. Specify template and language',
     'action'      => 'StoreTrue'
 ));
 
 self::setArgument('module',
-    array('description'=> 'Specicify the module or template for which you will make a translation. If spcified in collect command, then the module is where the collected translation are found',
+    array('description'=> 'Specicify the module or template for which you will extract a translation. In --all-up and collect you should specify all',
           'optional' => false));
 
 self::setArgument('language',
-    array('description'=> 'Specicify the folder in lang which will serve as language, e.g. en_GB or da_DK or en or da. Also the language which will be collected',
+    array('description'=> 'Specicify the language, e.g. da_DK or en_GB. This is the language we extract translation for.',
           'optional' => false));
 

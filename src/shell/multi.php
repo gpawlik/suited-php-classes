@@ -1,5 +1,8 @@
 <?php
 
+use diversen\conf;
+use diversen\file;
+
 /**
  * executes a command on all coscms systems install in parent dir (../) from
  * current dir

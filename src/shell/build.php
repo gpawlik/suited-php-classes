@@ -1,5 +1,8 @@
 <?php
 
+use diversen\conf;
+use diversen\profile;
+
 /**
  * build source package with more simple form of install. 
  * @param array $options

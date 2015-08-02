@@ -11,15 +11,18 @@ namespace diversen;
  * @ignore
  */
 
-use diversen\strings\ext;
-use diversen\db;
-use diversen\db\admin;
-use diversen\lang; 
-use diversen\moduleloader;
-use diversen\file;        
-use diversen\alias;
+use Console_CommandLine;
 use diversen\autoloader\modules;
 use diversen\conf;
+use diversen\db;
+use diversen\db\admin;
+use diversen\file;
+use diversen\lang;
+use diversen\moduleloader;
+use diversen\strings\ext;
+use Exception;
+
+
 
 
 
@@ -76,7 +79,7 @@ class cli {
         $m->autoloadRegister();
 
 
-        alias::set();
+        // alias::set();
 
         // define all constant - based on base_path and config.ini
         conf::defineCommon();
@@ -97,7 +100,7 @@ class cli {
         intl::setTimezone();
 
         // init parser
-        self::$parser = new \Console_CommandLine();
+        self::$parser = new Console_CommandLine();
         self::$parser->description = <<<EOF
                     _ _       _     
   ___ ___  ___  ___| (_)  ___| |__  
@@ -195,7 +198,7 @@ EOF;
             
             try {
                 $result = self::$parser->parse();
-            } catch (\Exception $e) {
+            } catch (Exception$e) {
                 cos_cli_abort($e->getMessage());
             }
 

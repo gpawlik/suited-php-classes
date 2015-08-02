@@ -1,8 +1,13 @@
 <?php
 
 namespace diversen;
-use diversen\mailer\mailmime;
+
 use diversen\conf as conf;
+use diversen\mailer\mailmime;
+use diversen\mailer\queue;
+use Mail;
+use PEAR;
+
 /**
  * contains mail class and mail functions
  * use cosMail::multipart, this will send text, html, add attachments
@@ -267,11 +272,11 @@ class mailer {
         $params = self::getCosParams();
         
         if (!is_object(self::$mail)) {
-            self::$mail = \Mail::factory($options['mail_method'], $params);
+            self::$mail = Mail::factory($options['mail_method'], $params);
         }
         
         $res = self::$mail->send($to, $mime_headers, $body);
-        if (\PEAR::isError($res)) {
+        if (PEAR::isError($res)) {
             log::error($res->getMessage());
             return false;
         }

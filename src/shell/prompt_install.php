@@ -1,6 +1,7 @@
 <?php
 
-
+use diversen\conf;
+use diversen\file;
 
 /**
  * File containing documentation functions for shell mode

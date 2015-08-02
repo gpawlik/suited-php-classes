@@ -1,5 +1,10 @@
 <?php
 
+use diversen\conf;
+use diversen\file;
+use diversen\time;
+
+
 /**
  * File containing file backup functions for shell mode.
  * 

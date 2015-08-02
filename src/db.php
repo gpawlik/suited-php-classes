@@ -1,8 +1,12 @@
 <?php
 
 namespace diversen;
-use diversen\conf as conf;
-use diversen\db\admin as admin;
+
+use diversen\conf;
+use diversen\db\admin;
+use PDO;
+use PDOException;
+
 /**
  * File contains contains class for connecting to a mysql database
  * with PDO and doing basic crud operations and simple search operations. 
@@ -138,13 +142,13 @@ class db {
             }
             
             
-            self::$dbh = new \PDO(
+            self::$dbh = new PDO(
                 $url,
                 $username,
                 $password, 
                     $options
             );
-            self::$dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            self::$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             
             self::setSsl();
 	        if (isset(conf::$vars['coscms_main']['db_init'])) {
@@ -152,7 +156,7 @@ class db {
 
             }
 
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             if (!$options){
                 self::fatalError ('Connection failed: ' . $e->getMessage());
             } else {
@@ -171,9 +175,9 @@ class db {
 
 	    $attr = conf::getMainIni('mysql_attr');
             if (isset($attr['mysql_attr'])) {
-                self::$dbh->setAttribute(\PDO::MYSQL_ATTR_SSL_KEY, $attr['ssl_key']);
-                self::$dbh->setAttribute(\PDO::MYSQL_ATTR_SSL_CERT, $attr['ssl_cert']);
-                self::$dbh->setAttribute(\PDO::MYSQL_ATTR_SSL_CA, $attr['ssl_ca']);
+                self::$dbh->setAttribute(PDO::MYSQL_ATTR_SSL_KEY, $attr['ssl_key']);
+                self::$dbh->setAttribute(PDO::MYSQL_ATTR_SSL_CERT, $attr['ssl_cert']);
+                self::$dbh->setAttribute(PDO::MYSQL_ATTR_SSL_CA, $attr['ssl_ca']);
             }   
     }    
     /**
@@ -199,7 +203,7 @@ class db {
         
         if ($info['scheme'] == 'sqlite') {
             $stmt = $this->rawQuery("SELECT * FROM $table LIMIT 1");
-            $fields = array_keys($stmt->fetch(\PDO::FETCH_ASSOC));
+            $fields = array_keys($stmt->fetch(PDO::FETCH_ASSOC));
             
             if (in_array($field, $fields)) {
                 return true;
@@ -285,7 +289,7 @@ class db {
                 $stmt->bindParam(':search', $search);
             }
             $stmt->execute();
-            $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $rows;
     }
     
@@ -391,8 +395,8 @@ class db {
                     }
                 }
                 $stmt->execute();
-                $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-            } catch (\PDOException $e) {
+                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
                 self::fatalError ($e->getMessage());
             }
         return $rows;
@@ -483,9 +487,9 @@ class db {
             $stmt = self::$dbh->prepare($query);
             $stmt->bindParam(':search', $search);
             $stmt->execute();
-            $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             self::fatalError ($e->getMessage());
         }
         return $rows;
@@ -507,7 +511,7 @@ class db {
         $stmt = self::$dbh->prepare($query);
         $stmt->bindParam(':search', $search);
         $stmt->execute();
-        $row = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
         foreach($row as $key => $val){
             return $val['num_rows'];
         }
@@ -593,7 +597,7 @@ class db {
             $stmt->bindValue (":$key", $val);
         }
         $ret = $stmt->execute();
-        $row = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $row[0]['num_rows'];
     }
@@ -613,7 +617,7 @@ class db {
         if (!$ret) { 
             return false;
         }
-        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $rows;
     }
     

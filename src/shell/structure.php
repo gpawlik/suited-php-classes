@@ -1,6 +1,9 @@
 <?php
 
-use diversen\db\admin as admin;
+use diversen\conf;
+use diversen\db\admin;
+use diversen\time;
+
 /**
  * dumps entire structure
  */

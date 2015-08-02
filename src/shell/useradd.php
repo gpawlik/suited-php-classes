@@ -1,6 +1,10 @@
 <?php
 
-use diversen\db\admin as admin;
+use diversen\db;
+use diversen\db\admin;
+
+
+
 /**
  * @package shell
  *

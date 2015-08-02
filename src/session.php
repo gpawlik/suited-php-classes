@@ -567,7 +567,7 @@ class session {
      * then you should call checkAccessControl('blog_allow') in order to prevent
      * others than 'admin' in using the page
      * 
-     * If user does not have perms then the default 403 page will be set, 
+     * If a user does not have perms then the default 403 page will be set, 
      * and a 403 header will be sent. 
      * 
      * @param   string  $allow user or admin or super
@@ -627,10 +627,34 @@ class session {
      * @return boolean $res true if access allowed else false
      */
     public static function checkAccessFromModuleIni ($allow, $setErrorModule = true){
-        return self::checkAccessControl($allow, $setErrorModule);
-        
+        return self::checkAccessControl($allow, $setErrorModule); 
     }
     
+    /**
+     * 
+     * @param string $allow, a module ini setting which yield a access level. 
+     *               e.g. blog_allow = 'user'
+     * @param boolean $setErrorModule if auth fails should we display error 403. Access denied.
+     *               defaults to 'true'
+     * @return boolean $res 
+     */
+    public static function authIni ($allow, $setErrorModule = true) {
+        return self::checkAccessControl($allow, $setErrorModule);
+    }
+    
+    
+    
+    /**
+     * 
+     * Method checks an account based on session user_id. It checks: 
+     * a) if an account is locked 
+     * b) if the current user_id does not correspond to an account.
+     * 
+     * In both cases all sessions are killed. 
+     * Method is run at boot. In diversen\boot
+     *   
+     * @return void
+     */
     public static function checkAccount () {
         $user_id = session::getUserId();
         if ($user_id) {
@@ -663,6 +687,15 @@ class session {
         } else {
             return true;
         }
+    }
+    
+    /**
+     * Auth. Check if a user has the correct level. 
+     * @param string $level 'user', 'admin', 'super'
+     * @return boolean $res true if user has the needed level. 
+     */
+    public static function auth ($level) {
+        return self::checkAccess($level);
     }
     
     /**

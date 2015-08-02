@@ -1,5 +1,8 @@
 <?php
 
+use diversen\conf;
+use diversen\moduleinstaller;
+
 /**
  * File containing module functions for shell mode
  * (install, update, delete modules)

@@ -1,7 +1,9 @@
 <?php
 
+use diversen\conf;
 use diversen\db\admin;
 use Symfony\Component\Filesystem\Filesystem;
+
 
 function db_to_sqlite ($options = array ()) {
     

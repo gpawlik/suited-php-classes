@@ -1,7 +1,9 @@
 <?php
 
-use diversen\conf;
 use diversen\cli;
+use diversen\conf;
+use Console_Color;
+
 /**
  * Some helper functions to use with shell.php
  *
@@ -137,7 +139,7 @@ function color_output($output, $color_code = 'g') {
     }
 
     if (!$color) {
-        $color = new \Console_Color();
+        $color = new Console_Color();
     }
     $ret = $color->convert("%$color_code$output%n");
 

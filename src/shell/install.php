@@ -1,11 +1,8 @@
 <?php
 
-/**
- * File containing install functions for shell mode
- *
- * @package     shell
- */
-
+use diversen\conf;
+use diversen\moduleinstaller;
+use diversen\profile;
 
 /**
  * function for installing coscms from a profile

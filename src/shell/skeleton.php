@@ -1,5 +1,7 @@
 <?php
 
+use diversen\conf;
+
 /**
  * File containing functions for creating a skeleton when writining a module
  *

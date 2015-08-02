@@ -1,8 +1,8 @@
 <?php
 
 namespace diversen\html\table;
-use diversen\db\q as q;
-use diversen\pagination as pagination;
+use diversen\db\q;
+use diversen\pagination;
 
 /**
  * File containing class for building a simple table from db

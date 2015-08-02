@@ -32,7 +32,7 @@ class boot {
         log::setLogLevel();
         
         // set alias    
-        alias::set();
+        //alias::set();
 
         // utf-8
         ini_set('default_charset', 'UTF-8');

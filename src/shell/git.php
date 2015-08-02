@@ -1,5 +1,8 @@
 <?php
 
+use diversen\conf;
+use diversen\profile;
+
 include_once "vendor/diversen/simple-php-classes/src/git.php";
 
 
