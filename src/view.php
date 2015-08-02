@@ -1,8 +1,11 @@
 <?php
 
 namespace diversen;
-use diversen\conf as conf;
+
+use diversen\conf;
 use diversen\layout;
+
+
 /**
  * a collection of view function
  * used for views

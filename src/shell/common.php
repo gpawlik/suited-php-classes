@@ -2,7 +2,7 @@
 
 use diversen\cli;
 use diversen\conf;
-use Console_Color;
+use \Console_Color;
 
 /**
  * Some helper functions to use with shell.php
