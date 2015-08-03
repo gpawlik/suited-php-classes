@@ -114,7 +114,7 @@ class cli {
 EOF;
         self::$parser->version = '0.0.1';
 
-        // Adding an main option for setting domain
+        // Adding a main option for setting domain
         self::$parser->addOption(
             'domain',
             array(
