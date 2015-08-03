@@ -141,6 +141,19 @@ class moduleloader {
         return self::isInstalledModule($module_name);
     }
     
+    /**
+     * moduleExists alias of isInstalledModule
+     * @param string $module_name
+     * @return boolean $res true if module exists else false.  
+     */
+    public static function moduleExistsAsDir ($module_name) {
+        $module_dir = conf::pathModules() . "/$module_name";
+        if (file_exists($module_dir)) {
+            return true;
+        }
+        return false;
+    }
+    
     
     
     /**
