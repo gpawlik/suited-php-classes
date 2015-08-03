@@ -578,7 +578,7 @@ class assets extends template {
      * @param   int      $order the loading order of css 0 is first > 0 is
      *                   later.
      */
-    public static function setModuleInlineCss($module, $css, $order = null){
+    public static function setModuleInlineCss($module, $css, $order = null, $options = array()){
         
         $module_css = conf::pathModules() . "/$module/$css";
         

@@ -1,9 +1,11 @@
 <?php
 
 namespace diversen;
-use diversen\moduleloader\reference;
+
+use diversen\conf;
+use diversen\db;
 use diversen\lang;
-use diversen\conf as conf;
+use diversen\moduleloader\reference;
 use diversen\uri;
 /**
  * File contains class for loading modules
@@ -512,8 +514,8 @@ class moduleloader {
         
         $controller = $this->info['controller'];
         $action = $controller. 'Action';
-        $module_class = $this->info['module_class'];
-        $var = $action_exists = @is_callable(array ($module_class, $action));
+        $module_class = self::modulePathToClassName($this->info['module_class']);
+        $action_exists = @is_callable(array ($module_class, $action));
 
         // We need is a controller
         if (!$action_exists){
