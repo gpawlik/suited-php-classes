@@ -90,7 +90,9 @@ function backup_restore($options){
     cos_needs_root();
     if (!isset($options['File'])){
         $latest = backup_get_latest_backup();
-        if ($latest == 0) die ("Yet no backups\n");
+        if ($latest == 0) { 
+            die ("Yet no backups\n");
+        }
         $backup_file = $latest = "backup/full/" . $latest . ".tar.gz";
     } else {
         $backup_file = $options['File'];
@@ -126,7 +128,7 @@ function backup_files_restore($options){
         $backup_file = $options['File'];
     }
     
-    cos_needs_root("./coscli.sh backup --public-restore $backup_file");
+    cos_needs_root("In order to restore: $backup_file. We need root");
     $command = "tar -Pxzf $backup_file -v ./htdocs/files ";
     $ret = cos_exec($command);
 }
