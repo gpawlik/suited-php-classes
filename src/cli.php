@@ -188,6 +188,10 @@ EOF;
         try {
             $ret = 0;
             
+           
+            // reload config - as this may be need if we install
+            conf::loadMainCli();
+            
             // load all modules
             if (!isset($options['disable_base_modules'])) {
                 self::loadBaseModules();
