@@ -483,7 +483,6 @@ class profile  {
     public function setProfileInfo($profile){
         $profile_dir = conf::pathBase() . "/profiles/$profile";
         if (!file_exists($profile_dir)) {
-            //echo;
             cos_cli_abort( "No such path to profiles: $profile_dir");
         } 
         
