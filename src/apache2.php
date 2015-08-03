@@ -63,10 +63,10 @@ class apache2 {
      */
     public static function enableSite($options) {
         $hostname = trim($options['hostname']);
-
-        cos_needs_root();
         self::createLogs();
-
+       
+        cos_needs_root();
+        
         // create apache2 conf and enable site
         $apache2_conf = self::getA2Conf($hostname);
         $tmp_file = conf::pathBase() . "/tmp/$hostname";
