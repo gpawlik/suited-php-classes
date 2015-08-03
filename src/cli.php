@@ -190,7 +190,7 @@ EOF;
             
            
             // reload config - as this may be need if we install
-            conf::loadMainCli();
+            //conf::loadMainCli();
             
             // load all modules
             if (!isset($options['disable_base_modules'])) {
@@ -206,6 +206,8 @@ EOF;
             } catch (Exception$e) {
                 cos_cli_abort($e->getMessage());
             }
+            
+            
 
             // we parse the command line given. 
             // Note: Now we examine the domain, to if the -d switch is given

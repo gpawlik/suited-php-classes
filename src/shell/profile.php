@@ -24,6 +24,7 @@ include_once "vendor/diversen/simple-php-classes/src/shell/module.php";
  */
 function load_profile($options) {
     $pro = new profile();
+
     $profiles = file::getFileList('profiles', array('dir_only' => true));
     if (!in_array($options['profile'], $profiles)){
         cos_cli_abort('No such profile');
@@ -33,6 +34,7 @@ function load_profile($options) {
     } else {
         $pro->loadProfile($options['profile']);
     }
+
 }
 
 /**

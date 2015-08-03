@@ -40,8 +40,18 @@ function prompt_install(){
     load_profile(array('profile' => $profile, 'config_only' => true));
     cos_cli_print("Main config file (config/config.ini) for $profile is loaded");
 
+    
+    
+    // Keep base path. Ortherwise we will lose it when loading profile    
+    $base_path = conf::pathBase();
+    
     // load profile.
-    conf::$vars['coscms_main'] = conf::getIniFileArray(conf::pathBase() . '/config/config.ini', true);
+    conf::$vars['coscms_main'] = conf::getIniFileArray($base_path . '/config/config.ini', true);
+    
+    // reset base path
+    // all commons are set based on base_path
+    conf::setMainIni('base_path', $base_path);
+    conf::defineCommon();
     
     // get configuration info
     $host = cos_readline('Enter mysql host, and hit return: ');
@@ -56,7 +66,7 @@ function prompt_install(){
     conf::$vars['coscms_main']['password'] = $password;
     conf::$vars['coscms_main']['server_name'] = $server_name;
     conf::$vars['coscms_main']['server_redirect'] = $server_name;
-
+    
     // write it to ini file
     $content = conf::arrayToIniFile(conf::$vars['coscms_main'], false);
     $path = conf::pathBase() . "/config/config.ini";

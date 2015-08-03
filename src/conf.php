@@ -529,7 +529,7 @@ class conf {
         
         // module path
         self::setMainIni('modules_path', self::pathBase() . "/" . $mod_dir);
-        
+                
         // files dir
         self::setMainIni('files_dir', 'files');
 
