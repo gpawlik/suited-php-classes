@@ -1,6 +1,6 @@
 <?php
 
-namespace diversen\config;
+namespace diversen\conf;
 /**
  * simple class for reading configuration
  */
