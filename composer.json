@@ -5,6 +5,8 @@
         "psr-4": {
             "diversen\\": "src/"
         }
+    },
+    "require": {
+        "diversen/simple-php-github-api": "^1.0"
     }
 }
-
