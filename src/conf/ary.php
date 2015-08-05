@@ -31,8 +31,8 @@ class ary {
      * @return mixed
      */
     public static function get($key, $sub = null) {
-        if (isset(self::$vars[$key][$sub])) {
-            return self::$vars[$key][$sub];
+        if (empty($sub)) {
+            return self::$vars[$key];
         }
 
         if (isset(self::$vars[$key])) {
