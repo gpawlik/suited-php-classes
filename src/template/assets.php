@@ -622,35 +622,7 @@ class assets extends template {
         }
         return $str;
     }
-    
-    
-    /**
-     * gets css style for a random gallery image 
-     * @return string $str
-     */
-    public static function getGalleryBgCssRandom ($interval = 7) {
-        if (!moduleloader::moduleExists('gallery')) {
-            return '';
-        }
-        moduleloader::includeModule('gallery');
-        $g = new gallery();
-        $random_img = $g->getShiftingImageURL();
-        if (empty($random_img)) {
-            return '';
-        }
-        
-        $css = <<<EOF
-<style>
-body {
-    background: url("{$random_img}") no-repeat fixed center center / cover rgba(0, 0, 0, 0);
-    overflow: scroll;
-    
-}
-</style>
-EOF;
-    return $css;
 
-    }
         
     /**
      * load assets specified in ini settings from template
@@ -703,11 +675,8 @@ EOF;
         $css_path = conf::pathHtdocs() . "/$base_path/$css.css";
         $css_web_path = $base_path . "/$css.css";
         if (file_exists($css_path)) {
-
-            //self::setCss("$css_web_path?version=$version", $order);
             self::setCss("$css_web_path", $order);
         } else {
-            //self::setCss("/templates/$template/default/default.css?version=$version", $order);
             self::setCss("/templates/$template/default/default.css", $order);
             return;
         }

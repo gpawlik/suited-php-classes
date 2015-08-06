@@ -5,6 +5,9 @@ namespace diversen;
 use diversen\upload;
 use diversen\lang;
 use diversen\html\helpers;
+use diversen\html\common;
+
+common::defineConstants();
 
 /**
  * File containing class for building forms and common methods used 
@@ -283,7 +286,6 @@ class html {
         self::$internal['form_id'] = $options['id'];
         $extra = self::parseExtra($options);
 
-        
         $str = "";   
         $str.= "<form action=\"$action\" method=\"$method\" name=\"$name\" $extra enctype = \"$enctype\">\n";
         
