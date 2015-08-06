@@ -127,8 +127,6 @@ class lang {
         // create system lanugage for all modules
         if (!empty($system_language)){
             foreach($system_language as $key => $val){
-
-                $val['module_name'];
                 $module_lang = unserialize($val['translation']);               
 
                 if ($module_lang === false) { 
@@ -211,7 +209,7 @@ class lang {
      * into db on install, and therefor always loaded. 
      * @param   string  $module the base module to load (e.g. content or account)
      */
-    static function loadModuleLanguage($module, $language = null){
+    public static function loadModuleLanguage($module, $language = null){
         
         if (self::$allLoaded) {         
             return;
@@ -316,7 +314,6 @@ class lang {
         $template = conf::getMainIni('language_all');
         self::$allLoaded = true;
         
-
         if (!$language) {
             $language = self::getLanguage();
         }
@@ -349,7 +346,7 @@ class lang {
      * method for loaindg a system language. 
      * @param   string   the base module to load (e.g. content or account)
      */
-    static function loadModuleSystemLanguage($module){
+    public static function loadModuleSystemLanguage($module){
         if (self::$allLoaded) {
             return;
         }

@@ -69,3 +69,13 @@ $_COS_LANG_MODULE['Max size'] = 'Max size';
 
 $_COS_LANG_MODULE['Enter number'] = 'Enter number';
 $_COS_LANG_MODULE['CAPTCHA image'] = 'CAPTCHA image';
+
+$_COS_LANG_MODULE['filter_autolinkext_help'] = 'Links will be added automaticly, e.g.: http://google.com';
+$_COS_LANG_MODULE['filter_autolink_help'] = 'Automatic replacement of URLs with links, e.g. http://os-cms.net becomes <a href="http://os-cms.net">http://os-cms.net</a>';
+$_COS_LANG_MODULE['filter_geshiHl_help'] = 'Code can be highlighted. e.g. for PHP you will use <span class="notranslate">[hl:php]</span> your php code<span class="notranslate">[/hl:php]</span>';
+$_COS_LANG_MODULE['filter_markdown_help'] = 'Content added to this field will be filtered according to the markdown syntax. <a href ="http://daringfireball.net/projects/markdown/syntax">This link</a> gives a description of the syntax. You can not use HTML directly.';
+$_COS_LANG_MODULE['filter_markdownExt_help'] = 'Content added to this field will be filtered according to the extended markdown syntax. <a href ="http://daringfireball.net/projects/markdown/syntax">This link</a> gives a description of the syntax. You can also use HTML.';
+$_COS_LANG_MODULE['filter_media_help'] = 'You can insert direct youtube, vimeo, or soundcloud links. e.g. http://www.youtube.com/watch?v=xTGKzWDakK8 or http://vimeo.com/39289096, https://soundcloud.com/kaskade/kaskade-quadron-waste-love-ice';
+$_COS_LANG_MODULE['filter_phphl_help'] = 'Highlighted PHP code using <span class="notranslate">[hl:php]</span> your php code<span class="notranslate">[/hl:php]</span>';
+$_COS_LANG_MODULE['filter_cosmarkdownNoFollow_help'] = 'Content added to this field will be filtered according to the markdown syntax. <a href ="http://daringfireball.net/projects/markdown/syntax">This link</a> gives a description of the syntax. You can not use HTML directly. And all links will be given the attribute nofollow';
+$_COS_LANG_MODULE['filter_stacklink_help'] = 'Automatic replacement of URLs with links, e.g. http://os-cms.net becomes <a href="http://os-cms.net">http://os-cms.net</a>';
