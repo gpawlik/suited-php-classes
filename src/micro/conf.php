@@ -1,10 +1,10 @@
 <?php
 
-namespace diversen\conf;
+namespace diversen\micro;
 /**
  * simple class for reading configuration
  */
-class ary {
+class conf {
 
     public static $file = 'config.php';
 
