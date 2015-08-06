@@ -47,7 +47,7 @@ class defaultProfile {
         $redirect = $_SERVER['REQUEST_URI'];
         $logout_url.= "?redirect=" . rawurlencode($redirect);
               
-        $link = lang::translate('system_profile_logout');
+        $link = lang::translate('Logout');
         $str = html::createLink(
                 $logout_url, 
                 $link);

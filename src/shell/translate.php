@@ -5,32 +5,8 @@ use diversen\file;
 use diversen\layout;
 use diversen\moduleloader;
 use diversen\translate;
+use diversen\translate\extract;
 use Symfony\Component\Filesystem\Filesystem;
-
-/**
- * @package     translate
- */
-
-/**
- * Find all lang::translate('Something to translate') or lang::translate("Another sentence") 
- * in a string and returns matches as a array
- * @param string $str
- * @return array $strings
- */
-function translate_match ($str) {
-    // find all strings matching inside lang::translate('e.g. Here is a sentense')
-    $search = "/lang::translate\('([^']+)'/s";
-    preg_match_all($search, $str, $out);
-    $strings = $out[1];
-    $strings = array_unique($strings);
-    
-    $search = '/lang::translate\("([^"]+)"/s';
-    preg_match_all($search, $str, $out2);
-    $strings2 = $out2[1];
-    $strings = array_merge($strings, $strings2);
-    
-    return $strings;
-}
 
 /**
  * generates a line of the translation array
@@ -80,7 +56,11 @@ function translate($options){
     $strings_all = array();
     $strings_all[] = '';
 
-    if (isset($options['template'])) {
+    if (isset($options['vendor'])) {
+        $module_dir = conf::pathBase() . "/vendor/diversen/simple-php-classes/src";
+        $lang_dir = conf::pathBase() . "/vendor/diversen/simple-php-classes/src/lang/$options[language]";
+    }
+    elseif (isset($options['template'])) {
         $module_dir = conf::pathHtdocs() . '/templates/' . $options['module'];
         $lang_dir = conf::pathHtdocs() . "/templates/$options[module]/lang/$options[language]";
     } else {
@@ -114,11 +94,13 @@ function translate($options){
         }
 
         $file_str = file_get_contents($val);    
-        $strings = translate_match ($file_str);
+        $strings = extract::fromStr($file_str);
 
 
         // no strings we continue
-        if (empty($strings)) continue;
+        if (empty($strings)) { 
+            continue;
+        }
 
         if (strstr($val, 'menu.inc') || strstr($val, 'install.inc') ||  strstr($val, 'system_lang.inc') ){
             // system translation
@@ -163,7 +145,7 @@ function translate($options){
     // final: write the translation file
     $write_file = $lang_dir . "/language.inc";
 
-    // issue warning if language file already exists
+    // Issue warning if language file already exists
     if (file_exists($write_file)){
         if (!cos_confirm_readline("language files already exists.\nThese file will be over written")) {
             cos_cli_abort();
@@ -176,6 +158,7 @@ function translate($options){
     $write_sys_file = $lang_dir . "/system.inc";
     file_put_contents($write_sys_file, rtrim($sys_str) . "\n");
 }
+
 
 
 /**
@@ -202,8 +185,16 @@ function translate_all_update ($options) {
         $options['module'] = $mod;
         translate_update($options);
     }
-    
-    
+}
+
+function translate_vendor ($options) {
+    $options['vendor'] = true;
+    translate($options);
+}
+
+function translate_vendor_update($options) {
+    $options['vendor'] = true;
+    translate_update($options);
 }
 
 function translate_temp($options){ 
@@ -240,8 +231,12 @@ function translate_is_text ($file) {
  * @param array $options
  */
 function translate_update($options){
-   
-    if (isset($options['template'])) {
+    
+    if (isset($options['vendor'])) {
+        $module_dir = conf::pathBase() . "/vendor/diversen/simple-php-classes/src";
+        $lang_dir = conf::pathBase() . "/vendor/diversen/simple-php-classes/src/lang/$options[language]";
+    }
+    elseif (isset($options['template'])) {
         $module_dir = conf::pathHtdocs() . '/templates/' . $options['module'];
         $lang_dir = conf::pathHtdocs() . "/templates/$options[module]/lang/$options[language]";
     } else {
@@ -294,7 +289,7 @@ function translate_update($options){
         $file_str = file_get_contents($val);
 
 
-        $strings = translate_match ($file_str);
+        $strings = extract::fromStr($file_str);
         // no strings we continue
         if (empty($strings)) continue;
 
@@ -485,6 +480,18 @@ self::setOption('translate_all_update', array(
     'action'      => 'StoreTrue'
 ));
 
+self::setOption('translate_vendor', array(
+    'long_name'   => '--vendor',
+    'description' => 'Update vendor dir simple-php-classes.',
+    'action'      => 'StoreTrue'
+));
+
+self::setOption('translate_vendor_update', array(
+    'long_name'   => '--vendor-up',
+    'description' => 'Update vendor dir simple-php-classes.',
+    'action'      => 'StoreTrue'
+));
+
 self::setOption('translate_collect', array(
     'long_name'   => '--collect',
     'description' => 'Collect all translations for a language into a single file into the enabled template. Specify template and language',
@@ -496,6 +503,6 @@ self::setArgument('module',
           'optional' => false));
 
 self::setArgument('language',
-    array('description'=> 'Specicify the language, e.g. da_DK or en_GB. This is the language we extract translation for.',
+    array('description'=> 'Specicify the language, e.g. da_DK or en_GB. This is the language we extract translation for. This will normally be en_GB as this is the systems base language.',
           'optional' => false));
 

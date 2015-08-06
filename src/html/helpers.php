@@ -28,14 +28,14 @@ class helpers {
 
         $str = '';
         if (session::isAdmin()) {
-            $str.= html::createLink("$url/edit/$id", lang::system('edit'));
+            $str.= html::createLink("$url/edit/$id", lang::translate('Edit'));
             $str.= MENU_SUB_SEPARATOR;
-            $str.= html::createLink("$url/delete/$id",  lang::system('delete'));
+            $str.= html::createLink("$url/delete/$id",  lang::translate('Delete'));
         }
         
         if (isset($options['view'])) {
             $str.= MENU_SUB_SEPARATOR;
-            $str.= html::createLink("$url/view/$id",  lang::system('view'));
+            $str.= html::createLink("$url/view/$id",  lang::translate('View'));
         }
         return $str;
     }

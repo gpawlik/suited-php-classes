@@ -87,9 +87,9 @@ class pagination {
         
         // set options       
         $pager_options = array(
-            'altPrev' => lang::translate('pager_prev_page'),
-            'altNext' => lang::translate('pager_next_page'),
-            'altPage' => lang::translate('pager_page'),
+            'altPrev' => lang::translate('Previous'),
+            'altNext' => lang::translate('Next page'),
+            'altPage' => lang::translate('Page'),
             'separator' => '',
             'mode'       => 'Sliding',
             'perPage'    => $this->perPage,

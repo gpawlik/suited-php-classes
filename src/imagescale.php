@@ -223,7 +223,7 @@ class imagescale {
         }
         
         if (\PEAR::isError($it)) {
-            self::$errors[] = self::$errors[] = lang::translate('System could not load image driver');
+            self::$errors[] = lang::translate('System could not load image driver');
             log::error($it->getMessage());
             return false;
         }

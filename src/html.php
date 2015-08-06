@@ -694,8 +694,8 @@ EOF;
         self::hidden('MAX_FILE_SIZE', $bytes);
         
         
-        $label = lang::system('system_form_label_file') . ". ";
-        $label.= lang::system('system_file_allowed_maxsize');
+        $label = lang::translate('File') . ". ";
+        $label.= lang::translate('Max size') . ". ";
         $size = upload::bytesToGreek($bytes);
         $label.= $size;
         

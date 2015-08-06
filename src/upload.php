@@ -148,23 +148,23 @@ class upload {
     public static function getNativeErrorMessage($error_code) {
         switch ($error_code) {
             case UPLOAD_ERR_INI_SIZE:
-                return lang::system('system_file_exceeds_php_ini');
+                return lang::translate('File exceeds php.ini settings');
             case UPLOAD_ERR_FORM_SIZE:
-                return lang::system('system_file_exceeds_max_file_size');
+                return lang::translate('File exceeds max size');
             case UPLOAD_ERR_PARTIAL:
-                return lang::system('system_file_partially_uploaded');
+                return lang::translate('File was only partial uploaded');
             case UPLOAD_ERR_NO_FILE:
-                return lang::system('system_file_no_file_uploaded');
+                return lang::translate('No file was uploaded');
             case UPLOAD_ERR_NO_TMP_DIR:
-                return lang::system('system_file_missing_tmp_folder');
+                return lang::translate('No temp dir exists');
             case UPLOAD_ERR_CANT_WRITE:
-                return lang::system('system_file_no_write_to_disk');
+                return lang::translate('Could not write to file system');
             case UPLOAD_ERR_EXTENSION:
-                return lang::system ('system_file_wrong_ext');
+                return lang::translate ('Wrong file extension');
             case UPLOAD_ERR_OK;
                 return 0;
             default:
-                return lang::system('system_file_unknown_error');
+                return lang::translate('Unknow upload error');
         }
     }
     
@@ -232,7 +232,7 @@ class upload {
             // check if file exists. 
             if (file_exists($savefile)){
                 if (isset(self::$options['only_unique'])) {
-                    self::$errors[] = lang::translate('system_file_upload_file_exists') . 
+                    self::$errors[] = lang::translate('File already exists') . 
                         MENU_SUB_SEPARATOR_SEC . $savefile;
                     return false;
                     
@@ -246,7 +246,7 @@ class upload {
                         
             $ret = move_uploaded_file($_FILES[$filename]['tmp_name'], $savefile);
             if (!$ret) {
-                self::$errors[] = 'Could not move file. Doh!';
+                self::$errors[] = lang::translate('Could not move file.');
                 return false;
             }
             $savefile = str_replace(conf::pathHtdocs(), '', $savefile);
@@ -299,8 +299,8 @@ class upload {
         $type = file::getMime($_FILES[$filename]['tmp_name']);
 
         if (!in_array($type, self::$options['allow_mime'])) {
-            $message = lang::translate('system_file_upload_mime_type_not allowed');
-            $message.= lang::translate('system_file_allowed_mimes');
+            $message = lang::translate('Mime type is not allowed. ');
+            $message.= lang::translate('These mime types are allowed ') . MENU_SUB_SEPARATOR_SEC;
             $message.=self::getMimeAsString(self::$options['allow_mime']);
             self::$errors[] = $message;
             return false;
@@ -333,8 +333,8 @@ class upload {
             $maxsize = self::$options['maxsize'];
         }
         if($_FILES[$filename]['size'] > $maxsize ){
-            $message = lang::translate('system_file_upload_to_large');
-            $message.= lang::translate('system_file_allowed_maxsize');
+            $message = lang::translate('File is to large');
+            $message.= lang::translate('Max size is ');
             $message.= self::bytesToSize($maxsize);
             self::$errors[] = $message;
             return false;
