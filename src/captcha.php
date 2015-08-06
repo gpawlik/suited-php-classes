@@ -139,7 +139,7 @@ class captcha {
      */
     static public function createCaptchaImage () {
         $options = array ('align' => 'top');
-        $options['title'] = lang::translate('system_captcha_alt_image');
+        $options['title'] = lang::translate('CAPTCHA image');
         $options['required'] = true;
         return "* " . lang::system('captcha_numbers') . ' ' . html::createImage('/image/captcha/index', $options);
     }

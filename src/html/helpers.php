@@ -52,7 +52,7 @@ class helpers {
         $html->setAutoEncode(true);
         $html->formStart('custom_delete_form');
         $html->legend($legend);
-        $html->submit($name, lang::translate('delete'));
+        $html->submit($name, lang::translate('Delete'));
         $html->formEnd(); 
         return $html->getStr();
     }
@@ -70,7 +70,7 @@ class helpers {
         $html->formStart('custom_delete_form');
         $html->legend($legend);
         if (!$submit_value) {
-            $submit_value = lang::translate('submit');
+            $submit_value = lang::translate('Submit');
         }
         $html->submit($submit_name, $submit_value);
         $html->formEnd(); 

@@ -357,46 +357,9 @@ class layout {
      * @return  array   array with top level module menu
      */
     public static function getBaseModuleMenu($module){
-        $menu = array();
-
         $module_menu = self::getMenuFromFile($module);   
         $children_menu = self::getChildrenMenus($module);
         $module_menu = array_merge($module_menu, $children_menu);  
-        
-        $db_config_file = conf::pathModules() . "/$module/configdb.inc";
-        
-        if (file_exists($db_config_file)) {
-            include $db_config_file;
-            if (isset($db_config_menu)) {
-                $module_menu = self::setDbConfigMenuItem ($module_menu, $module);
-            }
-        }
-        return $module_menu;
-    }
-    
-    /**
-     * Attach a db module config menu item to a module menu. See module dbconfig
-     * This can be used for auto generating config settings for your module
-     * The url for a dbconfig setting is always $module/config/index
-     * 
-     * @param array $module_menu
-     * @param type $module
-     * @return array $module_menu now with the config menu item
-     */
-    public static function setDbConfigMenuItem($module_menu, $module) {
-        $config_menu_item = array (
-            'url' => "/$module/config/index",
-            'title' => lang::translate('config_main_menu_edit'));
-        
-        // if e.g. account_allow_db_config is not set we use admin as base setting
-        $allow_config = $module . "_allow_db_config";
-        $allow = conf::getModuleIni($allow_config);
-        if (!$allow) {
-            $allow = 'admin';
-        }
-        
-        $config_menu_item['auth'] = $allow;        
-        $module_menu[] = $config_menu_item;
         return $module_menu;
     }
 
