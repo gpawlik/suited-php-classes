@@ -4,9 +4,9 @@
 
 namespace diversen\translate;
 
+use diversen\conf;
 use diversen\file;
 use diversen\layout;
-use diversen\conf;
 use diversen\moduleloader;
 use diversen\translate;
 use Symfony\Component\Filesystem\Filesystem;
