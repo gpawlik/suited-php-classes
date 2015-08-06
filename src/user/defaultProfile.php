@@ -76,4 +76,11 @@ class defaultProfile {
         return '';
         
     }
+    
+    public function getAdminLink($id) {
+        $str = html::createLink(
+            "/account/admin/edit/$id", 
+            lang::translate('(Admin) Edit profile'));
+        return $str;
+    } 
 }
