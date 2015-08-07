@@ -125,21 +125,6 @@ class extractor {
     }
     
     /**
-     * generate a language file in a language dir
-     * will overwrite previous translations
-     * e.g.:
-     * modules/account/lang/en/language.php
-     * 
-     * @param type $lang
-     */
-    public function generateLang () {
-        foreach ($this->dirs as $dir) {
-            $str = $this->generateLangStrForPath($dir);
-            $this->createFile($dir, $str);
-        }
-    }
-    
-    /**
      * get language dir name to be used in source dir
      * @param string $dir
      * @return string $dir
@@ -186,12 +171,13 @@ class extractor {
      * @param string $dir
      * @return string $translation_str
      */
-    public function generateLangStrForPath ($dir) {
+    public function createLangStrForPath ($dir) {
         $file_list = file::getFileListRecursive($dir);
 
         // compose a php file
         $translation_str = "<?php\n\n";
-        
+        $translation_str.= "$" . $this->translateAryName . " = array();\n\n";
+
         foreach ($file_list as $file) {
             if (!$this->isText($file)) {
                 continue;
@@ -211,14 +197,91 @@ class extractor {
             foreach ($strings as $trans) {
                 $translation_str.= $this->setCorrectQuotes($trans);
             }
-        }
-        
+        }  
         return $translation_str;
     }
+    
+    /**
+     * Updates a PHP string with extracted translation
+     * Updating means that any changes to the values of 
+     * e.g. $LANG['My sentence'] will not be changed
+     * @param string $dir
+     * @return string $translation_str
+     */
+    public function updateLangStrForPath ($dir) {
+        $file_list = file::getFileListRecursive($dir);
+
+        // compose a php file
+        $translation_str = "<?php\n\n";
+        $translation_str.= "$" . $this->translateAryName . " = array();\n\n";
+    
+        // if lang file does not exists
+        $lang_file = $this->getLanguageFileFromDir($dir);
+        if (!file_exists($lang_file)) {
+            return $this->createLangStrForPath($dir);
+        } 
+
+        include_once $lang_file;
+        $original_ary = ${$this->translateAryName};
+        
+        foreach ($file_list as $file) {
+            if (!$this->isText($file)) {
+                continue;
+            }
+            
+            $file_str = file_get_contents($file);
+            $strings = $this->search($file_str);
+            
+            // no strings we continue
+            if (empty($strings)) {
+                continue;
+            }
+            
+            $translation_str.="// Translation of file $file\n\n";
+
+            // and we add all strings
+            foreach ($strings as $trans) { 
+                if (!isset($original_ary[$trans])) {
+                    // new value
+                    $translation_str.=$this->setCorrectQuotes($trans);
+                } else {
+                    // keep old value
+                    $old_value = $original_ary[$trans];
+                    $translation_str.= $this->setCorrectQuotes($trans, $old_value);
+                }                
+            }
+        }
+        return $translation_str;
+    }
+    
+        
+    /**
+     * generate a language file in a language dir
+     * will overwrite previous translations
+     * e.g.:
+     * modules/account/lang/en/language.php
+     * 
+     * @param type $lang
+     */
+    public function generateLang () {
+        foreach ($this->dirs as $dir) {
+            $str = $this->createLangStrForPath($dir);
+            $this->createFile($dir, $str);
+        }
+    }
+    
+    /**
+     * generate a language file in a language dir
+     * will overwrite previous translations
+     * e.g.:
+     * modules/account/lang/en/language.php
+     * 
+     * @param type $lang
+     */
+    public function updateLang () {
+        foreach ($this->dirs as $dir) {
+            $str = $this->updateLangStrForPath($dir);
+            $this->createFile($dir, $str);
+        }
+    }
 }
-
-
-
-
-
-
