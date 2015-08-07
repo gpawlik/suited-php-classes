@@ -155,7 +155,7 @@ class moduleinstaller extends db {
             // if no version we check if this is a git repo
             // as there is no version from a install.inc file
             // we always just use the latest tag
-            if (!isset($this->installInfo['VERSION']) && defined('_COS_CLI')) {
+            if (!isset($this->installInfo['VERSION']) && conf::isCli()) {
                 
                 $command = "cd " . conf::pathModules() . "/"; 
                 $command.= $this->installInfo['NAME'] . " ";
