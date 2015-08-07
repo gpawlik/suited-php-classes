@@ -64,7 +64,7 @@ class extract {
         if ($apo_key) {
             $str.= "\$" . self::$arrayName . '["' . $key . '"] = ';
         } else {
-            $str.= "\$_" . self::$arrayName . "['$key'] = ";
+            $str.= "\$" . self::$arrayName . "['$key'] = ";
         }
 
         // and also for the value
@@ -80,19 +80,13 @@ class extract {
 
     public static function generate($options) {
 
+        $lang_dir = self::getPath($options, 'lang_dir');
+        $module_dir = self::getPath($options, 'module_dir');
+        
         $strings_all = array();
         $strings_all[] = '';
 
-        if (isset($options['vendor'])) {
-            $module_dir = conf::pathBase() . "/vendor/diversen/simple-php-classes/src";
-            $lang_dir = conf::pathBase() . "/vendor/diversen/simple-php-classes/src/lang/$options[language]";
-        } elseif (isset($options['template'])) {
-            $module_dir = conf::pathHtdocs() . '/templates/' . $options['module'];
-            $lang_dir = conf::pathHtdocs() . "/templates/$options[module]/lang/$options[language]";
-        } else {
-            $module_dir = conf::pathModules() . "/$options[module]";
-            $lang_dir = conf::pathModules() . "/$options[module]/lang/$options[language]";
-        }
+        //$module_dir = self::getPath($options, 'module_dir');
 
         if (!file_exists($module_dir)) {
             cos_cli_print_status('Notice', 'y', "No such module dir. Skipping: $module_dir");
@@ -183,7 +177,13 @@ class extract {
         file_put_contents($write_sys_file, rtrim($sys_str) . "\n");
     }
 
-    public function update($options) {
+    /**
+     * 
+     * @param array $options
+     * @param string $get module_dir or lang_dir
+     * @return string
+     */
+    public static function getPath ($options, $get = '') {
         if (isset($options['vendor'])) {
             $module_dir = conf::pathBase() . "/vendor/diversen/simple-php-classes/src";
             $lang_dir = conf::pathBase() . "/vendor/diversen/simple-php-classes/src/lang/$options[language]";
@@ -194,6 +194,19 @@ class extract {
             $module_dir = conf::pathModules() . "/$options[module]";
             $lang_dir = conf::pathModules() . "/$options[module]/lang/$options[language]";
         }
+        
+        if ($get == 'module_dir') {
+            return $module_dir;
+        }
+        
+        if ($get == 'lang_dir') {
+            return $lang_dir;
+        }
+    }
+    
+    public function update($options) {
+        $lang_dir = self::getPath($options, 'lang_dir');
+        $module_dir = self::getPath($options, 'module_dir');
 
         if (!file_exists($module_dir)) {
             cos_cli_print_status('Notice', 'y', "No such module|template dir. Skipping: $module_dir");
@@ -242,9 +255,9 @@ class extract {
 
             $strings = extract::fromStr($file_str);
             // no strings we continue
-            if (empty($strings))
+            if (empty($strings)) {
                 continue;
-
+            }
             // and we add all strings
             // all menus are added to system translation
 
