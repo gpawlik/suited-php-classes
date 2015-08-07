@@ -114,7 +114,7 @@ class extract {
             }
 
             $file_str = file_get_contents($val);
-            $strings = extract::fromStr($file_str);
+            $strings = self::fromStr($file_str);
 
 
             // no strings we continue
@@ -130,7 +130,7 @@ class extract {
 
                 // and we add all strings in that file
                 foreach ($strings as $trans) {
-                    $sys_str.= extract::setCorrectQuotes($trans);
+                    $sys_str.= self::setCorrectQuotes($trans);
                 }
             } else {
 
@@ -144,7 +144,7 @@ class extract {
                     if (array_search($trans, $strings_all)) {
                         continue;
                     }
-                    $str.= extract::setCorrectQuotes($trans);
+                    $str.= self::setCorrectQuotes($trans);
                 }
             }
             $values = array_values($strings);
