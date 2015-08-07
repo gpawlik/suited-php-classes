@@ -74,7 +74,7 @@ class imagescale {
         }
         
         if (\PEAR::isError($it)) {
-            self::$errors[] = lang::translate('system_scaleimage_transform_factory_exception');
+            self::$errors[] = lang::translate('System could not load image driver');
             log::error($it->getMessage());
             return false;
         }
@@ -82,21 +82,21 @@ class imagescale {
         //load the original file
         $ret = $it->load($image);
         if (\PEAR::isError($ret)) {
-            self::$errors[] = lang::translate('system_scaleimage_transform_load_exception');
+            self::$errors[] = lang::translate('System could not load image');
             log::error($ret->getMessage());
             return false;
         }
 
         $ret = $it->resize($x, $y);
         if (\PEAR::isError($ret)) {
-            self::$errors[] = lang::translate('system_scaleimage_image_transform_scale_exception');
+            self::$errors[] = lang::translate('System could not resize image');
             log::error($ret->getMessage());
             return false;
         }
 
         $ret = $it->save($thumb);
         if (\PEAR::isError($ret)) {
-            self::$errors[] = lang::translate('system_scaleimage_factory_transform_save_exception');
+            self::$errors[] = lang::translate('System could not save image');
             log::error($ret->getMessage());
             return false;
         }
@@ -124,7 +124,7 @@ class imagescale {
         }
         
         if (\PEAR::isError($it)) {
-            self::$errors[] = lang::translate('system_scaleimage_transform_factory_exception');
+            self::$errors[] = lang::translate('System could not load image driver');
             log::error($it->getMessage());
             return false;
         }
@@ -132,21 +132,21 @@ class imagescale {
         //load the original file
         $ret = $it->load($image);
         if (\PEAR::isError($ret)) {
-            self::$errors[] = lang::translate('system_scaleimage_transform_load_exception');
+            self::$errors[] = lang::translate('System could not load image');
             log::error($ret->getMessage());
             return false;
         }
 
         $ret = $it->scaleByX($x);
         if (\PEAR::isError($ret)) {
-            self::$errors[] = lang::translate('system_scaleimage_image_transform_scale_exception');
+            self::$errors[] = lang::translate('System could not resize image');
             log::error($ret->getMessage());
             return false;
         }
 
         $ret = $it->save($thumb);
         if (\PEAR::isError($ret)) {
-            self::$errors[] = lang::translate('system_scaleimage_factory_transform_save_exception');
+            self::$errors[] = lang::translate('System could not save image');
             log::error($ret->getMessage());
             return false;
         }
@@ -174,7 +174,7 @@ class imagescale {
         }
         
         if (\PEAR::isError($it)) {
-            self::$errors[] = lang::translate('system_scaleimage_transform_factory_exception');
+            self::$errors[] = lang::translate('System could not load image driver');
             log::error($it->getMessage());
             return false;
         }
@@ -182,21 +182,21 @@ class imagescale {
         //load the original file
         $ret = $it->load($image);
         if (\PEAR::isError($ret)) {
-            self::$errors[] = lang::translate('system_scaleimage_transform_load_exception');
+            self::$errors[] = lang::translate('System could not load image');
             log::error($ret->getMessage());
             return false;
         }
 
         $ret = $it->fit($x, $y);
         if (\PEAR::isError($ret)) {
-            self::$errors[] = lang::translate('system_scaleimage_image_transform_scale_exception');
+            self::$errors[] = lang::translate('System could not resize image');
             log::error($ret->getMessage());
             return false;
         }
 
         $ret = $it->save($thumb);
         if (\PEAR::isError($ret)) {
-            self::$errors[] = lang::translate('system_scaleimage_factory_transform_save_exception');
+            self::$errors[] = lang::translate('System could not save image');
             log::error($ret->getMessage());
             return false;
         }
@@ -223,7 +223,7 @@ class imagescale {
         }
         
         if (\PEAR::isError($it)) {
-            self::$errors[] = lang::translate('system_scaleimage_transform_factory_exception');
+            self::$errors[] = lang::translate('System could not load image driver');
             log::error($it->getMessage());
             return false;
         }
@@ -231,21 +231,21 @@ class imagescale {
         //load the original file
         $ret = $it->load($image);
         if (\PEAR::isError($ret)) {
-            self::$errors[] = lang::translate('system_scaleimage_transform_load_exception');
+            self::$errors[] = lang::translate('System could not load image');
             log::error($ret->getMessage());
             return false;
         }
 
         $ret = $it->scaleByY($y);
         if (\PEAR::isError($ret)) {
-            self::$errors[] = lang::translate('system_scaleimage_image_transform_scale_exception');
+            self::$errors[] = lang::translate('System could not resize image');
             log::error($ret->getMessage());
             return false;
         }
 
         $ret = $it->save($thumb);
         if (\PEAR::isError($ret)) {
-            self::$errors[] = lang::translate('system_scaleimage_factory_transform_save_exception');
+            self::$errors[] = lang::translate('System could not save image');
             log::error($ret->getMessage());
             return false;
         }

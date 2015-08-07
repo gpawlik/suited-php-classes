@@ -5,6 +5,9 @@ namespace diversen;
 use diversen\upload;
 use diversen\lang;
 use diversen\html\helpers;
+use diversen\html\common;
+
+common::defineConstants();
 
 /**
  * File containing class for building forms and common methods used 
@@ -283,7 +286,6 @@ class html {
         self::$internal['form_id'] = $options['id'];
         $extra = self::parseExtra($options);
 
-        
         $str = "";   
         $str.= "<form action=\"$action\" method=\"$method\" name=\"$name\" $extra enctype = \"$enctype\">\n";
         
@@ -692,8 +694,8 @@ EOF;
         self::hidden('MAX_FILE_SIZE', $bytes);
         
         
-        $label = lang::system('system_form_label_file') . ". ";
-        $label.= lang::system('system_file_allowed_maxsize');
+        $label = lang::translate('File') . ". ";
+        $label.= lang::translate('Max size') . ". ";
         $size = upload::bytesToGreek($bytes);
         $label.= $size;
         

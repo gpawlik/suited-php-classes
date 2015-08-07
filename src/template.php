@@ -425,8 +425,6 @@ class template {
         if ($css) {
             assets::setTemplateCssIni($template, $css);
         }
-        
-
     }
     
     public static function loadTemplateIniAssets () {
@@ -444,6 +442,5 @@ class template {
      */
     public static function setTemplateCss ($template = '', $order = 0, $version = 0){
         assets::setTemplateCss($template, $order, $version);
-
     }
 }

@@ -68,20 +68,10 @@ class pagination {
      */
     public function getPagerHTML ($options = null){
 
-        //require_once 'Pager/Pager.php';
-     
         //first, we use Pager to create the links
         $num_items = $this->total;
         $uri_ary = explode('?', $_SERVER['REQUEST_URI']);
         $uri = $uri_ary[0];
-
-        /*
-        if (moduleloader::isInstalledModule('rewrite_manip')) {
-            $alt_uri = rewrite::getRowFromRequest($uri);
-            if (isset($alt_uri)){
-                $uri = $alt_uri; //$row['rewrite_uri'];
-            }
-        }*/
 
         $filename = $uri . '?from=' . '%d' . '&';
 
@@ -97,9 +87,9 @@ class pagination {
         
         // set options       
         $pager_options = array(
-            'altPrev' => lang::translate('pager_prev_page'),
-            'altNext' => lang::translate('pager_next_page'),
-            'altPage' => lang::translate('pager_page'),
+            'altPrev' => lang::translate('Previous'),
+            'altNext' => lang::translate('Next page'),
+            'altPage' => lang::translate('Page'),
             'separator' => '',
             'mode'       => 'Sliding',
             'perPage'    => $this->perPage,

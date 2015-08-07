@@ -3,7 +3,7 @@
 namespace diversen;
 use diversen\moduleloader;
 use diversen\html;
-use diversen\conf as conf;
+use diversen\conf;
 use diversen\lang;
 /**
  * File contains very simple captcha class
@@ -55,7 +55,7 @@ class captcha {
             if (conf::getMainIni('captcha_image_module')) {
                 return self::createCaptchaImage();
             }
-            return "* " . lang::system('captcha_numbers') . $_SESSION['cstr'];
+            return "* " . lang::translate('Enter number') . $_SESSION['cstr'];
         }
         $num_1 = mt_rand  ( 20  , 40  );
         $num_2 = mt_rand  ( 20  , 40  );
@@ -67,7 +67,7 @@ class captcha {
         if (conf::getMainIni('captcha_image_module')) {
             return self::createCaptchaImage();
         }
-        return "* " . lang::system('captcha_numbers') . $str;
+        return "* " . lang::translate('Enter number') . $str;
     }
 
     /**
@@ -88,7 +88,7 @@ class captcha {
             if (conf::getMainIni('captcha_image_module')) {
                 return self::createCaptchaImage();
             }
-            return "* " . lang::system('captcha_numbers') . MENU_SUB_SEPARATOR_SEC . $_SESSION['cstr'];
+            return "* " . lang::translate('Enter number') . MENU_SUB_SEPARATOR_SEC . $_SESSION['cstr'];
         }
         
         $_SESSION['cstr'] = $str = self::genRandomString();
@@ -97,7 +97,7 @@ class captcha {
         if (conf::getMainIni('captcha_image_module')) {
             return self::createCaptchaImage();
         }
-        return "* " . lang::system('captcha_numbers') . MENU_SUB_SEPARATOR_SEC  . $str;
+        return "* " . lang::translate('Enter number') . MENU_SUB_SEPARATOR_SEC  . $str;
     }
 
     /**
@@ -139,8 +139,8 @@ class captcha {
      */
     static public function createCaptchaImage () {
         $options = array ('align' => 'top');
-        $options['title'] = lang::translate('system_captcha_alt_image');
+        $options['title'] = lang::translate('CAPTCHA image');
         $options['required'] = true;
-        return "* " . lang::system('captcha_numbers') . ' ' . html::createImage('/image/captcha/index', $options);
+        return "* " . lang::translate('Enter number') . ' ' . html::createImage('/image/captcha/index', $options);
     }
 }

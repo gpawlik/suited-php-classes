@@ -265,7 +265,7 @@ class imap {
         } 
         
         if (empty($parts['plain'])) {
-            $parts['plain'] = lang::system('no_title');           
+            $parts['plain'] = lang::translate('No title');           
         }
 
         if ($gen_sub) {

@@ -2,10 +2,10 @@
 
 namespace diversen;
 use diversen\moduleloader;
-use diversen\conf as conf;
+use diversen\conf;
 use diversen\template;
 use diversen\session;
-use diversen\db\q as q;
+use diversen\db\q;
 use diversen\db;
 use diversen\file;
 use diversen\lang;
@@ -57,60 +57,11 @@ class layout {
         self::includeTemplateCommon($template);
         template::init($template);
         template::loadTemplateIniAssets();
-        
-        
-        self::defineLayoutConstants ();
+
         self::$menu['module'] = array ();
         self::$menu['sub'] = array ();
         self::$menu['main'] = array ();
         
-    }
-    
-    /**
-     * defines common layout constants for forms and
-     * menu displays. 
-     * 
-     * Remeber that template is included before layout so you are
-     * able to define these constants in your template. 
-     */
-    public static function defineLayoutConstants () {
-        if (!defined('HTML_FORM_TEXT_SIZE')) {
-            define('HTML_FORM_TEXT_SIZE', 30);
-        }
-
-        if (!defined('HTML_FORM_PASSWD_SIZE')) {
-            define('HTML_FORM_PASSWD_SIZE', 8);
-        }
-
-        if (!defined('HTML_FORM_TEXTAREA_WT')) {
-            define('HTML_FORM_TEXTAREA_WT', 60);
-        }
-
-        if (!defined('HTML_FORM_TEXTAREA_HT')) {
-            define('HTML_FORM_TEXTAREA_HT', 16);
-        }
-        if (!defined('MENU_LIST_START')) {
-            define('MENU_LIST_START', '<ul>');
-        }
-
-        if (!defined('MENU_LIST_END')) {
-            define('MENU_LIST_END', '</ul>');
-        }
-
-        if (!defined('MENU_SUBLIST_START')) {
-            define('MENU_SUBLIST_START', '<li>');
-        }
-        if (!defined('MENU_SUBLIST_END')) {
-            define('MENU_SUBLIST_END', '</li>');
-        }
-
-        if (!defined('MENU_SUB_SEPARATOR')) {   
-            define('MENU_SUB_SEPARATOR', ' | ');
-        }
-
-        if (!defined('MENU_SUB_SEPARATOR_SEC')) {
-            define('MENU_SUB_SEPARATOR_SEC', ' :: ');
-        }
     }
     
     public static function includeTemplateCommon($template = null) {
@@ -121,12 +72,8 @@ class layout {
         // modules still can effect the template. Set header, css, js etc. 
         $template_path = conf::pathHtdocs(). "/templates/" .
             $template;
-        
-        $common = $template_path . "/common.php";
-        if (file_exists($common)) {
-            include_once $common;
-        }
-        include_once $template_path . "/template.inc";
+
+        include_once $template_path . "/template.php";
     }
     
     /**
@@ -410,46 +357,9 @@ class layout {
      * @return  array   array with top level module menu
      */
     public static function getBaseModuleMenu($module){
-        $menu = array();
-
         $module_menu = self::getMenuFromFile($module);   
         $children_menu = self::getChildrenMenus($module);
         $module_menu = array_merge($module_menu, $children_menu);  
-        
-        $db_config_file = conf::pathModules() . "/$module/configdb.inc";
-        
-        if (file_exists($db_config_file)) {
-            include $db_config_file;
-            if (isset($db_config_menu)) {
-                $module_menu = self::setDbConfigMenuItem ($module_menu, $module);
-            }
-        }
-        return $module_menu;
-    }
-    
-    /**
-     * Attach a db module config menu item to a module menu. See module dbconfig
-     * This can be used for auto generating config settings for your module
-     * The url for a dbconfig setting is always $module/config/index
-     * 
-     * @param array $module_menu
-     * @param type $module
-     * @return array $module_menu now with the config menu item
-     */
-    public static function setDbConfigMenuItem($module_menu, $module) {
-        $config_menu_item = array (
-            'url' => "/$module/config/index",
-            'title' => lang::translate('config_main_menu_edit'));
-        
-        // if e.g. account_allow_db_config is not set we use admin as base setting
-        $allow_config = $module . "_allow_db_config";
-        $allow = conf::getModuleIni($allow_config);
-        if (!$allow) {
-            $allow = 'admin';
-        }
-        
-        $config_menu_item['auth'] = $allow;        
-        $module_menu[] = $config_menu_item;
         return $module_menu;
     }
 

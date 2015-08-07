@@ -28,14 +28,14 @@ class helpers {
 
         $str = '';
         if (session::isAdmin()) {
-            $str.= html::createLink("$url/edit/$id", lang::system('edit'));
+            $str.= html::createLink("$url/edit/$id", lang::translate('Edit'));
             $str.= MENU_SUB_SEPARATOR;
-            $str.= html::createLink("$url/delete/$id",  lang::system('delete'));
+            $str.= html::createLink("$url/delete/$id",  lang::translate('Delete'));
         }
         
         if (isset($options['view'])) {
             $str.= MENU_SUB_SEPARATOR;
-            $str.= html::createLink("$url/view/$id",  lang::system('view'));
+            $str.= html::createLink("$url/view/$id",  lang::translate('View'));
         }
         return $str;
     }
@@ -52,7 +52,7 @@ class helpers {
         $html->setAutoEncode(true);
         $html->formStart('custom_delete_form');
         $html->legend($legend);
-        $html->submit($name, lang::translate('delete'));
+        $html->submit($name, lang::translate('Delete'));
         $html->formEnd(); 
         return $html->getStr();
     }
@@ -70,7 +70,7 @@ class helpers {
         $html->formStart('custom_delete_form');
         $html->legend($legend);
         if (!$submit_value) {
-            $submit_value = lang::translate('submit');
+            $submit_value = lang::translate('Submit');
         }
         $html->submit($submit_name, $submit_value);
         $html->formEnd(); 

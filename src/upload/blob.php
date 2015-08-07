@@ -67,7 +67,7 @@ class blob extends upload {
         
         if (!file_exists($filename)) {
             self::$errors[] = 
-            lang::translate('system_upload_get_fp_file_does_not_exists')
+            lang::translate('File does not exists')
             . ' : ' . $options['filename'];
             return false;
         }
@@ -77,8 +77,8 @@ class blob extends upload {
 
             //  check the file is less than the maximum file size
             if($size > $options['maxsize'] ){
-                $error = lang::translate('system_file_upload_to_large');
-                $error.= lang::translate('system_file_allowed_maxsize') . 
+                $error = lang::translate('File is too large.');
+                $error.= lang::translate('Max size is ') . 
                         upload::bytesToGreek($options['maxsize']);
                 error_log($error);
                 self::$errors[] = $error; 
@@ -90,7 +90,7 @@ class blob extends upload {
         if (isset($options['allow_mime'])){
             $type = file::getMime($options['filename']);
             if (!in_array($type, $options['allow_mime'])) {
-                self::$errors[] = lang::translate('system_class_upload_file_format_not_allowed') .
+                self::$errors[] = lang::translate('This Content type is not allowed') .
                 MENU_SUB_SEPARATOR_SEC . $type;
                 return false;
                 

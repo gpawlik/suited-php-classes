@@ -85,6 +85,7 @@ class lang {
             self::loadTemplateAllLanguage($language);       
         } else {
             self::loadSystemLanguage($language);
+            self::loadVendorLanguage($language);
         } 
     }
     
@@ -114,6 +115,7 @@ class lang {
         if (!$language) {
             $language = self::getLanguage();
         }
+        
         $system_lang = array();
         $db = new db();
         $system_language = q::select('language')->
@@ -124,10 +126,9 @@ class lang {
                 
         // create system lanugage for all modules
         if (!empty($system_language)){
-            foreach($system_language as $val){
-                $val['module_name'];
-                $module_lang = @unserialize($val['translation']);               
-                //var_dump($module_lang);
+            foreach($system_language as $key => $val){
+                $module_lang = unserialize($val['translation']);               
+
                 if ($module_lang === false) { 
                     log::error('Something wrong with language files. Try to reload them!');
                 } else {
@@ -135,7 +136,8 @@ class lang {
                     
                 }
             }
-        }      
+        }
+        
         self::$dict = $system_lang;
     }
 
@@ -153,6 +155,7 @@ class lang {
      *                  if no translation is found in translation registry,
      *                  the string suplied will have "NT: " prepended. 
      *                  (Not Translated)
+     * 
      */
     public static function translate($sentence, $substitute = array(), $options = array ()){
         
@@ -184,12 +187,10 @@ class lang {
     
     
     /**
-     * method for doing translations. The method calls translate. 
-     * and it is an alias. But: In order to auto translate modules, 
-     * you should use this function if you call translation found
-     * in the system module. E.g. for default submit buttons.
-     * This is because the ./coscli.sh translate commend looks 
-     * for strings which uses lang::translate('string);   
+     * Method for doing translations. The method calls translate. 
+     * and it is an alias. But: In order to auto extract strings from modules, 
+     * you should use this function if your module language needs to be 
+     * used outside of the called module
      *
      * @param   string  $sentence the sentence to translate.
      * @param   array   array with substitution to perform on sentence.
@@ -208,10 +209,9 @@ class lang {
      * into db on install, and therefor always loaded. 
      * @param   string  $module the base module to load (e.g. content or account)
      */
-    static function loadModuleLanguage($module, $language = null){
+    public static function loadModuleLanguage($module, $language = null){
         
-        if (self::$allLoaded) {
-            
+        if (self::$allLoaded) {         
             return;
         }
         
@@ -237,6 +237,29 @@ class lang {
         }
 
         self::$loadedModules[$module] = true;
+    }
+    
+    /**
+     * load vendor language
+     * @param type $language
+     */
+    public static function loadVendorLanguage ($language) {
+        if (!$language) {
+            $language = self::getLanguage();
+        }
+
+        $base = conf::pathBase();
+        $language_file =
+            $base . "/vendor/diversen/simple-php-classes/src/lang/" .
+            $language .
+            '/language.inc';
+
+        if (file_exists($language_file)){
+            include $language_file;
+            if (isset($_COS_LANG_MODULE)){
+                self::$dict+= $_COS_LANG_MODULE;
+            }
+        }
     }
     
     /**
@@ -291,7 +314,6 @@ class lang {
         $template = conf::getMainIni('language_all');
         self::$allLoaded = true;
         
-
         if (!$language) {
             $language = self::getLanguage();
         }
@@ -324,7 +346,7 @@ class lang {
      * method for loaindg a system language. 
      * @param   string   the base module to load (e.g. content or account)
      */
-    static function loadModuleSystemLanguage($module){
+    public static function loadModuleSystemLanguage($module){
         if (self::$allLoaded) {
             return;
         }
