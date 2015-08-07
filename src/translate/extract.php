@@ -286,8 +286,9 @@ class extract {
 
                 foreach ($strings as $trans) {
 
-                    if (isset($done_lang[$trans]))
+                    if (isset($done_lang[$trans])){
                         continue;
+                    }
                     $done_lang[$trans] = 1;
 
                     if (!isset($org_lang[$trans])) {
