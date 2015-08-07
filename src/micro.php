@@ -107,11 +107,11 @@ class micro {
         $path = "modules/". $this->controller . "/module";
         $class = $this->pathToClass($path);
         
-        $path =  $this->modules . "/error/module.php";
+        $path =  $this->modules . "/error/module";
         $class = $this->pathToClass($path);
         if (file_exists($path)) {
             include_once $path;
-            $object = new \errorModule();
+            $object = $class();
             $object->notFound();
             return;
         }
