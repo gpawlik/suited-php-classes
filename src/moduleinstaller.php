@@ -243,24 +243,7 @@ class moduleinstaller extends db {
         return $modules;
     }
 
-    /**
-     * method to reload all languages in all modules and template
-     * gets all modules
-     * reloads language files one after another.
-     */
-    public function reloadLanguages(){        
-        $modules = $this->getModules();
-        foreach ($modules as $key => $val){
-            $this->installInfo['NAME'] = $val['module_name'];
-            $this->insertLanguage($val['module_name']);
-        } 
-        
-        $templates = $this->getTemplates();
-        foreach ($templates as $key => $val){
-            $this->installInfo['NAME'] = $val;
-            $this->insertLanguage($val, 'template');
-        }
-    }
+
     
     public function getTemplates () {
         $dir = conf::pathHtdocs() . "/templates";
@@ -268,18 +251,7 @@ class moduleinstaller extends db {
         return $templates;
     }
     
-    /**
-     * method to reload all languages for system
-     * These language files are placed in lang/
-     * reloads language files one after another.
-     * @deprecated since 2.42 all language files in lang/ are now in system module
-     */
-    public function reloadCosLanguages(){        
-        $modules = file::getFileList(conf::pathBase() . "/lang/", array ('dir_only' => true));
-        foreach ($modules as $val){
-            $this->insertLanguage($val);
-        }
-    }
+
     
     /**
      * reloads config for all modules
@@ -356,56 +328,7 @@ class moduleinstaller extends db {
         }
     }
 
-    /**
-     * method for inserting a language into the system language table
-     * system language is messages which is needed outside of the module scope,
-     * e.g. menu items.
-     * @param string $module
-     * @return  boolean $res false if no language file exists. Else return true.
-     */
-    public function insertLanguage($module = null, $type = 'module'){
-        if (!$module) {
-            $module = $this->installInfo['NAME'];
-        }
 
-        if ($type == 'module') {
-            $language_path =
-                conf::pathModules() . '/' .
-                $module .
-                '/lang';
-        } else {
-            $language_path =
-                conf::pathHtdocs() . '/templates/' .
-                $module .
-                '/lang';
-        }
-        
-        $dirs = file::getFileList($language_path);
-        if ($dirs == false){
-            $this->notice = "Notice: No language dir in: $language_path " . NEW_LINE;
-        }
-
-        $this->delete('language', 'module_name', $module);
-        if (is_array($dirs)){
-            foreach($dirs as $val){
-                $language_file = $language_path . "/$val" . '/system.inc';
-                if (file_exists($language_file)){
-                    include $language_file;
-                    if (isset($_COS_LANG_MODULE)){         
-                        $str = serialize($_COS_LANG_MODULE);
-                        $values = array(
-                            'module_name' => $module,
-                            'language' => $val,
-                            'translation' => $str);
-                        $this->insert('language', $values);
-                    }
-                } else {
-                    $this->notice = "Notice: " . $language_file . " not found" . NEW_LINE;
-                }
-            }
-        }      
-        return true;
-    }
 
     /**
      * get single sql file name from module, version, and action
@@ -539,7 +462,9 @@ class moduleinstaller extends db {
         $res = null;
 
         moduleloader::setModuleIniSettings($this->installInfo['NAME']);
-        lang::loadModuleSystemLanguage($this->installInfo['NAME']);
+        
+        // XXX rm load system language
+        // Load all language
         
         if (!empty($this->installInfo['MAIN_MENU_ITEM'])){
             $values = $this->installInfo['MAIN_MENU_ITEM'];
@@ -741,7 +666,7 @@ class moduleinstaller extends db {
         
         // insert into registry. Set menu item and insert language.
         $this->insertRegistry();
-        $this->insertLanguage();
+
         $this->insertMenuItem();
         $this->insertRoutes();
         

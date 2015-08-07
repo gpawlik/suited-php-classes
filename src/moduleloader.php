@@ -854,7 +854,7 @@ class moduleloader {
         $base_module = $ary[0]; 
         
         // lang and ini only exists in base module
-        lang::loadModuleLanguage($base_module);
+
         self::setModuleIniSettings($base_module);
         
         // new include style

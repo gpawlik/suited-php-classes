@@ -283,7 +283,15 @@ EOF;
         
         // load a 'language_all' file or load all module system language
         // depending on configuration
-        lang::loadLanguage();
+        $l = new lang();
+        
+        $base = conf::pathBase();
+        $l->setDirsInsideDir("$base/modules/*");
+        $l->setDirsInsideDir("$base/htdocs/templates/*");
+        $l->setSingleDir("$base/vendor/diversen/simple-php-classes");
+        
+        
+        $l->loadLanguage(conf::getMainIni('lang'));
         
         $mod_loader = new moduleloader();
         $modules = moduleloader::getAllModules();

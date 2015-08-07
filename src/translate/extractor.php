@@ -1,9 +1,7 @@
 <?php
 
 namespace diversen\translate;
-
 use diversen\file;
-
 
 class extractor {
     
@@ -219,8 +217,12 @@ class extractor {
             return $this->createLangStrForPath($dir);
         } 
 
-        include_once $lang_file;
+        include $lang_file;
+
         $original_ary = ${$this->translateAryName};
+        if (empty($original_ary)) {
+            return $this->createLangStrForPath($dir);
+        }
         
         foreach ($file_list as $file) {
             if (!$this->isText($file)) {

@@ -95,7 +95,7 @@ function cos_reset_install (){
  */
 function cos_reload_language(){
     $reload = new moduleinstaller();
-    $reload->reloadLanguages();
+
 }
 
 /**

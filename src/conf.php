@@ -749,13 +749,7 @@ class conf {
         
         // locales are almost always installed but we test anyway
         // sort of a base module
-        if ($check_lang) {
-            if (moduleloader::isInstalledModule('locales')) {
-                $locales = \locales_module::getLanguages();
-            }
-        } else {
-            $locales = array();
-        }
+        $locales = array ();
         
         // check for locales in config array, e.g. en or en_GB or da
         $locale_sections = '';
