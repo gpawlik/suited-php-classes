@@ -2,6 +2,7 @@
 
 
 use diversen\translate\extractor;
+use diversen\conf;
 
 
 
@@ -21,11 +22,27 @@ function translate_all_update($options) {
  * @param array $options
  */
 function translate_path($options) {
-
+    if (!isset($options['path'])) {
+        cos_cli_abort('Add a path');
+    }
+    
+    $path = conf::pathBase() . "/$options[path]";
+    if (!file_exists($path) OR !is_dir($path)) {
+        cos_cli_abort('Specify a dir as path');
+    }
+    
+    $e = new extractor();
+    if (!empty($options['language'])) {
+        $e->defaultLanguage = $options['language'];
+    }
+    
+    $e->setSingleDir($options['path']);
+    $e->updateLang();
+    cos_cli_print_status('OK', 'g', 'Extraction done');
 }
 
 self::setCommand('translate', array(
-    'description' => 'Extract strings to translation files.',
+    'description' => 'Extract strings to be translated into translation files.',
 ));
 
 self::setOption('translate', array(
@@ -51,6 +68,6 @@ self::setOption('translate_path', array(
 self::setArgument('path', array('description' => 'Specicify the path for which you want to create translation. ',
     'optional' => true));
 
-self::setArgument('language', array('description' => "Specicify the language, e.g. da_DK or en_GB. Default is 'en'",
+self::setArgument('language', array('description' => "Specicify the language, e.g. 'de' or 'da'. Default is 'en'",
     'optional' => true));
 
