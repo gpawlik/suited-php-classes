@@ -2,7 +2,6 @@
 
 namespace diversen;
 
-use diversen\alias;
 use diversen\autoloader\modules;
 use diversen\conf;
 use diversen\log;
