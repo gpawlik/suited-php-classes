@@ -4,8 +4,6 @@
 use diversen\translate\extractor;
 use diversen\conf;
 
-
-
 /**
  * will update all translation files in specified language
  * @param array $options
@@ -14,6 +12,7 @@ function translate_all_update($options) {
     $e = new extractor();
     $e->setDirsInsideDir('modules/*');
     $e->setDirsInsideDir('htdocs/templates/*');
+    $e->setSingleDir("vendor/diversen/simple-php-classes");
     $e->updateLang();
 }
 

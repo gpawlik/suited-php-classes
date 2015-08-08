@@ -80,7 +80,7 @@ class extractor {
      * @param string $value
      * @return string $str
      */
-    private function setCorrectQuotes($key, $value = '') {
+    public function setCorrectQuotes($key, $value = '') {
 
         $str = '';
         if (empty($value)) {
@@ -155,6 +155,7 @@ class extractor {
             $res = mkdir($save_dir, 0755, true);
             if (!$res) {
                 echo "Could not make dir $dir with permission 0755";
+                return false;
             }
         }
         $file = $this->getLanguageFileFromDir($dir);

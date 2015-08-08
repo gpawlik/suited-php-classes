@@ -17,30 +17,33 @@ class gtranslate {
      * var holding options
      * @var array $options
      */
-    public static $options;
+    public $options;
 
     /**
      * Gtranslate URL
      * @var string $Gtranslate_URL
      */
-    const GTranslate_URL = 'https://www.googleapis.com/language/translate/v2';
+    public $apiEndpoint = 'https://www.googleapis.com/language/translate/v2';
 
     /**
      * set options for translation 
-     * @param array $options 
+     * @param array $options e.g:  
+     *              array('key' => 'your api key', 
+     *                    'target' => 'da',
+     *                    'source' => 'en')
      */
-    public static function setOptions ($options) {
-        self::$options = $options;
+    public function setOptions ($options) {
+        $this->options = $options;
     }
 
     /**
      * method for getting all languages supported by the API
      * @return array $lang array of languages
      */
-    public static function getSupportLangs (){
-        $url = self::GTranslate_URL . "/languages?";
-        $url.= "key=" . self::$options['key'] . "&";
-        $url.= "target=" . self::$options['target'];
+    public function getSupportLangs (){
+        $url = $this->apiEndpoint . "/languages?";
+        $url.= "key=" . $this->options['key'] . "&";
+        $url.= "target=" . $this->options['target'];
         $str = file_get_contents($url);
         $ary = json_decode($str, true);
         return $ary;
@@ -51,25 +54,14 @@ class gtranslate {
      * @param string $str string to be translated
      * @return string $str the translated string
      */
-    public static function translateString ($str) {
-        $url = self::GTranslate_URL . "?";
-        $url.= "key=" . self::$options['key'] . "&";
-        $url.= "target=" . self::$options['target'] . "&";
-        $url.= "source=" . self::$options['source'] . "&";
+    public function translate ($str) {
+        $url = $this->apiEndpoint . "?";
+        $url.= "key=" . $this->options['key'] . "&";
+        $url.= "target=" . $this->options['target'] . "&";
+        $url.= "source=" . $this->options['source'] . "&";
         $url.= "q=" . urlencode($str);
-
         $str = file_get_contents($url);
         $ary = json_decode($str, true);
-        return $ary;
-    }
-
-    /**
-     * method for translating a single string
-     * @param string $str the string to be translated
-     * @return string $str the translated string. 
-     */
-    public static function translateSingle ($str) {
-        $ary = self::translateString($str);
         if (isset($ary['data']['translations'][0]['translatedText'])){
             $text = $ary['data']['translations'][0]['translatedText'];
             return urldecode($text);
@@ -77,4 +69,3 @@ class gtranslate {
         return null;
     }
 }
-

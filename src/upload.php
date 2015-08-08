@@ -333,7 +333,7 @@ class upload {
             $maxsize = self::$options['maxsize'];
         }
         if($_FILES[$filename]['size'] > $maxsize ){
-            $message = lang::translate('File is to large');
+            $message = lang::translate('File is too large');
             $message.= lang::translate('Max size is ');
             $message.= self::bytesToSize($maxsize);
             self::$errors[] = $message;
