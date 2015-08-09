@@ -4,7 +4,6 @@ namespace diversen\cli;
 
 use Console_Color;
 use diversen\conf;
-//use diversen\cli\common;
 
 /**
  * common helper function in CLI env.
@@ -56,7 +55,7 @@ class common {
             echo self::colorOutput(self::getColorStatus("[$status]"), $color);
             echo $mes . "\n";
         } else {
-            common::echoMessage($status);
+            self::echoMessage($status);
         }
         return;
     }
@@ -192,7 +191,7 @@ class common {
         }
         $str = $line;
         $str.= " Sure you want to continue? [Y/n]";
-        $res = common::readSingleline($str);
+        $res = self::readSingleline($str);
         if (strtolower($res) == 'y') {
             return 1;
         } else {
