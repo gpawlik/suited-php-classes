@@ -3,20 +3,7 @@
 use diversen\conf;
 use diversen\file;
 use diversen\time;
-
-
-/**
- * File containing file backup functions for shell mode.
- * 
- * 
- * commands can be used when using the command
- * <code>$ coscli.sh backup</code>
- * For options about the shell command, use
- * <code>$ coscli.sh backup -h</code>
- * For backup of database, you should use the db command.
- *
- * @package     shell
- */
+use diversen\cli\common;
 
 /**
  * function for generaing tar archives
@@ -34,7 +21,7 @@ use diversen\time;
  * @return  int     $int the executed commands shell status. 0 on success. 
  */
 function backup_backup($options){
-    cos_needs_root();
+    common::needRoot();
     
     // default backup dir
     if (isset($options['File'])){
@@ -44,7 +31,7 @@ function backup_backup($options){
         $backup_file = "backup/full/" . time() . ".tar.gz";
     }
     $command = "tar -Pczf $backup_file --exclude=backup* -v . ";
-    $ret = cos_exec($command);
+    $ret = common::execCommand($command);
 }
 
 /**
@@ -59,7 +46,7 @@ function backup_backup($options){
  * @return  int     the executed commands shell status 0 on success. 
  */
 function backup_files_backup($options){
-    cos_needs_root();
+    common::needRoot();
     // default backup dir
     if (isset($options['File'])){
         // we use full path when specifing a file
@@ -68,7 +55,7 @@ function backup_files_backup($options){
         $backup_file = "backup/files/" . time() . ".tar.gz";
     }
     $command = "tar -Pczf $backup_file -v ./htdocs/files ";
-    $ret = cos_exec($command);
+    $ret = common::execCommand($command);
 }
 
 /**
@@ -87,7 +74,7 @@ function backup_files_backup($options){
  */
 function backup_restore($options){
     
-    cos_needs_root();
+    common::needRoot();
     if (!isset($options['File'])){
         $latest = backup_get_latest_backup();
         if ($latest == 0) { 
@@ -99,7 +86,7 @@ function backup_restore($options){
     }
 
     $command = "tar -Pxzf $backup_file --exclude=backup* -v . ";
-    $ret = cos_exec($command);
+    $ret = common::execCommand($command);
 }
 
 /**
@@ -128,9 +115,9 @@ function backup_files_restore($options){
         $backup_file = $options['File'];
     }
     
-    cos_needs_root("In order to restore: $backup_file. We need root");
+    common::needRoot("In order to restore: $backup_file. We need root");
     $command = "tar -Pxzf $backup_file -v ./htdocs/files ";
-    $ret = cos_exec($command);
+    $ret = common::execCommand($command);
 }
 
 /**

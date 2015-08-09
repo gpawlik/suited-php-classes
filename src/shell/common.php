@@ -1,27 +1,9 @@
 <?php
 
-use \Console_Color;
-use diversen\cli;
-use diversen\conf;
+use diversen\cli\common;
 
-/**
- * Some helper functions to use with shell.php
- *
- * @package     shell
- */
 
-if (!conf::isCli()){
-    $new_line = "<br />";
-} else {
-    $new_line = PHP_EOL;
-}
 
-/**
- * define new line if not cli
- */
-
-define('NEW_LINE', $new_line);
-define('COS_CLI_STATUS_LENGTH', 12);
 /**
  * readline
  * found on php.net 
@@ -29,17 +11,10 @@ define('COS_CLI_STATUS_LENGTH', 12);
  * @param string ouput to print to screen
  * @return string the input which readline reads
  */
-function cos_readline($str){
-    echo $str;
-    $out = "";
-    $key = "";
-    $key = fgetc(STDIN);      // read from standard input (keyboard)
-    while ($key!="\n") {      // if the newline character has not yet arrived read another
-        $out.= $key;
-        $key = fread(STDIN, 1);
-    }
-    return $out;
-}
+/*
+function common::readSingleline($str){
+    return common::readSingleline($str);
+}*/
 
 /**
  * a function for getting a confirm from command prompt
@@ -47,40 +22,21 @@ function cos_readline($str){
  * @param mixed $silence. If set we answer 'y' to all confirm readlines
  * @return int 1 on 'y' or 'Y' and 0 on anything else.
  */
-
-function cos_confirm_readline($line = null, $set_silence = null){
-    static $silence = null;
-    if (isset($set_silence)){
-        $silence = 1;
-    }
-    if ($silence == 1){
-        return 1;
-    }
-    $str = $line;
-    $str.= " Sure you want to continue? [Y/n]";
-    $res = cos_readline($str);
-    if (strtolower($res) == 'y'){
-        return 1;
-    } else {
-        return 0;
-    }
+/*
+function common::readlineConfirm($line = null, $set_silence = null){
+    return common::readlineConfirm($line, $set_silence);
 }
-
+*/
 /**
  * command for aborting a script and printing info about abort
  * @param   string  $str string to be printed on abort
  * @return  int     $res  16
  */
-function cos_cli_abort($str = null){
-    if (isset($str)){
-        $str = $str . "\nAborting!";
-    } else {
-        $str = "Aborting!";
-    }
-    cos_cli_print(color_output($str, 'r'));
-    exit(16);
+/*
+function common::abort($str = null){
+    return common::abort($str);
 }
-
+*/
 /**
  * function for executing commands with php command exec
  * @param   string  $command to execute
@@ -89,28 +45,10 @@ function cos_cli_abort($str = null){
  * @return  mixed   $ret the value returned by the shell script being
  *                  executed through exec()
  */
-function cos_exec($command, $options = array(), $echo_output = 1){
-    $output = array();
-    exec($command.' 2>&1', $output, $ret);
-    if ($ret == 0){
-        if (!isset($options['silence'])){
-            echo color_output (cos_get_color_status('[OK]'), 'g');
-            echo $command . "\n";
-            if ($echo_output) {
-                echo cos_parse_shell_output($output);
-            }
-        }
-    } else {
-        if (!isset($options['silence'])){
-            echo color_output(cos_get_color_status('[ERROR]'), 'r');
-            echo $command . "\n";
-            if ($echo_output) {
-                echo cos_parse_shell_output($output);
-            }
-        }
-    }
-    return $ret;
-}
+/*
+function common::execCommand($command, $options = array(), $echo_output = 1){
+    return common::execCommand($command, $options, $echo_output);
+}*/
 
 /**
  * calculate and gets correct length of a status message,
@@ -118,13 +56,11 @@ function cos_exec($command, $options = array(), $echo_output = 1){
  * @param string $status [OK]
  * @return string $status
  */
+/*
 function cos_get_color_status ($status) {
-    $len = strlen($status);
-    $add_spaces = COS_CLI_STATUS_LENGTH - $len;
-    $status.=str_repeat(' ', $add_spaces);
-    return $status;
+    return common::getColorStatus($status);
 }
-
+*/
 
 /**
  * method for coloring output to command line
@@ -132,71 +68,42 @@ function cos_get_color_status ($status) {
  * @param char $color_code (e.g. 'g', 'y', 'r')
  * @return string $colorered output
  */
+
+/*
 function color_output($output, $color_code = 'g') {
-    static $color = null;
-    if (!conf::isCli()) {
-        return $output;
-    }
-
-    if (!$color) {
-        $color = new Console_Color();
-    }
-    $ret = $color->convert("%$color_code$output%n");
-
-    return $ret;
+    return common::colorOutput($output, $color_code);
 }
-
+*/
 /**
  * transform an array of output from exec into a single string
  * @param array $output
  * @return string $str
  */
+/*
 function cos_parse_shell_output ($output){
-    if (!is_array($output)) { 
-        return '';
-    }
-    $end_output = '';
-    foreach($output as $val){
-        $end_output.= $val ."\n";
-    }
-    return $end_output;    
+    return common::parseShellArray($output);
 }
-
+*/
 /**
- * function for executing commands with php built-in command exec
+ * function for executing commands with php built-in command system
  * @param string $command to execute
  * @return int   $ret the value returned by the shell script being
  *                 executed through exec()
  */
-function cos_system($command){
-    system($command.' 2>&1', $ret);
-    if ($ret == 0){
-        echo color_output (cos_get_color_status('[OK]'), 'g');
-        echo $command . "\n";
-    } else {
-        echo color_output(cos_get_color_status('[ERROR]'), 'r');
-        echo $command . "\n";
-    }
-    return $ret;
+/*
+function common::systemExec($command){
+    return common::systemExec($command);
 }
-
+*/
 /**
  * simple function for printing a message
  * @param  string $mes the message to echo
  */
-function cos_cli_print($mes, $color = null){
-    if ($color) {
-        echo color_output($mes . "\n", $color);
-        return;
-    }
-    if (conf::isCli()) {
-        echo $mes . NEW_LINE;
-    } else {
-        echo $mes . "<br />\n";
-    }
-    return;
+/*
+function common::echoMessage($mes, $color = null){
+    return common::echoMessage($mes, $color);
 }
-
+*/
 /**
  * echos a colored status message
  * @param string $status (e.g. UPGRADE, NOTICE, ERROR)
@@ -205,58 +112,20 @@ function cos_cli_print($mes, $color = null){
  *               'module upgrade failed'
  * @return void
  */
-function cos_cli_print_status ($status, $color, $mes) {
-    if (conf::isCli()) {
-        echo color_output(cos_get_color_status("[$status]"), $color);
-        echo $mes . "\n";
-    } else {
-        cos_cli_print($status);
-    }
-    return;
+/*
+function common::echoStatus ($status, $color, $mes) {
+    return common::echoStatus($status, $color, $mes);
 }
+*/
 
-
-/**
- * checks if we are on command line 
- * @deprecated use config::isCli
- * @return boolean $res true if yes else false
- * 
- */
-function cos_is_cli (){
-    if (isset($_SERVER['SERVER_NAME'])){
-        return false;
-    }
-    return true;
-}
-
-/**
- * checks if user is root or not
- * @return boolean true if is root else false
- */
-function cos_is_root () {
-    if (0 == posix_getuid()) {
-        return true;
-    } else {
-        return false;
-    }
-}
 
 /**
  * examine if user is root. If not we die and echos a message
  * @param string $str
  * @return int 0 on success else a positive int. 
  */
-function cos_needs_root ($str = '') {
-    
-    $output = '';
-    $output.= "Current command needs to be run as root. E.g. with sudo: ";
-    if (!empty($str)) {
-        $output.="\nsudo $str";
-    }
-
-    if (!cos_is_root()) {
-        echo $output . PHP_EOL;
-        cli::exitInt(128);
-    }
-    return 0;
+/*
+function common::needRoot ($str = '') {
+    return common::needRoot($str);
 }
+*/

@@ -2,6 +2,8 @@
 
 use diversen\conf;
 use diversen\profile;
+use diversen\cli\common;
+
 
 /**
  * build source package with more simple form of install. 
@@ -13,12 +15,12 @@ function cos_build_simple($options = null) {
     $name = basename($dir);
 
     if (file_exists("./build/$name")) {
-        cos_exec("sudo rm -rf ./build/$name*");
+        common::execCommand("sudo rm -rf ./build/$name*");
     }
-    cos_exec("mkdir ./build/$name");
+    common::execCommand("mkdir ./build/$name");
 
     $htdocs = "cp -rf htdocs/* ./build/$name";
-    cos_exec($htdocs);
+    common::execCommand($htdocs);
 
     $domain = conf::getMainIni('domain');
     if (!$domain) {
@@ -26,25 +28,25 @@ function cos_build_simple($options = null) {
     }
 
     $files_rm = "sudo rm -rf ./build/$name/files/$domain/*";
-    cos_exec($files_rm);
+    common::execCommand($files_rm);
 
     $config = "mkdir ./build/$name/config";
-    cos_exec($config);
+    common::execCommand($config);
 
     $tmp_dir = "mkdir ./build/$name/tmp";
-    cos_exec($tmp_dir);
+    common::execCommand($tmp_dir);
     
     $profiles = "cp -rf profiles ./build/$name";
-    cos_exec($profiles);
+    common::execCommand($profiles);
 
     $sql_scripts = "cp -rf scripts ./build/$name";
-    cos_exec($sql_scripts);
+    common::execCommand($sql_scripts);
 
     $cli = "cp -rf coscli.sh ./build/$name";
-    cos_exec($cli);
+    common::execCommand($cli);
     
     $composer = "cp -rf composer.json ./build/$name";
-    cos_exec($composer);
+    common::execCommand($composer);
 
     // reset database password
     $ary = conf::getIniFileArray("./config/config.ini");
@@ -59,29 +61,29 @@ function cos_build_simple($options = null) {
     file_put_contents("./build/$name/config/config.ini-dist", $ini_settings);
 
     $index = "cp -rf htdocs/index.php ./build/$name/index.php";
-    cos_exec($index);
+    common::execCommand($index);
 
     $phar_cli = "cp -rf phar-cli.php ./build/$name/";
-    cos_exec($phar_cli);
+    common::execCommand($phar_cli);
     
     $phar_web = "cp -rf phar-web.php ./build/$name/";
-    cos_exec($phar_web);
+    common::execCommand($phar_web);
 
     $module_dir = conf::pathModules();
     $modules = "cp -rf $module_dir ./build/$name";
-    cos_exec($modules);
+    common::execCommand($modules);
 
     $vendor = "cp -rf vendor ./build/$name";
-    cos_exec($vendor);
+    common::execCommand($vendor);
 
     $rm_git = "rm `find ./build/$name -name '.git'` -rf";
-    cos_exec($rm_git);
+    common::execCommand($rm_git);
 
     $rm_ignore = "rm `find ./build/$name -name '.gitignore'` -rf";
-    cos_exec($rm_ignore);
+    common::execCommand($rm_ignore);
 
     $rm_doc = "rm -rf ./build/vendor/doc";
-    cos_exec($rm_doc);
+    common::execCommand($rm_doc);
 
     $output = array();
 
@@ -89,7 +91,7 @@ function cos_build_simple($options = null) {
     $version = array_pop($output);
 
     $command = "cd  ./build && tar -Pczf $name-$version.tar.gz $name ";
-    cos_exec($command);
+    common::execCommand($command);
 }
 
 self::setCommand('build', array(

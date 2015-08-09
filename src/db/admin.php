@@ -2,7 +2,8 @@
 
 namespace diversen\db;
 use diversen\db;
-use diversen\conf as conf;
+use diversen\conf;
+use diversen\cli\common;
 /**
  * File contains comon methods when working in db adin mode. 
  * @package db 
@@ -163,6 +164,6 @@ class admin {
 
         $command.= "--default-character-set=utf8 ";
         $command.= "CREATE $db[dbname]";
-        return $ret = cos_exec($command, $options);
+        return $ret = common::execCommand($command, $options);
     }
 }

@@ -2,6 +2,7 @@
 
 use diversen\conf;
 use diversen\file;
+use diversen\cli\common;
 
 /**
  * executes a command on all coscms systems install in parent dir (../) from
@@ -13,7 +14,7 @@ function multi_exec_command ($options = null) {
     
     $path = conf::pathBase() . "/../";  
     if (!isset($options['command'])) {
-        cos_cli_abort('Specify a command');
+        common::abort('Specify a command');
         return 1;
     }
     
@@ -35,7 +36,7 @@ function multi_exec_command ($options = null) {
  * @return int $res result from passthrou
  */
 function multi_passthru ($command) {
-    cos_cli_print_status('NOTICE', 'g', "Executing command: $command");
+    common::echoStatus('NOTICE', 'g', "Executing command: $command");
     passthru($command, $ret);
     return $ret;
 }
@@ -49,7 +50,7 @@ function multi_passthru ($command) {
 function multi_exec_shell_command ($options = array ()) {
     $path = conf::pathBase() . "/../";  
     if (!isset($options['command'])) {
-        cos_cli_abort('Specify a command');
+        common::abort('Specify a command');
         return 1;
     }
     

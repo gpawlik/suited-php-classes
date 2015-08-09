@@ -2,7 +2,7 @@
 
 use diversen\db;
 use diversen\db\admin;
-
+use diversen\cli\common;
 
 
 /**
@@ -17,8 +17,8 @@ use diversen\db\admin;
  */
 function useradd_add ($options = null){
 
-    $values['email'] = cos_readline("Enter Email of super user (you will use this as login): ");
-    $values['password'] = cos_readline ("Enter password: ");
+    $values['email'] = common::readSingleline("Enter Email of super user (you will use this as login): ");
+    $values['password'] = common::readSingleline ("Enter password: ");
     $values['password'] = md5($values['password']);
     $values['username'] = $values['email'];
     $values['verified'] = 1;

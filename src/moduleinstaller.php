@@ -1,7 +1,14 @@
 <?php
 
 namespace diversen;
-use diversen\conf as conf;
+
+use diversen\cli\common;
+use diversen\conf;
+use diversen\db;
+use diversen\git;
+use Exception;
+use PDOException;
+
 /**
  * *
  * File which contains class for installing modules
@@ -9,11 +16,7 @@ use diversen\conf as conf;
  * @package    installer
  */
 
-/**
- * XXX: Most be moved.
- * used for add newline definiton, when doing web - or shell install of modules.
- */
-include_once "shell/common.php";
+
 
 /**
  * class for installing a module or upgrading it.
@@ -30,7 +33,7 @@ include_once "shell/common.php";
  * and also tables connected to module.
  * @package    installer
  */
-class moduleinstaller extends db {
+class moduleinstaller  {
 
     /**
      * holding array of info for the install
@@ -67,7 +70,9 @@ class moduleinstaller extends db {
      */
     function __construct($options = null){
         
-        $this->connect();
+        $db = new db();
+        $db->connect();
+        
         
         if (isset($options)){
             return $this->setInstallInfo($options);
@@ -126,7 +131,7 @@ class moduleinstaller extends db {
             $install_file = "$module_dir/install.inc";
             if (!file_exists($install_file)){
                 $status = "Notice: No install file '$install_file' found in: '$module_dir'";
-                cos_cli_print_status('NOTICE', 'y', $status);
+                common::echoStatus('NOTICE', 'y', $status);
             }
             
             // set a defaukt module_name - which is the module dir
@@ -162,7 +167,7 @@ class moduleinstaller extends db {
                 $command.= "&& git config --get remote.origin.url";
 
                 $git_url = shell_exec($command);
-                $tags = git_get_remote_tags($git_url);
+                $tags = git::getTagsRemote($git_url);
 
                 if (empty($tags)) {
                     $latest = 'master';
@@ -173,7 +178,7 @@ class moduleinstaller extends db {
             }
         } else {
             $status = "No module dir: $module_dir";
-            cos_cli_print_status('NOTICE', 'y', $status);
+            common::echoStatus('NOTICE', 'y', $status);
             return false;
         }
     }
@@ -203,7 +208,8 @@ class moduleinstaller extends db {
             $module = $this->installInfo['NAME'];
         }
 
-        $row = $this->selectOne('modules', 'module_name', $module);
+        $db = new db();
+        $row = $db->selectOne('modules', 'module_name', $module);
 
         if (!empty($row)){    
             return true;
@@ -221,10 +227,11 @@ class moduleinstaller extends db {
     public function getModuleInfo(){
         // test if a module with $this->installInfo['MODULE_NAME']
         // already is installed.
+        $db = new db();
         try {
-            $row = $this->selectOne('modules', 'module_name', $this->installInfo['NAME'] );
+            $row = $db->selectOne('modules', 'module_name', $this->installInfo['NAME'] );
         } catch (PDOException $e) {
-            $this->fatalError($e->getMessage());
+            $db->fatalError($e->getMessage());
         }
         if (!empty($row)){
             return $row;
@@ -257,17 +264,18 @@ class moduleinstaller extends db {
      * reloads config for all modules
      */
     public function reloadConfig () {
+        $db = newdb();
         $modules = $this->getModules();
         foreach ($modules as $val){
             $this->setInstallInfo($options = array ('module' => $val['module_name']));
             if (isset($this->installInfo['IS_SHELL']) && $this->installInfo['IS_SHELL'] == '1') {
-                $this->update(
+                $db->update(
                         'modules', 
                         array('is_shell' => 1), 
                         array ('module_name' => $val['module_name'])
                         );
             } else {
-                $this->update(
+                $db->update(
                         'modules', 
                         array('is_shell' => 1), 
                         array ('module_name' => NULL)
@@ -275,7 +283,7 @@ class moduleinstaller extends db {
             }
             
             if (isset($this->installInfo['RUN_LEVEL'])) {
-                $this->update(
+                $db->update(
                         'modules', 
                         array('run_level' => $this->installInfo['RUN_LEVEL']), 
                         array('module_name' => $val['module_name']));
@@ -304,16 +312,18 @@ class moduleinstaller extends db {
      * method for deleting routes for a module
      */
     public function deleteRoutes () {
-        $this->delete('system_route', 'module_name', $this->installInfo['NAME']);
+        $db = new db();
+        $db->delete('system_route', 'module_name', $this->installInfo['NAME']);
     }
     
     /**
      * method for inserting routes for modules
      */
     public function insertRoutes () {
+        $db = new db();
         
         if (isset($this->installInfo['ROUTES'])) {
-            $this->delete('system_route', 'module_name', $this->installInfo['NAME']);
+            $db->delete('system_route', 'module_name', $this->installInfo['NAME']);
             $routes = $this->installInfo['ROUTES'];
             foreach ($routes as $val) {
                 foreach ($val as $route => $value) {
@@ -322,7 +332,7 @@ class moduleinstaller extends db {
                         'route' => $route,
                         'value' => serialize($value));
                     
-                    $this->insert('system_route', $insert);
+                    $db->insert('system_route', $insert);
                 }
             }  
         }
@@ -419,6 +429,7 @@ class moduleinstaller extends db {
      */
     public function insertRegistry (){
           
+        $db = new db();
         if (!isset($this->installInfo['menu_item'])) {
             $this->installInfo['menu_item'] = 0;
         }
@@ -445,9 +456,9 @@ class moduleinstaller extends db {
             $values['parent'] = $this->installInfo['PARENT'];
         }
         try {
-            $this->insert('modules', $values);
+            $db->insert('modules', $values);
         } catch (PDOException $e) {
-            $this->fatalError($e->getMessage());
+            $db->fatalError($e->getMessage());
         }
         return true;
     }
@@ -461,6 +472,7 @@ class moduleinstaller extends db {
     public function insertMenuItem(){
         $res = null;
 
+        $db = new db();
         moduleloader::setModuleIniSettings($this->installInfo['NAME']);
         
         // XXX rm load system language
@@ -472,7 +484,7 @@ class moduleinstaller extends db {
             if (empty($values['title_human'])) {
                 $values['title_human'] = '';
             }
-            $res = $this->insert('menus', $values);
+            $res = $db->insert('menus', $values);
         }
 
         
@@ -482,7 +494,7 @@ class moduleinstaller extends db {
                 if (empty($val['title_human'])) {
                     $val['title_human'] = '';
                 }
-                $res = $this->insert('menus', $val);
+                $res = $db->insert('menus', $val);
             }
         }
 
@@ -494,7 +506,7 @@ class moduleinstaller extends db {
             if (empty($values['title_human'])) {
                 $values['title_human'] = '';
             }
-            $res = $this->insert('menus', $values);
+            $res = $db->insert('menus', $values);
         }
         
         return $res;
@@ -508,11 +520,12 @@ class moduleinstaller extends db {
      */
     public function deleteMenuItem($module = null){
 
+        $db = new db();
         if (!isset($module)){
             $module = $this->installInfo['NAME'];
         }
         try {
-            $result = $this->delete('menus', 'module_name', $module);
+            $result = $db->delete('menus', 'module_name', $module);
         } catch (PDOException $e) {
             $this->fatalError($e->getMessage());
         }
@@ -527,14 +540,15 @@ class moduleinstaller extends db {
      * @return boolean true or throws an error on failure
      */
     public function updateRegistry ($new_version, $id){
+        $db = new db();
         $values = array (
             'module_version' => $new_version,
             'run_level' => $this->installInfo['RUN_LEVEL']);
 
         try {
-            $result = $this->update('modules', $values, $id);
+            $result = $db->update('modules', $values, $id);
         } catch (PDOException $e) {
-            $this->fatalError($e->getMessage());
+            $db->fatalError($e->getMessage());
         }
         return true;
     }
@@ -545,10 +559,11 @@ class moduleinstaller extends db {
      * @return boolean true or throws an error on failure
      */
     public function deleteRegistry (){
+        $db = new db();
         try {
-            $result = $this->delete('modules', 'module_name', $this->installInfo['NAME']);
+            $result = $db->delete('modules', 'module_name', $this->installInfo['NAME']);
         } catch (PDOException $e) {
-            $this->fatalError($e->getMessage());
+            $db->fatalError($e->getMessage());
         }
         return true;
     }
@@ -570,7 +585,7 @@ class moduleinstaller extends db {
 
         if (!file_exists($ini_file)){
             if (!copy($ini_file_dist, $ini_file)){
-                $this->error = "Error: Could not copy $ini_file to $ini_file_dist" . NEW_LINE;
+                $this->error = "Error: Could not copy $ini_file to $ini_file_dist" . PHP_EOL;
                 $this->error.= "Make sure your module has an ini-dist file: $ini_file_dist";
                 return false;
             }
@@ -592,7 +607,8 @@ class moduleinstaller extends db {
      * are using. 
      */
     public function createSQL () {
-        
+
+
         $updates = $this->getSqlFileListOrdered($this->installInfo['NAME'], 'up');
 
         // perform sql upgrade. We upgrade only to the version nmber
@@ -612,7 +628,8 @@ class moduleinstaller extends db {
 
                     foreach ($sql_ary as $sql_key => $sql_val) {
                         try {
-                            $result = self::$dbh->exec($sql_val);
+                            
+                            $result = db::$dbh->exec($sql_val);
                         } catch (Exception $e) {
                             echo "Error in install $val: ";
                             echo $e->getMessage();
@@ -683,6 +700,7 @@ class moduleinstaller extends db {
      */
     public function uninstall(){
         // checks if module exists in registry
+        $db = new db();
         $specific = 0;
         if (!$this->isInstalled()){
             $this->error = "module '" . $this->installInfo['NAME'];
@@ -699,7 +717,9 @@ class moduleinstaller extends db {
         $this->deleteRegistry();
         $this->deleteMenuItem();
         $this->deleteRoutes();
-        $this->delete('language', 'module_name', $this->installInfo['NAME']);
+        
+        // delete module language
+        $db->delete('language', 'module_name', $this->installInfo['NAME']);
         
         if(isset($this->installInfo['UNINSTALL'])) {
             $this->installInfo['UNINSTALL']($this->installInfo['VERSION']);
@@ -717,7 +737,7 @@ class moduleinstaller extends db {
                         $sql_ary = explode ("\n\n", $sql);
                         foreach ($sql_ary as $sql_key => $sql_val){
                             try {
-                                $result = self::$dbh->query($sql_val);
+                                $result = db::$dbh->query($sql_val);
                             } catch (Exception $e) {
                                 echo "Error in uninstall $version: ";
                                 echo $e->getMessage();
@@ -780,7 +800,7 @@ class moduleinstaller extends db {
     public function upgrade ($specific = null){
         
         if (!moduleloader::isInstalledModule($this->installInfo['NAME'])) {
-            cos_cli_print("Notice: Can not upgrade. You will need to install module first");
+            common::echoMessage("Notice: Can not upgrade. You will need to install module first");
             return;
         }
         
@@ -834,7 +854,7 @@ class moduleinstaller extends db {
                     foreach ($sql_ary as  $sql_val) {
                         if (empty($sql_val)) continue;
                         try {
-                            self::$dbh->query($sql_val);
+                            db::$dbh->query($sql_val);
                         } catch (Exception $e) {
                             echo 'Caught exception: ',  $e->getMessage(), "\n";
                             echo "SQL = $sql_val\n";

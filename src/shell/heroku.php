@@ -1,6 +1,7 @@
 <?php
 
 use diversen\conf;
+use diversen\cli\common;
 
 /**
  * get a ini setting from heroku
@@ -72,8 +73,8 @@ function heroku_set_sendgrid_conf () {
         
         $config_file = heroku_get_config_filename();
         conf::$vars['coscms_main'] = conf::getIniFileArray($config_file, true);
-        $from_text = cos_readline('Enter which from text should be seen in his inbx, e.g. CosCMS (not the email)');
-        $reply = cos_readline('Enter which email users should reply to (an email):');
+        $from_text = common::readSingleline('Enter which from text should be seen in his inbx, e.g. CosCMS (not the email)');
+        $reply = common::readSingleline('Enter which email users should reply to (an email):');
         
         conf::$vars['coscms_main']['site_email'] = "$from_text <$user>"; 
         conf::$vars['coscms_main']['site_email_reply'] = "$from_text <$reply>"; 
@@ -93,18 +94,18 @@ function heroku_set_sendgrid_conf () {
  * prompt install command
  */
 function heroku_prompt_install () {
-    $res = cos_exec("which heroku");
+    $res = common::execCommand("which heroku");
     if ($res) {
         die('You wll need the heroku command. Download the heroku toolbelt');
     }
     echo "Enabling addons ... wait\n";
     heroku_enable_addons();
-    cos_exec("cp misc/htaccess .htaccess");
-    cos_exec("mkdir -p files/default");
-    cos_exec("chmod -R 777 files");
-    cos_exec("touch files/default/dummy.txt");
+    common::execCommand("cp misc/htaccess .htaccess");
+    common::execCommand("mkdir -p files/default");
+    common::execCommand("chmod -R 777 files");
+    common::execCommand("touch files/default/dummy.txt");
     load_db_default();
-    cos_cli_print('Installing all modules. This may take a few minutes. Be patient'); 
+    common::echoMessage('Installing all modules. This may take a few minutes. Be patient'); 
     install_from_profile(array ('profile' => 'default'));
     useradd_add();    
 }

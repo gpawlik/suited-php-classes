@@ -3,6 +3,8 @@
 use diversen\conf;
 use diversen\db\admin;
 use diversen\time;
+use diversen\cli\common;
+
 
 /**
  * dumps entire structure
@@ -12,7 +14,7 @@ function cos_structure_dump () {
     $user = conf::getMainIni('username');
     $password = conf::getMainIni('password');
     $command = "mysqldump -d -h $ary[host] -u $user -p$password $ary[dbname]";
-    cos_exec($command);
+    common::execCommand($command);
 }
 
 /**
@@ -32,7 +34,7 @@ function cos_structure_dump_table ($options) {
     $dump_name = "backup/sql/$options[table]/" . time() . ".sql";
     
     $command = "mysqldump -d -h $ary[host] -u $user -p$password $ary[dbname] $options[table] > $dump_name";
-    cos_exec($command);
+    common::execCommand($command);
 }
 
 /**
@@ -47,7 +49,7 @@ function cos_structure_dump_table ($options) {
 function cos_db_dump_table ($options = null){
 
     if (!isset($options['table'])) {
-        cos_cli_abort('Specify a table to backup');
+        common::abort('Specify a table to backup');
     }
     
     $dump_dir = "backup/sql/$options[table]";
@@ -62,7 +64,7 @@ function cos_db_dump_table ($options = null){
         "mysqldump --opt -u" . conf::$vars['coscms_main']['username'] .
         " -p" . conf::$vars['coscms_main']['password'];
     $command.= " $db[dbname] $options[table] > $dump_name";
-    cos_exec($command);
+    common::execCommand($command);
 }
 
 /**
@@ -76,18 +78,18 @@ function cos_db_load_table($options){
     
     
     if (!isset($options['table'])) {
-        cos_cli_abort('Specify a table to load with a backup');
+        common::abort('Specify a table to load with a backup');
     }
     
     $dump_dir = "backup/sql/$options[table]";
     if (!file_exists($dump_dir)) {
-        cos_cli_abort('Yet no backups');
+        common::abort('Yet no backups');
     }
     
     $search = conf::pathBase() . "/backup/sql/$options[table]";
     $latest = get_latest_db_dump($search);
     if ($latest == 0) {
-        cos_cli_abort('Yet no database dumps');
+        common::abort('Yet no database dumps');
     }
         
     $latest = "backup/sql/$options[table]/" . $latest . ".sql";
@@ -96,7 +98,7 @@ function cos_db_load_table($options){
     $command = 
         "mysql --default-character-set=utf8  -u" . conf::$vars['coscms_main']['username'] .
         " -p" . conf::$vars['coscms_main']['password'] . " $db[dbname] < $latest";
-    return $ret = cos_exec($command);
+    return $ret = common::execCommand($command);
 }
 
 if (conf::isCli()){

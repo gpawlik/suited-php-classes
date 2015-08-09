@@ -1,6 +1,7 @@
 <?php
 
 use diversen\conf;
+use diversen\cli\common;
 
 /**
  * File containing documentation functions for shell mode
@@ -18,18 +19,18 @@ use diversen\conf;
 function create_docs(){
     // check if command exists
     $command = "whereis phpdoc";
-    $ret = cos_exec($command);
+    $ret = common::execCommand($command);
     if ($ret){
-        cos_cli_print("Could not find command phpdoc on your system");
-        cos_cli_print("If the command phpdoc is not on your system we will not be able to create documentation.");
-        cos_cli_print("One way to do this is to: pear install PhpDocumentor");
+        common::echoMessage("Could not find command phpdoc on your system");
+        common::echoMessage("If the command phpdoc is not on your system we will not be able to create documentation.");
+        common::echoMessage("One way to do this is to: pear install PhpDocumentor");
         exit(127);
     }
 
     $command = "phpdoc run ";
     $command.= "-d coslib ";
     $command.= "--template abstract -t " . conf::pathBase() . "/htdocs/phpdocs ";
-    cos_system($command);
+    common::systemExec($command);
 }
 
 // }}}

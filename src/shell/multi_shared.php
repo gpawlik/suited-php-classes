@@ -3,6 +3,7 @@
 use diversen\conf;
 use diversen\file;
 use diversen\moduleloader;
+use diversen\cli\common;
 
 function multi_shared_all_up ($options = null) {
     $path = conf::pathBase() . "/config/multi/*";    
@@ -13,14 +14,14 @@ function multi_shared_all_up ($options = null) {
     foreach ($dirs as $domain) {
         
         $command = "./coscli.sh --domain=$domain module --all-up";
-        cos_cli_print("Updating: $domain");
-        cos_cli_print($command);
+        common::echoMessage("Updating: $domain");
+        common::echoMessage($command);
         passthru($command, $return_var);
         
         $command = "./coscli.sh --domain=$domain install --lang";
         
-        cos_cli_print("Updating system language: $domain");
-        cos_cli_print($command);
+        common::echoMessage("Updating system language: $domain");
+        common::echoMessage($command);
         passthru($command, $return_var);
         
     }
@@ -30,7 +31,7 @@ function multi_shared_exec_command ($options = null) {
     
     $path = conf::pathBase() . "/config/multi/*";  
     if (!isset($options['command'])) {
-        cos_cli_abort('Specify a command');
+        common::abort('Specify a command');
         return 1;
     }
     
@@ -39,7 +40,7 @@ function multi_shared_exec_command ($options = null) {
     $dirs = file::getDirsGlob($path, array ('basename' => 1));
     foreach ($dirs as $domain) {
         $exec_command = "./coscli.sh --domain=$domain $command";
-        cos_cli_print("Executing command: $exec_command");
+        common::echoMessage("Executing command: $exec_command");
 
         passthru($exec_command, $return_var);
     }  

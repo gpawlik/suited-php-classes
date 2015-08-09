@@ -1,14 +1,9 @@
 <?php
 
-/**
- * File containing template functions for shell mode
- *
- * @package     shell
- */
-
 use diversen\conf;
 use diversen\profile;
 use diversen\templateinstaller;
+use diversen\cli\common;
 
 /**
  * wrapper function for settings template
@@ -60,7 +55,7 @@ function install_template ($options, $return_val = null) {
     if ($return_val) {
         return $str;
     } else {
-        cos_cli_print($str);
+        common::echoMessage($str);
     }
 }
 
@@ -72,16 +67,16 @@ function install_template ($options, $return_val = null) {
 function purge_template($options){
     //uninstall_module($options);
     if ( strlen($options['template']) == 0 ){
-        cos_cli_print("No such template: $options[template]");
-        cos_cli_abort();
+        common::echoMessage("No such template: $options[template]");
+        common::abort();
     }
     $template_path = conf::pathBase() . '/htdocs/templates/' . $options['template'];
     if (!file_exists($template_path)){
-        cos_cli_print("Template already purged: No such template path: $template_path");
-        cos_cli_abort();
+        common::echoMessage("Template already purged: No such template path: $template_path");
+        common::abort();
     }
     $command = "rm -rf $template_path";
-    cos_exec($command);
+    common::execCommand($command);
 }
 
 self::setCommand('template', array(

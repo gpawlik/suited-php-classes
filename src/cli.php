@@ -20,7 +20,7 @@ use diversen\file;
 use diversen\lang;
 use diversen\moduleloader;
 use diversen\strings\ext;
-use diversen\alias;
+use diversen\cli\common;
 use Exception;
 
 
@@ -80,7 +80,7 @@ class cli {
         $m->autoloadRegister();
 
 
-        alias::set();
+        // alias::set();
 
         // define all constant - based on base_path and config.ini
         conf::defineCommon();
@@ -204,7 +204,7 @@ EOF;
             try {
                 $result = self::$parser->parse();
             } catch (Exception$e) {
-                cos_cli_abort($e->getMessage());
+                common::abort($e->getMessage());
             }
             
             
@@ -225,7 +225,7 @@ EOF;
             if ($domain != 'default' || empty($domain)) {
                 $domain_ini = conf::pathBase() . "/config/multi/$domain/config.ini";
                 if (!file_exists($domain_ini)) {
-                    cos_cli_abort("No such domain - no configuration found: It should be placed here $domain_ini");
+                    common::abort("No such domain - no configuration found: It should be placed here $domain_ini");
                 } else {
                     
                     // if a not standard domain is given - we now need to load
@@ -248,7 +248,7 @@ EOF;
                             if (function_exists($key)){                    
                                 $ret = $key($result->command->args);
                             } else {
-                                cos_cli_abort("No such function $key");
+                                common::abort("No such function $key");
                             }
                         } else {
                             $no_sub = 1;
@@ -261,10 +261,10 @@ EOF;
             }
 
             if (isset($no_sub)){
-                cos_cli_print('No sub commands given use -h or --help for help');
+                common::echoMessage('No sub commands given use -h or --help for help');
             }
             if (isset($no_base)){
-                cos_cli_print('No base commands given use -h or --help for help');
+                common::echoMessage('No base commands given use -h or --help for help');
             }
         } catch (Exception $e) {           
             self::$parser->displayError($e->getMessage());
@@ -277,7 +277,7 @@ EOF;
     public static function loadDbModules (){        
           
         if (!self::tablesExists()) {
-            cos_cli_print('No tables exists. We can not load all modules');
+            common::echoMessage('No tables exists. We can not load all modules');
             return;
         }
         

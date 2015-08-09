@@ -6,6 +6,7 @@ use diversen\layout;
 use diversen\moduleinstaller;
 use diversen\moduleloader;
 use diversen\profile;
+use diversen\cli\common;
 
 /**
  * File containing profile functions for shell mode
@@ -27,7 +28,7 @@ function load_profile($options) {
 
     $profiles = file::getFileList('profiles', array('dir_only' => true));
     if (!in_array($options['profile'], $profiles)){
-        cos_cli_abort('No such profile');
+        common::abort('No such profile');
     }
     if (isset($options['config_only'])){
         $pro->loadConfigIni($options['profile']);
@@ -194,12 +195,12 @@ function upgrade_config_ini_file ($options){
     file_put_contents($ini_file_path, $content);
 
     if (empty($ary_diff)){
-        cos_cli_print("No new ini file settings for config.ini");
+        common::echoMessage("No new ini file settings for config.ini");
     } else {
         $new_settings_str = conf::arrayToIniFile($ary_diff);
-        cos_cli_print("New ini file written to: $ini_file_path");
-        cos_cli_print("These are the new ini settings for config.ini");
-        cos_cli_print(trim($new_settings_str));
+        common::echoMessage("New ini file written to: $ini_file_path");
+        common::echoMessage("These are the new ini settings for config.ini");
+        common::echoMessage(trim($new_settings_str));
     }
 }
 

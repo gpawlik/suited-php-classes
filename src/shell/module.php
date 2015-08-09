@@ -3,6 +3,7 @@
 use diversen\conf;
 use diversen\moduleinstaller;
 use diversen\moduleloader;
+use diversen\cli\common;
 /**
  * File containing module functions for shell mode
  * (install, update, delete modules)
@@ -33,7 +34,7 @@ function install_module($options, $return_output = null){
         if ($return_output) {
             return $str;
         } else { 
-            cos_cli_print($str);
+            common::echoMessage($str);
         }
     }
 }
@@ -60,7 +61,7 @@ function upgrade_all(){
         $upgrade->upgrade();
 
         //update_ini_file($options);
-        cos_cli_print($upgrade->confirm);
+        common::echoMessage($upgrade->confirm);
     }
 }
 
@@ -75,13 +76,13 @@ function uninstall_module($options){
     $proceed = $un->setInstallInfo($options);
     
     if ($proceed === false) {
-        cos_cli_print($un->error);
+        common::echoMessage($un->error);
     } else {
         $ret = $un->uninstall();
         if ($ret) {
-            cos_cli_print($un->confirm);
+            common::echoMessage($un->confirm);
         } else {
-            cos_cli_print($un->error);
+            common::echoMessage($un->error);
         }
     }
 }
@@ -94,15 +95,15 @@ function uninstall_module($options){
 function purge_module($options){
     // check if module is set
     if ( strlen($options['module']) == 0 ){
-        cos_cli_print("No such module: $options[module]");
-        cos_cli_abort();
+        common::echoMessage("No such module: $options[module]");
+        common::abort();
     }
 
     // check if module exists
     $module_path = conf::pathModules() . '/' . $options['module'];
     if (!file_exists($module_path)){
-        cos_cli_print("module already purged: No such module path: $module_path");
-        cos_cli_abort();
+        common::echoMessage("module already purged: No such module path: $module_path");
+        common::abort();
     }
 
     // it exists. Uninstall
@@ -110,7 +111,7 @@ function purge_module($options){
 
     // remove
     $command = "rm -rf $module_path";
-    cos_exec($command);
+    common::execCommand($command);
 }
 
 
@@ -126,16 +127,16 @@ function upgrade_module($options){
     $upgrade = new moduleinstaller($options);
     $proceed = $upgrade->setInstallInfo($options);
     if ($proceed === false) {
-        cos_cli_print("No such module '$options[module]' exists in modules dir.");
-        cos_cli_print("This means that module exists in modules table. Try uninstall");
+        common::echoMessage("No such module '$options[module]' exists in modules dir.");
+        common::echoMessage("This means that module exists in modules table. Try uninstall");
         return;
     }
     
     $ret = $upgrade->upgrade($options['version']);
     if (!$ret) {
-        echo $upgrade->error . NEW_LINE;
+        echo $upgrade->error . PHP_EOL;
     } else {
-        echo $upgrade->confirm . NEW_LINE;
+        echo $upgrade->confirm . PHP_EOL;
     }
 }
 
@@ -146,7 +147,7 @@ function upgrade_module($options){
  * questions raised by scripts
  */
 function force_confirm_readline(){
-    cos_confirm_readline(null, 1);
+    common::readlineConfirm(null, 1);
 }
 
 /**
@@ -187,9 +188,9 @@ function update_ini_file ($options){
         //cos_cli_print("No new ini file settings for module $options[module]");
     } else {
         $new_settings_str = conf::arrayToIniFile($new_settings);
-        cos_cli_print("New ini file written with updated settings: $ini_file_path");
-        cos_cli_print("These are the new ini settings for module $options[module]:");
-        cos_cli_print(trim($new_settings_str));
+        common::echoMessage("New ini file written with updated settings: $ini_file_path");
+        common::echoMessage("These are the new ini settings for module $options[module]:");
+        common::echoMessage(trim($new_settings_str));
     }
 }
 

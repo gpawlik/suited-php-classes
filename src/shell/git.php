@@ -2,9 +2,8 @@
 
 use diversen\conf;
 use diversen\profile;
-
-include_once "vendor/diversen/simple-php-classes/src/git.php";
-
+use diversen\cli\common;
+use diversen\git;
 
 /**
  * funtion for installing a module from a git repo name
@@ -12,9 +11,9 @@ include_once "vendor/diversen/simple-php-classes/src/git.php";
  * @param string    $type (module, profile or template)
  */
 function cos_git_install ($options, $type = 'module'){
-    $module_name = git_module_name_from_repo($options['repo']);
+    $module_name = git::getModulenameFromRepo($options['repo']);
     if (!$module_name){
-        cos_cli_abort('Install command need a valid repo name');
+        common::abort('Install command need a valid repo name');
     }
 
     $options['module'] = $module_name;
@@ -22,13 +21,13 @@ function cos_git_install ($options, $type = 'module'){
     $ret = cos_git_clone ($options, $type);
     if ($type == 'module'){
         $str = install_module($options, true);
-        cos_cli_print($str);
+        common::echoMessage($str);
         return;
     }
     
     if ($type == 'template') {
         $str = install_template($options, true);
-        cos_cli_print($str);
+        common::echoMessage($str);
         return;
     }
 }
@@ -60,10 +59,10 @@ function cos_git_clone_template($options){
     
     cos_git_clone($options, 'template');
     
-    $template = git_module_name_from_repo($options['repo']);
+    $template = git::getModulenameFromRepo($options['repo']);
     $options['template'] = $template;
     $str = install_template($options, true);
-    cos_cli_print($str);
+    common::echoMessage($str);
     return;
 }
 
@@ -77,7 +76,7 @@ function cos_git_clone_template($options){
 function cos_git_clone($options, $type){
     
     // get latest repo tag
-    $latest = git_get_latest_remote_tag($options['repo']);
+    $latest = git::getTagsRemoteLatest($options['repo']);
     
     // if version is set we will use this version.
     // or we will use latest tag.
@@ -112,7 +111,7 @@ function cos_git_clone($options, $type){
     }
 
     // get module name
-    $module_name = git_module_name_from_repo($options['repo']);
+    $module_name = git::getModulenameFromRepo($options['repo']);
     $module_path = "$clone_path/$module_name";
 
     // if dir exists we check if it is a git repo
@@ -130,15 +129,15 @@ function cos_git_clone($options, $type){
             // no git repo - empty dir we presume.
             $git_command = "cd $clone_path && git clone $options[repo] && cd $module_name && git checkout $checkout";
         }
-        $ret = cos_exec($git_command);
+        $ret = common::execCommand($git_command);
     } else {
         $git_command = "cd $clone_path && git clone $options[repo] && cd $module_name && git checkout $checkout";
-        $ret = cos_exec($git_command);
+        $ret = common::execCommand($git_command);
     }
 
     // evaluate actions
     if ($ret){
-        cos_cli_abort("$git_command failed");
+        common::abort("$git_command failed");
     }    
 }
 
@@ -166,7 +165,7 @@ function cos_git_upgrade_template_single($options) {
         $mod = $p->getTemplate($options['repo']);
         cos_git_upgrade_template ($mod);
     } else {
-        cos_cli_print_status('ERROR', 'r', "--temp-up needs a template name, e.g. 'clean'. The module must exists in the module dir");
+        common::echoStatus('ERROR', 'r', "--temp-up needs a template name, e.g. 'clean'. The module must exists in the module dir");
     }
 }
 
@@ -183,7 +182,7 @@ function cos_git_upgrade_module_single($options) {
         $mod = $p->getModule($options['repo']);        
         cos_git_upgrade_module ($mod);
     } else {
-        cos_cli_print_status('ERROR', 'r', "--mod-up needs a module name, e.g. 'settings'. The module must exists in the module dir");
+        common::echoStatus('ERROR', 'r', "--mod-up needs a module name, e.g. 'settings'. The module must exists in the module dir");
     }
 }
 
@@ -196,13 +195,13 @@ function cos_git_upgrade_module ($val, $tag = null) {
     if (isset(conf::$vars['git_use_master'])){
         $tag = 'master';
     } else {
-        $tag = git_get_latest_remote_tag($val['public_clone_url'], true);
+        $tag = git::getTagsRemoteLatest($val['public_clone_url'], true);
     }
 
     if ( ($tag == 'master') OR  ($tag != $val['module_version'])) { 
         cos_git_upgrade ($val, $tag, 'module');
     } else {
-        cos_cli_print_status('NOTICE', 'y', "Nothing to upgrade: Version is: $tag");
+        common::echoStatus('NOTICE', 'y', "Nothing to upgrade: Version is: $tag");
     }
 }
 
@@ -214,13 +213,13 @@ function cos_git_upgrade_template($val) {
     if (isset(conf::$vars['git_use_master'])){
         $tag = 'master';
     } else {
-        $tag = git_get_latest_remote_tag($val['public_clone_url'], true);
+        $tag = git::getTagsRemoteLatest($val['public_clone_url'], true);
     }
 
     if ( ($tag == 'master') OR  ($tag != $val['module_version'])) {
         cos_git_upgrade ($val, $tag, 'template');
     } else {
-        cos_cli_print_status('NOTICE', 'y', "Nothing to upgrade: Version is: $tag");
+        common::echoStatus('NOTICE', 'y', "Nothing to upgrade: Version is: $tag");
     }
 }
 
@@ -273,7 +272,7 @@ function cos_git_commit_module_single ($options){
 
     $path = conf::pathModules() . "/$options[repo]";
     if (!cos_git_is_repo($path)) {
-        cos_cli_abort("Module: $options[repo] is not a git repo. Specify installed module name (e.g. 'settings') when commiting");
+        common::abort("Module: $options[repo] is not a git repo. Specify installed module name (e.g. 'settings') when commiting");
     }
     
     $p = new profile();
@@ -288,7 +287,7 @@ function cos_git_commit_module_single ($options){
 function cos_git_commit_template_single ($options){
     $path = conf::pathHtdocs() . "/templates/$options[repo]";
     if (!cos_git_is_repo($path)) {
-        cos_cli_abort("Template: $options[repo] is not a git repo. Specify installed template (e.g. 'clean') name when commiting");
+        common::abort("Template: $options[repo] is not a git repo. Specify installed template (e.g. 'clean') name when commiting");
     }
     
     $p = new profile();
@@ -302,13 +301,13 @@ function cos_git_commit_template_single ($options){
  */
 function cos_git_tag_all ($options){
     $profile = new profile();
-    $version = cos_readline('Enter tag version to use ');
+    $version = common::readSingleline('Enter tag version to use ');
     $modules = $profile->getModules();
     foreach ($modules as $key => $val){
 
-        $tags = git_get_local_tags($val['module_name'], 'module');
+        $tags = git::getTagsModule($val['module_name'], 'module');
         if (in_array($version, $tags)) {
-            cos_cli_print_status('NOTICE', 'y', "Tag already exists local for module '$val[module_name]'.");
+            common::echoStatus('NOTICE', 'y', "Tag already exists local for module '$val[module_name]'.");
         }
         
         $val['new_version'] = $version;
@@ -319,9 +318,9 @@ function cos_git_tag_all ($options){
     $templates = $profile->getTemplates();
     foreach ($templates as $key => $val){
         
-        $tags = git_get_local_tags($val['module_name'], 'template');
+        $tags = git::getTagsModule($val['module_name'], 'template');
         if (in_array($version, $tags)) {
-            cos_cli_print_status('NOTICE', 'y', "Tag already exists local for template '$val[module_name]'");
+            common::echoStatus('NOTICE', 'y', "Tag already exists local for template '$val[module_name]'");
         }
         
         $val['new_version'] = $version;
@@ -339,16 +338,16 @@ function cos_git_tag ($val, $type = 'module'){
     $repo_path = cos_get_repo_path($val['module_name'], $type);
 
     if (!cos_git_is_repo ($repo_path)){
-        cos_cli_print("$repo_path is not a git repo");
+        common::echoMessage("$repo_path is not a git repo");
         return;
     }
 
     if (empty($val['private_clone_url'])) {
-        cos_cli_print("No private clone url is set in install.inc of $val[module_name]");
+        common::echoMessage("No private clone url is set in install.inc of $val[module_name]");
         return;
     }
 
-    if (!cos_confirm_readline("You are about to tag module: $val[module_name]. Continue?")){
+    if (!common::readlineConfirm("You are about to tag module: $val[module_name]. Continue?")){
         return;
     }
     
@@ -369,7 +368,7 @@ function cos_git_tag ($val, $type = 'module'){
  * @param type $options
  */
 function cos_git_tag_all_files ($options){
-    $version = cos_readline('Enter tag version to use ');
+    $version = common::readSingleline('Enter tag version to use ');
 
     $profile = new profile();
     $modules = $profile->getModules();
@@ -397,13 +396,13 @@ function cos_git_tag_install_file ($val, $type = 'module'){
     $repo_path = cos_get_repo_path($val['module_name'], $type);
 
     if (!cos_git_is_repo ($repo_path)){
-        cos_cli_print("$repo_path is not a git repo");
+        common::echoMessage("$repo_path is not a git repo");
         return;
     }
 
     $install_file = $repo_path . "/install.inc";
     if (!file_exists($install_file)) {
-        cos_cli_print_status('NOTICE', 'y', "No install file exists ($install_file). We can not set a version");
+        common::echoStatus('NOTICE', 'y', "No install file exists ($install_file). We can not set a version");
         return;
     }
     
@@ -423,7 +422,7 @@ function cos_git_tag_install_file ($val, $type = 'module'){
         fclose($handle);
     }
     file_put_contents($install_file, $str);
-    cos_cli_print("Tagged file $install_file with version $val[new_version]");
+    common::echoMessage("Tagged file $install_file with version $val[new_version]");
 }
 
 /**
@@ -438,31 +437,31 @@ function cos_git_commit ($val, $type = 'module'){
     $repo_path = cos_get_repo_path($val['module_name'], $type);
 
     if (!cos_git_is_repo ($repo_path)){
-        cos_cli_print("$repo_path is not a git repo");
+        common::echoMessage("$repo_path is not a git repo");
         return;
     }
 
     if (empty($val['private_clone_url'])) {
-        cos_cli_print("No private clone url is set in install.inc of $val[module_name]");
+        common::echoMessage("No private clone url is set in install.inc of $val[module_name]");
         return;
     }
     
-    if (!cos_confirm_readline("You are about to commit module: $val[module_name]. Continue?")){
+    if (!common::readlineConfirm("You are about to commit module: $val[module_name]. Continue?")){
         return;
     }
 
 
-    cos_cli_print_status('COMMIT', 'g', "Module: '$val[module_name]'");
+    common::echoStatus('COMMIT', 'g', "Module: '$val[module_name]'");
     
     $git_add = "cd $repo_path && git add . ";
-    cos_exec($git_add);
+    common::execCommand($git_add);
 
     $git_command = "cd $repo_path && git commit ";
     proc_close(proc_open($git_command, array(0 => STDIN, 1 => STDOUT, 2 => STDERR), $pipes));
 
     $git_push = "cd $repo_path && git push $val[private_clone_url]";
     //passthru($git_command);
-    cos_exec($git_push);
+    common::execCommand($git_push);
     echo PHP_EOL;
 }
 
@@ -477,13 +476,13 @@ function cos_git_commit ($val, $type = 'module'){
 function cos_git_upgrade ($val, $tag = 'master', $type = 'module'){
 
     if (!isset($val['module_name'])) {
-        $val['module_name'] = git_module_name_from_repo($val['repo']);
+        $val['module_name'] = git::getModulenameFromRepo($val['repo']);
     }
     
     $repo_path = cos_get_repo_path($val['module_name'], $type);
     
     if (!cos_git_is_repo ($repo_path)){
-        cos_cli_print("$repo_path is not a git repo - will not upgrade");
+        common::echoMessage("$repo_path is not a git repo - will not upgrade");
         return;
     }
 
@@ -492,7 +491,7 @@ function cos_git_upgrade ($val, $tag = 'master', $type = 'module'){
     $git_command.= "git pull && git fetch --tags && ";
     $git_command.= "git checkout $tag";
     
-    cos_exec($git_command);
+    common::execCommand($git_command);
     
     if ($type == 'module'){
         // sorry - but it is called with a different name in the upgrade_module
@@ -516,7 +515,7 @@ function cos_git_is_repo($path){
 }
 
 function cos_git_no_questions (){
-    cos_confirm_readline(null, 1);
+    common::readlineConfirm(null, 1);
 }
 
 /**
@@ -525,15 +524,15 @@ function cos_git_no_questions (){
  */
 function cos_git_echo_remote_tags ($options){
     if (empty($options['repo']))  {
-        cos_cli_abort('You need to specify a repo');
+        common::abort('You need to specify a repo');
     }
     
-    $tags = git_get_remote_tags($options['repo']);
+    $tags = git::getTagsRemote($options['repo']);
     if (empty($tags)) {
-        cos_cli_abort('No tags');
+        common::abort('No tags');
     }
-    $latest = git_get_latest_remote_tag($options['repo']);
-    cos_cli_print("Latest is: $latest");
+    $latest = git::getTagsRemoteLatest($options['repo']);
+    common::echoMessage("Latest is: $latest");
 }
 
 self::setCommand('git', array(

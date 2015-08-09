@@ -2,6 +2,7 @@
 
 use diversen\conf;
 use diversen\moduleinstaller;
+use diversen\cli\common;
 
 /**
  * File containing module functions for shell mode
@@ -22,7 +23,7 @@ function cos_menu_install_menu($options){
     // check if module exists in modules dir
     $module_path = conf::getModulePath($options['module']);
     if (!file_exists($module_path)){
-        cos_cli_print("module $options[module] does not exists in modules dir. ");
+        common::echoMessage("module $options[module] does not exists in modules dir. ");
         return;
     }
 
@@ -30,7 +31,7 @@ function cos_menu_install_menu($options){
     $res = $mod->insertMenuItem();
     if ($res) {
         if (conf::getMainIni('verbose') ) {
-            cos_cli_print("Main menu item for '$options[module]' inserted");
+            common::echoMessage("Main menu item for '$options[module]' inserted");
         }
     }  
 }
@@ -67,7 +68,7 @@ function cos_menu_uninstall_menu($options){
     // check if module exists in modules dir
     $module_path = conf::pathModules() . '/' . $options['module'];
     if (!file_exists($module_path)){
-        cos_cli_print("module $options[module] does not exists in modules dir. ");
+        common::echoMessage("module $options[module] does not exists in modules dir. ");
     }
 
     $menu = new moduleinstaller($options);
@@ -75,7 +76,7 @@ function cos_menu_uninstall_menu($options){
     
     if ($res) {
         if (conf::getMainIni('verbose') ) {
-            cos_cli_print("Main menu item for '$options[module]' deleted");
+            common::echoMessage("Main menu item for '$options[module]' deleted");
         }
     }
 

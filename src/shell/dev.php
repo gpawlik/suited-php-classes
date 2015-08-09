@@ -4,6 +4,7 @@ use diversen\conf;
 use diversen\file;
 use diversen\log;
 use diversen\mycurl;
+use diversen\cli\common;
 
 
 /**
@@ -30,7 +31,7 @@ function dev_test_access($options = null){
         $curl->createCurl();
        
         echo $curl->getHttpStatus();
-        cos_cli_print(" Status code recieved on: $url");       
+        common::echoMessage(" Status code recieved on: $url");       
    }
 }
 

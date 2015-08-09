@@ -3,13 +3,8 @@
 namespace diversen;
 use diversen\moduleinstaller;
 use diversen\conf;
-
-/**
- * *
- * File which contains class for creating profiles which is complete systems
- * with modules and templates
- * @package    profile
- */
+use diversen\cli\common;
+use diversen\git;
 
 /**
  * class for installing a profile or creating one from current install
@@ -115,15 +110,15 @@ class profile  {
                 
                 // try to find public clone url
                 $status = "module $val[module_name] has no public clone url set. We try to guess it.";
-                cos_cli_print_status('NOTICE', 'y', $status);
+                common::echoStatus('NOTICE', 'y', $status);
                 $module_path = conf::pathModules() . "/$val[module_name]";
                 if (!file_exists($module_path)) {
-                    cos_cli_print_status('NOTICE', 'y', "module $val[module_name] has no module source");
+                    common::echoStatus('NOTICE', 'y', "module $val[module_name] has no module source");
                     continue;
                 } 
                 
                 $command = "cd $module_path && git config --get remote.origin.url";              
-                $ret = cos_exec($command, null, 0);
+                $ret = common::execCommand($command, null, 0);
                 if (!$ret) { 
                     $git_url = shell_exec($command);
                     $modules[$key]['public_clone_url'] = $git_url;
@@ -135,7 +130,7 @@ class profile  {
                 $modules[$key]['private_clone_url'] = $mi->installInfo['PRIVATE_CLONE_URL'];
             } else {
                 $status = "No private clone url is set for module $val[module_name]";
-                cos_cli_print_status('NOTICE', 'y', $status);
+                common::echoStatus('NOTICE', 'y', $status);
             }
             
             if (self::$master){
@@ -239,7 +234,7 @@ class profile  {
                 if ($ret != 0) continue;
                
                 $git_url = shell_exec($command);
-                $tags = git_get_local_tags($val, 'template');
+                $tags = git::getTagsModule($val, 'template');
                 
                 $latest = array_pop($tags);
                 
@@ -483,7 +478,7 @@ class profile  {
     public function setProfileInfo($profile){
         $profile_dir = conf::pathBase() . "/profiles/$profile";
         if (!file_exists($profile_dir)) {
-            cos_cli_abort( "No such path to profiles: $profile_dir");
+            common::abort( "No such path to profiles: $profile_dir");
         } 
         
         include $profile_dir . "/profile.inc";

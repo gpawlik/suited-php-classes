@@ -2,43 +2,36 @@
 
 use diversen\conf;
 use diversen\file;
+use diversen\cli\common;
+use diversen\git;
 
-/**
- * File containing documentation functions for shell mode
- *
- * @package     shell
- */
 
 /**
  * function for doing a prompt install from shell mode
  * is a wrapper around other shell functions.
  */
 function prompt_install(){
-    if (defined('NO_CONFIG_FILE')){
-        cos_cli_print("No config file (config/config.ini) is loaded");
-    }
-
-    cos_cli_print('The following tags can be used:');
+    common::echoMessage('The following tags can be used:');
 
     $tags = '';
-    $tags.= git_coscms_tags_local ();
+    $tags.= git::getTags ();
     $tags.= "master";
 
-    cos_cli_print ($tags);
-    $tag = cos_readline("Enter tag (version) to use:");
+    common::echoMessage ($tags);
+    $tag = common::readSingleline("Enter tag (version) to use:");
 
-    cos_exec("git checkout $tag");
+    common::execCommand("git checkout $tag");
 
     $profiles = file::getFileList('profiles', array('dir_only' => true));
-    cos_cli_print("List of profiles: ");
+    common::echoMessage("List of profiles: ");
     foreach ($profiles as $key => $val){
-        cos_cli_print("\t".$val);
+        common::echoMessage("\t".$val);
     }
 
     // select profile and load it
-    $profile = cos_readline('Enter profile, and hit return: ');
+    $profile = common::readSingleline('Enter profile, and hit return: ');
     load_profile(array('profile' => $profile, 'config_only' => true));
-    cos_cli_print("Main config file (config/config.ini) for $profile is loaded");
+    common::echoMessage("Main config file (config/config.ini) for $profile is loaded");
 
     
     
@@ -54,11 +47,11 @@ function prompt_install(){
     conf::defineCommon();
     
     // get configuration info
-    $host = cos_readline('Enter mysql host, and hit return: ');
-    $database = cos_readline('Enter database name, and hit return: ');
-    $username = cos_readline('Enter database user, and hit return: ');
-    $password = cos_readline('Enter database users password, and hit return: ');
-    $server_name = cos_readline('Enter server host name (e.g. www.coscms.org), and hit return: ');
+    $host = common::readSingleline('Enter mysql host, and hit return: ');
+    $database = common::readSingleline('Enter database name, and hit return: ');
+    $username = common::readSingleline('Enter database user, and hit return: ');
+    $password = common::readSingleline('Enter database users password, and hit return: ');
+    $server_name = common::readSingleline('Enter server host name (e.g. www.coscms.org), and hit return: ');
 
     // assemble configuration info
     conf::$vars['coscms_main']['url'] = "mysql:dbname=$database;host=$host;charset=utf8";
@@ -75,7 +68,7 @@ function prompt_install(){
     $confirm_mes = "Configuration rewritten (config/config.ini). More options can be set here, so check it out at some point.";
     $confirm_mes.= "Will now install system ... ";
     
-    cos_cli_print($confirm_mes);
+    common::echoMessage($confirm_mes);
 
     $options = array();
     $options['profile'] = $profile;
@@ -86,12 +79,12 @@ function prompt_install(){
     cos_install($options);
     useradd_add();
     $login = "http://$server_name/account/login/index";
-    cos_cli_print("You are now able to log in: At $login");
+    common::echoMessage("You are now able to log in: At $login");
 }
 
 function get_password(){
-    $site_password = cos_readline('Enter system user password, and hit return: ');
-    $site_password2 = cos_readline('Retype system user password, and hit return: ');
+    $site_password = common::readSingleline('Enter system user password, and hit return: ');
+    $site_password2 = common::readSingleline('Retype system user password, and hit return: ');
     if ($site_password == $site_password2){
         return $site_password;
     } else {

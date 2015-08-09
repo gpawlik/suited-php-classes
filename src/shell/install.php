@@ -3,6 +3,7 @@
 use diversen\conf;
 use diversen\moduleinstaller;
 use diversen\profile;
+use diversen\cli\common;
 
 /**
  * function for installing coscms from a profile
@@ -11,7 +12,7 @@ function cos_install($options = false) {
 
     // we need a profile specified
     if (!isset($options['profile'])){
-        cos_cli_abort('You need to specifiy a profile');
+        common::abort('You need to specifiy a profile');
     }
 
     // create files - logs/ - files/
@@ -126,7 +127,7 @@ function cos_install_use_master ($options){
 }
 
 function cos_check_root ($options = null) {
-    cos_needs_root();
+    common::needRoot();
 }
 
 

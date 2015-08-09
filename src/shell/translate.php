@@ -3,6 +3,7 @@
 
 use diversen\translate\extractor;
 use diversen\conf;
+use diversen\cli\common;
 
 /**
  * will update all translation files in specified language
@@ -22,12 +23,12 @@ function translate_all_update($options) {
  */
 function translate_path($options) {
     if (!isset($options['path'])) {
-        cos_cli_abort('Add a path');
+        common::abort('Add a path');
     }
     
     $path = conf::pathBase() . "/$options[path]";
     if (!file_exists($path) OR !is_dir($path)) {
-        cos_cli_abort('Specify a dir as path');
+        common::abort('Specify a dir as path');
     }
     
     $e = new extractor();
@@ -37,7 +38,7 @@ function translate_path($options) {
     
     $e->setSingleDir($options['path']);
     $e->updateLang();
-    cos_cli_print_status('OK', 'g', 'Extraction done');
+    common::echoStatus('OK', 'g', 'Extraction done');
 }
 
 self::setCommand('translate', array(

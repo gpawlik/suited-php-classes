@@ -2,6 +2,7 @@
 
 use diversen\conf;
 use diversen\profile;
+use diversen\cli\common;
 
 function cos_phar_cli_create() {
 
@@ -22,7 +23,7 @@ function cos_phar_cli_create() {
     // phar archive we will create this file and a .sqlite database. 
     $build_phar_dir = "build/phar";
     if (!file_exists($build_phar_dir)) {
-        cos_exec("mkdir $build_phar_dir");
+        common::execCommand("mkdir $build_phar_dir");
     }
 
     // hidden .config file
@@ -37,9 +38,9 @@ function cos_phar_cli_create() {
         db_to_sqlite();
     
         // mv sqlite database into hidden file
-        cos_exec("cp -R sqlite/database.sql $build_from_dir/tmp/.database.sql");
-        cos_exec("chmod 777 $build_from_dir/tmp/.database.sql");
-        cos_exec("mkdir $build_from_dir/sqlite");
+        common::execCommand("cp -R sqlite/database.sql $build_from_dir/tmp/.database.sql");
+        common::execCommand("chmod 777 $build_from_dir/tmp/.database.sql");
+        common::execCommand("mkdir $build_from_dir/sqlite");
         
         unset($ary['db_init']);
         $ary['url'] = 'sqlite:.database.sql';
@@ -54,8 +55,8 @@ function cos_phar_cli_create() {
     $ary['cached_assets_inline'] = 1;
     
     if (conf::getMainIni('phar_files')) {
-        cos_exec("cp -rf htdocs/files $build_from_dir");
-        cos_exec("sudo chown -R 777 $build_from_dir/files");
+        common::execCommand("cp -rf htdocs/files $build_from_dir");
+        common::execCommand("sudo chown -R 777 $build_from_dir/files");
     }
     
     $ini_settings = conf::arrayToIniFile($ary);
@@ -73,7 +74,7 @@ function cos_phar_cli_create() {
     $phar->setStub($stub);
     $phar->stopBuffering();
     
-    cos_exec("chmod +x $output");
+    common::execCommand("chmod +x $output");
 
     echo "Web phar executable file created from current source ($output)\n";
     echo "Serve it e.g. with the built-in server. Like this:\n";
@@ -102,7 +103,7 @@ function cos_phar_web_create() {
     // phar archive we will create this file and a .sqlite database. 
     $build_phar_dir = "build/phar";
     if (!file_exists($build_phar_dir)) {
-        cos_exec("mkdir $build_phar_dir");
+        common::execCommand("mkdir $build_phar_dir");
     }
 
     // hidden .config file
@@ -119,9 +120,9 @@ function cos_phar_web_create() {
         db_to_sqlite();
     
         // mv sqlite database into hidden file
-        cos_exec("cp -R sqlite/database.sql $build_from_dir/tmp/.database.sql");
-        cos_exec("chmod 777 $build_from_dir/tmp/.database.sql");
-        cos_exec("mkdir $build_from_dir/sqlite");
+        common::execCommand("cp -R sqlite/database.sql $build_from_dir/tmp/.database.sql");
+        common::execCommand("chmod 777 $build_from_dir/tmp/.database.sql");
+        common::execCommand("mkdir $build_from_dir/sqlite");
         
         unset($ary['db_init']);
         $ary['url'] = 'sqlite:.database.sql';
@@ -136,8 +137,8 @@ function cos_phar_web_create() {
     $ary['cached_assets_inline'] = 1;
     
     if (conf::getMainIni('phar_files')) {
-        cos_exec("cp -rf htdocs/files $build_from_dir");
-        cos_exec("sudo chown -R 777 $build_from_dir/files");
+        common::execCommand("cp -rf htdocs/files $build_from_dir");
+        common::execCommand("sudo chown -R 777 $build_from_dir/files");
     }
     
     $ini_settings = conf::arrayToIniFile($ary);

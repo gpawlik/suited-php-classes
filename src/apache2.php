@@ -2,7 +2,8 @@
 
 namespace diversen;
 
-use diversen\strings\version as strings_version;
+use diversen\strings\version;
+use diversen\cli\common;
 
 /**
  * file contains class for doing insall, removal of apache2 virtual hosts
@@ -65,7 +66,7 @@ class apache2 {
         $hostname = trim($options['hostname']);
         self::createLogs();
         
-        cos_needs_root();
+        common::needRoot();
         
 
         // create apache2 conf and enable site
@@ -78,14 +79,14 @@ class apache2 {
         // se http://httpd.apache.org/docs/current/upgrading.html
 
         $version = self::getVersion();
-        $version = strings_version::getSemanticAry($version);
+        $version = version::getSemanticAry($version);
 
         if ($version['minor'] >= 4) {
             $apache2_conf_file.= ".conf";
         }
 
-        cos_exec("cp -f tmp/$hostname $apache2_conf_file");
-        cos_exec("a2ensite $hostname");
+        common::execCommand("cp -f tmp/$hostname $apache2_conf_file");
+        common::execCommand("a2ensite $hostname");
 
         // create new hosts file and reload server
         // not very exact match
@@ -95,9 +96,9 @@ class apache2 {
         if (!strstr($hosts_file_str, $host_str)) {
             $new_hosts_file_str = $host_str . $hosts_file_str;
             file_put_contents("tmp/hosts", $new_hosts_file_str);
-            cos_exec("cp -f tmp/hosts /etc/hosts");
+            common::execCommand("cp -f tmp/hosts /etc/hosts");
         }
-        cos_exec("/etc/init.d/apache2 reload");
+        common::execCommand("/etc/init.d/apache2 reload");
     }
 
     /**
@@ -106,23 +107,23 @@ class apache2 {
      */
     public static function disableSite($options) {
 
-        cos_needs_root();
+        common::needRoot();
         $hostname = trim($options['hostname']);
 
         $apache2_conf_file = "/etc/apache2/sites-available/$hostname";
-        $ret = cos_exec("a2dissite $hostname");
+        $ret = common::execCommand("a2dissite $hostname");
         if ($ret) {
             return false;
         }
 
         $version = self::getVersion();
-        $version = strings_version::getSemanticAry($version);
+        $version = version::getSemanticAry($version);
 
         if ($version['minor'] >= 4) {
             $apache2_conf_file.= ".conf";
         }
 
-        $ret = cos_exec("rm -f $apache2_conf_file");
+        $ret = common::execCommand("rm -f $apache2_conf_file");
 
         // create new hosts file and reload server
         $host_file_str = '';
@@ -138,8 +139,8 @@ class apache2 {
             }
         }
         file_put_contents("tmp/hosts", $host_file_str);
-        cos_exec("cp -f tmp/hosts /etc/hosts");
-        cos_exec("/etc/init.d/apache2 reload");
+        common::execCommand("cp -f tmp/hosts /etc/hosts");
+        common::execCommand("/etc/init.d/apache2 reload");
     }
 
     /**
@@ -179,7 +180,7 @@ class apache2 {
      */
     public static function getConf($SERVER_NAME, $DOCUMENT_ROOT, $APACHE_LOG_ROOT) {
         $version = self::getVersion();
-        $version = strings_version::getSemanticAry($version);
+        $version = version::getSemanticAry($version);
 
         if ($version['minor'] >= 4) {
             $VERSION_2_4_x = <<<EOF
@@ -254,7 +255,7 @@ EOF;
      */
     public static function getConfSSL($SERVER_NAME, $DOCUMENT_ROOT, $APACHE_LOG_ROOT) {
         $version = self::getVersion();
-        $version = strings_version::getSemanticAry($version);
+        $version = version::getSemanticAry($version);
 
         if ($version['minor'] >= 4) {
             $VERSION_2_4_x = <<<EOF

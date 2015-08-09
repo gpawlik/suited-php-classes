@@ -3,11 +3,12 @@
 
 use diversen\translate\google;
 use diversen\conf;
+use diversen\cli\common;
 
 function google_translate_all_update ($options) {
     
     if ($options['path'] != 'all') {
-        cos_cli_abort("Specify 'all' as path");
+        common::abort("Specify 'all' as path");
     }
     
     
@@ -31,10 +32,10 @@ function google_translate_all_update ($options) {
 
 function google_translate_path ($options) {
     if (!isset($options['path'])) {
-        cos_cli_abort('You need to specify path to translate');
+        common::abort('You need to specify path to translate');
     }
     if (!isset($options['target'])) {
-        cos_cli_abort('You need to specify target language to translate into');
+        common::abort('You need to specify target language to translate into');
     }
     $e = new google();
     $key = conf::getMainIni('google_translate_key');

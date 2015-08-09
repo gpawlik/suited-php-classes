@@ -3,17 +3,18 @@
 use diversen\conf;
 use diversen\db\admin;
 use Symfony\Component\Filesystem\Filesystem;
+use diversen\cli\common;
 
 
 function db_to_sqlite ($options = array ()) {
     
     $check = "which sequel";
-    if (cos_exec($check)) {
-        cos_cli_print('You need sequel. Install it like this, e.g.:');
-        cos_cli_print('sudo aptitude install ruby-sequel libsqlite3-ruby libmysql-ruby');
-        cos_cli_abort();
+    if (common::execCommand($check)) {
+        common::echoMessage('You need sequel. Install it like this, e.g.:');
+        common::echoMessage('sudo aptitude install ruby-sequel libsqlite3-ruby libmysql-ruby');
+        common::abort();
     } else {
-        cos_cli_print_status('OK' , 'g','Sequel is installed' );
+        common::echoStatus('OK' , 'g','Sequel is installed' );
     }
     
     $ok = false;
@@ -26,7 +27,7 @@ function db_to_sqlite ($options = array ()) {
     }
     
     if (!$ok) {
-        cos_cli_print_status('ERROR', 'r', 'Driver needs to be mysql or mysqli');
+        common::echoStatus('ERROR', 'r', 'Driver needs to be mysql or mysqli');
     }
     
     $fs = new Filesystem();
@@ -39,12 +40,12 @@ function db_to_sqlite ($options = array ()) {
     $command.= "-C ";
     $command.= "sqlite://sqlite/database.sql";
 
-    $ret = cos_system($command);
+    $ret = common::systemExec($command);
     
     if (!$ret) {
         $fs->chmod('sqlite/database.sql', 0777, 0000, true);
-        cos_cli_print('Sqlite database created. Edit config.ini and add:'); 
-        cos_cli_print("sqlite://sqlite/database.sql");
+        common::echoMessage('Sqlite database created. Edit config.ini and add:'); 
+        common::echoMessage("sqlite://sqlite/database.sql");
     }    
 }
 

@@ -4,6 +4,7 @@ use diversen\conf;
 use diversen\db\admin;
 use diversen\file;
 use diversen\time;
+use diversen\cli\common;
 
 
 /**
@@ -45,7 +46,7 @@ function drop_db_default($options = array()){
         "mysqladmin -f -u" . conf::$vars['coscms_main']['username'] .
         " -p" . conf::$vars['coscms_main']['password'] . " -h$db[host] ";
     $command.= "DROP $db[dbname]";
-    return $ret = cos_exec($command, $options);
+    return $ret = common::execCommand($command, $options);
 }
 
 
@@ -63,7 +64,7 @@ function load_db_default(){
         "-h$db[host] " . ' ' .
         "$db[dbname] < scripts/default.sql";
 
-    return cos_exec($command);
+    return common::execCommand($command);
 }
 
 
@@ -96,7 +97,7 @@ function connect_db(){
  */
 function dump_db_file ($options = null){
     if (!isset($options['File'])){
-        cos_cli_print('You did not specify file to dump. We create one from current timestamp!');
+        common::echoMessage('You did not specify file to dump. We create one from current timestamp!');
         $dump_name = "backup/sql/" . time() . ".sql";
     } else {
         $dump_name = $options['File'];
@@ -108,7 +109,7 @@ function dump_db_file ($options = null){
         " -p" . conf::$vars['coscms_main']['password'] . 
         " -h" . $db['host'];
     $command.= " $db[dbname] > $dump_name";
-    cos_exec($command);
+    common::execCommand($command);
 }
 
 /**
@@ -120,10 +121,10 @@ function dump_db_file ($options = null){
  */
 function load_db_file($options){
     if (!isset($options['File'])){
-        cos_cli_print('You did not specify file to load. We use latest!');
+        common::echoMessage('You did not specify file to load. We use latest!');
         $latest = get_latest_db_dump();
         if ($latest == 0) {
-            cos_cli_abort('Yet no database dumps');
+            common::abort('Yet no database dumps');
         }
         
         $latest = "backup/sql/" . $latest . ".sql";
@@ -131,14 +132,14 @@ function load_db_file($options){
     } else {
         $file = $options['File'];
         if (!file_exists($file)) {
-            cos_cli_abort("No such file: $file");
+            common::abort("No such file: $file");
         }
     }
     $db = admin::getDbInfo();
     $command = 
         "mysql --default-character-set=utf8  -u" . conf::$vars['coscms_main']['username'] .
         " -p" . conf::$vars['coscms_main']['password'] . " -h$db[host]  $db[dbname] < $file";
-    return $ret = cos_exec($command);
+    return $ret = common::execCommand($command);
 }
 
 /**
@@ -168,7 +169,7 @@ function get_latest_db_dump($dir = null, $num_files = null){
 
 function clone_db ($options = array ()) {
     if (!isset($options['File'])){
-        cos_cli_abort('Specify new database name');
+        common::abort('Specify new database name');
     }
     $db = admin::getDbInfo();
     $old = $db['dbname'];

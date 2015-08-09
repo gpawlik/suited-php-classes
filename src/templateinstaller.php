@@ -1,17 +1,16 @@
 <?php
 
 namespace diversen;
-use diversen\moduleinstaller;
+
 use diversen\conf as conf;
-/**
- * file contains the template installer
- * @package installer
- */
+use diversen\moduleinstaller;
+use diversen\cli\common;
+use diversen\git;
+
 
 /**
  * class for installing a templates or upgrading it.
  * base actions are:
- *
  *
  * update: checks module version from install.inc
  * perform any needed updates e.g. from version
@@ -21,7 +20,6 @@ use diversen\conf as conf;
  * 
  * @package    installer
  */
-
 class templateinstaller extends moduleinstaller {
     /**
      * holding array of info for the install
@@ -75,7 +73,7 @@ class templateinstaller extends moduleinstaller {
         if (file_exists($template_dir)){
             $install_file = "$template_dir/install.inc";
             if (!file_exists($install_file)){
-                cos_cli_print("Notice: No install file '$install_file' found in: '$template_dir'\n");
+                common::echoMessage("Notice: No install file '$install_file' found in: '$template_dir'\n");
             }
               
             $this->installInfo['NAME'] = $template_name;
@@ -89,7 +87,7 @@ class templateinstaller extends moduleinstaller {
 
                 $git_url = shell_exec($command);
                 // git config --get remote.origin.url
-                $tags = git_get_remote_tags($git_url);
+                $tags = git::getTagsRemote($git_url);
                 
                 //git_get_latest_remote_tag($repo);
 
@@ -124,7 +122,7 @@ class templateinstaller extends moduleinstaller {
             
             
         } else {
-            cos_cli_print ("Notice: No module dir: $template_dir\n");
+            common::echoMessage ("Notice: No module dir: $template_dir\n");
         }
     }
     
@@ -144,7 +142,7 @@ class templateinstaller extends moduleinstaller {
         if (!file_exists($ini_file)){
             if (file_exists($ini_file_dist)){
                 if (!copy($ini_file_dist, $ini_file)){
-                    $this->error = "Error: Could not copy $ini_file to $ini_file_dist" . NEW_LINE;
+                    $this->error = "Error: Could not copy $ini_file to $ini_file_dist" . PHP_EOL;
                     $this->error.= "Make sure your module has an ini-dist file: $ini_file_dist";
                     return false;
                 }
@@ -158,7 +156,7 @@ class templateinstaller extends moduleinstaller {
             }
         }
         
-        $this->confirm = "Template '" . $this->installInfo['NAME'] . "' installed" . NEW_LINE;
+        $this->confirm = "Template '" . $this->installInfo['NAME'] . "' installed" . PHP_EOL;
         $this->confirm.= "Make sure your module has an ini-dist file: $ini_file_dist";
                     
     }
