@@ -339,17 +339,6 @@ class profile  {
         return $db->update('settings', $values, 1);        
     }
 
-    /**
-     * method for settinge weather we use a home url or not in main menu 
-     */
-    public function setProfileUseHome(){
-        $db = new db();
-        $db->connect();
-        $sql = "INSERT INTO `menus` VALUES (1, 'home', '/', '', '', 0, 0);";
-        if ($this->profileUseHome){
-            return $db->rawQuery($sql);
-        }
-    }
 
     /**
      * method for creating a profiles configuration files

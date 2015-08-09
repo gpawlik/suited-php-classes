@@ -18,18 +18,18 @@ function cos_install($options = false) {
     // create files - logs/ - files/
     cos_create_files();
 
+    // drop database
     drop_db_default($ary = array ('silence' => 1));
     
+    // create database
     create_db();
+    
     // load default base sql.
     load_db_default();
 
-    // use profile object
+    // Set up profile to install
     $pro = new profile();
     $pro->setProfileInfo($options['profile']);
-
-    // first we set if home link to http://example.com/ will be added to menus.
-    $pro->setProfileUseHome();
 
     // install all the profile modules
     foreach ($pro->profileModules as $key => $val){

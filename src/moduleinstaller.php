@@ -683,7 +683,6 @@ class moduleinstaller  {
         
         // insert into registry. Set menu item and insert language.
         $this->insertRegistry();
-
         $this->insertMenuItem();
         $this->insertRoutes();
         

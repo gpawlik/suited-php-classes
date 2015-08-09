@@ -19,7 +19,6 @@ use diversen\cli\common;
  */
 function cos_menu_install_menu($options){
     
-
     // check if module exists in modules dir
     $module_path = conf::getModulePath($options['module']);
     if (!file_exists($module_path)){
@@ -39,8 +38,7 @@ function cos_menu_install_menu($options){
 function cos_menu_install_all (){
 
     $mods = moduleinstaller::getModules();
-    foreach ($mods as $key => $val){
-        
+    foreach ($mods as $key => $val){   
         $options = array('module' => $val['module_name']);
         cos_menu_install_menu($options);
     }
@@ -50,7 +48,6 @@ function cos_menu_install_all (){
 function cos_menu_uninstall_all (){
 
     $mods = moduleinstaller::getModules();
-
     foreach ($mods as $key => $val){
         $options = array('module' => $val['module_name']);
         cos_menu_uninstall_menu($options);
