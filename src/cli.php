@@ -286,10 +286,9 @@ EOF;
         $l = new lang();
         
         $base = conf::pathBase();
-        $l->setDirsInsideDir("$base/modules/*");
-        $l->setDirsInsideDir("$base/htdocs/templates/*");
+        $l->setDirsInsideDir("$base/modules/");
+        $l->setDirsInsideDir("$base/htdocs/templates/");
         $l->setSingleDir("$base/vendor/diversen/simple-php-classes");
-        
         
         $l->loadLanguage(conf::getMainIni('lang'));
         

@@ -23,8 +23,8 @@ function google_translate_all_update ($options) {
     
     $key = conf::getMainIni('google_translate_key');
     $t->key = $key;
-    $t->setDirsInsideDir('modules/*');
-    $t->setDirsInsideDir('/htdocs/templates/*');  
+    $t->setDirsInsideDir('modules/');
+    $t->setDirsInsideDir('htdocs/templates/');  
     $t->setSingleDir("vendor/diversen/simple-php-classes");
     $t->updateLang();
 

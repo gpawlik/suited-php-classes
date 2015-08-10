@@ -1,8 +1,8 @@
 <?php
 
 namespace diversen;
-use diversen\file\path as path;
-use diversen\conf as conf;
+use diversen\file\path;
+use diversen\conf;
 
 /**
  * package contains file class for doing common file tasks
@@ -245,7 +245,14 @@ class file {
      * @return array $dirs 
      */
     public static function getDirsGlob($path, $options = array()) {
-        $dirs = glob($path . '*', GLOB_ONLYDIR);
+        $it = new \DirectoryIterator($path);
+        
+        $dirs = array ();
+        foreach ($it as $file) {
+            if ($file->isDir() && !$file->isDot()) {
+                $dirs[] = $it->getPathname();
+            }
+        }
         if (isset($options['basename'])) {
             foreach ($dirs as $key => $dir) {
                 $dirs[$key] = basename($dir);

@@ -11,8 +11,8 @@ use diversen\cli\common;
  */
 function translate_all_update($options) {
     $e = new extractor();
-    $e->setDirsInsideDir('modules/*');
-    $e->setDirsInsideDir('htdocs/templates/*');
+    $e->setDirsInsideDir('modules/');
+    $e->setDirsInsideDir('htdocs/templates/');
     $e->setSingleDir("vendor/diversen/simple-php-classes");
     $e->updateLang();
 }

@@ -117,8 +117,9 @@ class boot {
         
         $l = new lang();
         $base = conf::pathBase();
-        $l->setDirsInsideDir("$base/modules/*");
-        $l->setDirsInsideDir("$base/htdocs/templates/*");
+        $htdocs = conf::pathHtdocs();
+        $l->setDirsInsideDir("$base/modules/");
+        $l->setDirsInsideDir("$htdocs/templates/");
         $l->setSingleDir("$base/vendor/diversen/simple-php-classes");
         
         
