@@ -40,7 +40,7 @@ function db_to_sqlite ($options = array ()) {
     $command.= "-C ";
     $command.= "sqlite://sqlite/database.sql";
 
-    $ret = common::systemExec($command);
+    $ret = common::systemCommand($command);
     
     if (!$ret) {
         $fs->chmod('sqlite/database.sql', 0777, 0000, true);

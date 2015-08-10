@@ -21,6 +21,10 @@ class common {
             return false;
         }
     }
+    
+    public static function systemCommand () {
+        
+    }
 
     /**
      * examine if user is root. If not exit, and echo a message
