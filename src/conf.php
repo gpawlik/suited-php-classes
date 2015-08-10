@@ -2,9 +2,6 @@
 
 namespace diversen;
 
-use diversen\moduleloader;
-
-
 /**
  * contains methods for getting and setting configuration. 
  * @package config

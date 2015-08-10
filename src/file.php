@@ -174,7 +174,7 @@ class file {
      * @return string $mime
      */
     public static function getPrimMime($file) {
-        $str = file::getMime($file);
+        $str = self::getMime($file);
         $ary = explode('/', $str);
         return $ary[0];
     }
