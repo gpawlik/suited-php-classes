@@ -264,7 +264,7 @@ class moduleinstaller  {
      * reloads config for all modules
      */
     public function reloadConfig () {
-        $db = newdb();
+        $db = new db();
         $modules = $this->getModules();
         foreach ($modules as $val){
             $this->setInstallInfo($options = array ('module' => $val['module_name']));
