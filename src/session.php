@@ -720,7 +720,7 @@ class session {
         return $res;
     }
     
-        /**
+    /**
      * method for relocate user to login, and after correct login 
      * redirect to the page where he was. You can set message to
      * be shown on login screen.
@@ -730,10 +730,9 @@ class session {
     public static function loginThenRedirect ($message){
         unset($_SESSION['return_to']);
         if (!session::isUser()){
-            moduleloader::includeModule('account');
             $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
             session::setActionMessage($message);
-            \account::redirectDefault();
+            http::locationHeader('/account/login/index');
             die;
         }
     }
