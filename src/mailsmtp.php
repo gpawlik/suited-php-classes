@@ -1,6 +1,7 @@
 <?php
 
 namespace diversen;
+use diversen\micro\conf;
 /**
  * simple wrapper of PHPMailer. 
  * just loads most basic settings from config.php 
@@ -33,7 +34,7 @@ class mailsmtp {
      * @return \PHPMailer
      */
     public static function getPHPMailer () {
-        $config = config::get('smtp');
+        $config = conf::get('smtp');
 
         $mail = new \PHPMailer;
         $mail->SMTPDebug = $config['SMTPDebug'];

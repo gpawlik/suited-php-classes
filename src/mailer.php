@@ -2,7 +2,7 @@
 
 namespace diversen;
 
-use diversen\conf as conf;
+use diversen\conf;
 use diversen\mailer\mailmime;
 use diversen\mailer\queue;
 use Mail;

@@ -2,7 +2,7 @@
 
 namespace diversen\mailer;
 
-use diversen\db\rb as rb;
+use diversen\db\rb;
 use diversen\mailer\helpers;
 /**
  * contains mail queue
