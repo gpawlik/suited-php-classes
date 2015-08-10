@@ -8,6 +8,8 @@ use diversen\log;
 use diversen\moduleloader;
 use diversen\uri\dispatch;
 use mainTemplate;
+use diversen\intl;
+use diversen\db;
 
 
 class boot {
@@ -29,9 +31,6 @@ class boot {
 
         // set log level - based on config.ini
         log::setLogLevel();
-        
-        // set alias    
-        //alias::set();
 
         // utf-8
         ini_set('default_charset', 'UTF-8');
