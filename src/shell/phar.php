@@ -176,6 +176,7 @@ function cos_phar_sqlite ($options = array ()) {
 function cos_phar_files ($options = array ()) {
     conf::setMainIni('phar_files', 1);
 }
+/*
 
 self::setCommand('phar', array(
     'description' => 'Generate phar archieves from current source',
@@ -205,3 +206,4 @@ self::setOption('cos_phar_web_create', array(
     'action'      => 'StoreTrue'
 ));
 
+*/
