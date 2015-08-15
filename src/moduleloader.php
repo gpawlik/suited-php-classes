@@ -239,24 +239,11 @@ class moduleloader {
      */
     public function setHomeModuleInfo(){
         
+        // home controller is alway frontpage_module's indexAction
         $frontpage_module = conf::getMainIni('frontpage_module');
-        $this->info['is_frontpage'] = true;
         $this->info['module_name'] = $frontpage_module;
-        $this->info['module_base_name'] = $frontpage_module;
-        $this->info['language_file'] = conf::pathModules() . "/$frontpage_module" . '/lang/' . conf::getMainIni('language') . '/language.inc';
-        $this->info['ini_file'] =  conf::pathModules() . "/$frontpage_module"  . "/$frontpage_module" . '.ini';
-        
-        $controller_dir = conf::pathModules() . "/$frontpage_module/";
-        $first = uri::fragment(0);
-        
-        if (!empty($first)){
-            $controller_file = $controller_dir . $first . ".php";
-        } else {
-            $controller_file = $controller_dir . "index.php";
-        }
-        $this->info['controller_file'] = $controller_file;
         $this->info['controller'] = 'index';
-        $this->info['module_class'] = $this->info['module_name'] . "";
+        $this->info['module_class'] = "modules\\" . $this->info['module_name'] . "\\module";
         
     }
     
@@ -275,11 +262,9 @@ class moduleloader {
         if (!$error_module) {
             $error_module = 'error';
         }
+        
         $this->info['module_name'] = $error_module;
         $this->info['module_base_name'] = $error_module;
-        
-        $this->info['language_file'] = conf::pathModules() . "/$error_module" . '/lang/' . conf::getMainIni('language'). '/language.inc';
-        $this->info['ini_file'] =  conf::pathModules()  . "/$error_module"  . "/$error_module" . '.ini';
         
         if (isset(self::$status[404])){
             $controller_file = conf::pathModules() . "/$error_module". '/404.php';
@@ -290,7 +275,7 @@ class moduleloader {
 
         $this->info['controller_file'] = $controller_file;
         $this->info['controller'] = "403.php";
-        $this->info['module_class'] = $this->info['module_name'];
+        $this->info['module_class'] = "modules\\" . str_replace('/', '\\', $this->info['module_name']) . "\\module";
         
     }
     
@@ -300,43 +285,32 @@ class moduleloader {
      */
     public function setModuleInfo ($route = null){
 
+        if ($route) {
+            return;
+        }
+        
+        // get URI info 
+        $info = uri::getInfo();
+        
         // check if user already is denied
         if (isset(self::$status[403]) || isset(self::$status[404])){                     
             $this->setErrorModuleInfo(); 
             return;
         } 
         
-        // enable uri 
-        $uri = uri::getInstance($route);
-        $info = uri::getInfo();
-       
-        // if no module_base is set in the URI::info we can will use
-        // the home module
+        // if no module base exists we load fronpage module
         if (empty($info['module_base'])){
             $this->setHomeModuleInfo();
             return;
         }
-
         
-        // if we only have one fragment, then load frontpage module
-        $frontpage_module = conf::getMainIni('frontpage_module');
+        // move info from uri to this->info
         $this->info['module_name'] = $info['module_name'];
-        
-        if ($uri->numFragments() == 1){         
-            $this->info['module_base_name'] = $frontpage_module;
-            $this->info['base'] = conf::pathModules() . "/$frontpage_module";
-        } else {
-            $this->info['module_base_name'] = $info['module_base_name'];
-            $this->info['base'] = conf::pathModules();
-        }
-        
-        // generel info
+        $this->info['module_base_name'] = $info['module_base_name'];
         $this->info['module_class'] = "modules\\" . str_replace('/', '\\', $this->info['module_name']) . "\\module";
-        $this->info['ini_file'] =  conf::pathModules() . $info['module_base'] . $info['module_base'] . '.ini';
-        $this->info['ini_file_php'] =  conf::pathModules() . $info['module_base'] . $info['module_base'] . '.php.ini';
         $this->info['controller'] = $info['controller'];
         
-        // check if installed
+        // check if module is installed
         if (!self::isInstalledModule($this->info['module_base_name'])){          
             self::$status[404] = 1;
             $this->setErrorModuleInfo(); 
@@ -346,8 +320,7 @@ class moduleloader {
     /**
      * Init module. Set it as running and include it. 
      */
-    public function initModule(){
-        
+    public function initModule(){  
         $module = $this->info['module_name'];  
         self::$running = $module;
         self::includeModule($module);    
@@ -390,21 +363,25 @@ class moduleloader {
             // include controller file or call module action 
             if ($action_str !== false) {
                 echo $action_str;        
-            } else {
-                include_once $this->info['controller_file'];
-            }
+            } 
         }
         
+        // access denied
         if (isset(self::$status[403])){
             $this->setErrorModuleInfo();
             $this->initModule();
-            include_once $this->info['controller_file'];
+            $class = $this->info['module_class'];
+            $obj = new $class();
+            $obj->accessdeniedAction();
         }
 
+        // not found
         if (isset(self::$status[404])){
             $this->setErrorModuleInfo();
             $this->initModule();
-            include_once $this->info['controller_file'];
+            $class = $this->info['module_class'];
+            $obj = new $class();
+            $obj->notfoundAction();
         }
 
         $str = ob_get_contents();

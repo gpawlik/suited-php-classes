@@ -1,13 +1,11 @@
 <?php
 
 namespace diversen\uri;
-use diversen\moduleloader;
-use diversen\db\q;
+
 use diversen\conf;
-/**
- * simple url dispatch class
- * @package uri 
- */
+use diversen\db\q;
+use diversen\moduleloader;
+use modules\error\module as errorModule;
 
 /**
  * simple class for dispatching url patterns to a controller file or class
@@ -40,42 +38,51 @@ class dispatch {
      * @return boolean $res if no function or method is found return false. 
      */
     public static function call ($call) {
+        
         $ary = explode('::', $call);
         $call_exists = null;
-        
+                        
         ob_start();
         
-        // call is a function
-        if (count($ary) == 1) {
-            if (function_exists($call)) {
-                $call_exists = 1;
-                $call();
-                
-            }
-        }
-        
         // call is a class
-        if (count($ary == 2)) {
-            $class = $ary[0]; $method = $ary[1];
+        if (count($ary) == 2) {
+
+            $module = $ary[0]; 
+            $method = $ary[1];
+            
+            $class = self::getModuleName($module);
+            moduleloader::includeModule($module);
+            
             if (method_exists($class, $method)) {
-                
                 $call_exists = 1;
                 $o = new $class;
                 $o->$method();
                 //$class::$method();
                 if (isset(moduleloader::$status[403])){
                     moduleloader::includeModule('error');
-                    moduleloader::includeController('error/403');
+                    $e = new errorModule();
+                    $e->accessdeniedAction();
                 }  
                 
                 if (isset(moduleloader::$status[404])){
                     moduleloader::includeModule('error');
-                    moduleloader::includeController('error/404');
+                    $e = new errorModule();
+                    $e->notfoundAction();
                 }   
             }
+            
         }  
 
         return ob_get_clean();
+    }
+    
+    /**
+     * get module class name from module name
+     * @param string $module
+     * @return string $str
+     */
+    public static function getModuleName ($module) {
+        return "modules\\" . str_replace('/', '\\', $module) . "\\module";
     }
     
     /**

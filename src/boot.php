@@ -80,6 +80,9 @@ class boot {
         // installed modules
         $db = new db();
         $ml = new moduleloader();
+        
+        //
+        uri::getInstance();
 
 
         // runlevel 1: merge db config
@@ -134,21 +137,14 @@ class boot {
         dispatch::setDbRoutes();
 
         $ml->runLevel(6);
-
-        $controller = null;
-        $route = dispatch::getMatchRoutes();
-
-        if ($route) {
-            // if any route is found we get controller from match
-            // else we load module in default way
-            $controller = $route['controller'];
+        
+        // check db routes or load by defaults
+        $db_route = dispatch::getMatchRoutes();
+        if (!$db_route) {
+            $ml->setModuleInfo();
+            $ml->initModule();
         }
-
-        // set module info
-        $ml->setModuleInfo($controller);
-
-        // load module
-        $ml->initModule();
+        
 
         // include template class found in conf::pathHtdocs() . '/templates'
         // only from here we should use template class. 
@@ -163,11 +159,13 @@ class boot {
         // init blocks
         $layout->initBlocks();
 
+        $db_route = dispatch::getMatchRoutes();
+        
         // if any matching route was found we check for a method or function
-        if (isset($route['method'])) {
-            $str = dispatch::call($route['method']);
+        if ($db_route) {
+            $str = dispatch::call($db_route['method']);
         } else {
-            // or we use default ('old') module loading
+            // or we use default module parsing
             $str = $ml->getParsedModule();
         }
 

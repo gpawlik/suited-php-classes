@@ -69,29 +69,24 @@ class uri {
      * @return void
      */
     public static function setInfo($path = null) {
-        static $info_isset = null;
-        if ($info_isset) { 
-            return;
-        }
-        
+    
+        // set all fragments
         $frags = self::getRequestUriAry($path);
-
-        self::$info['frags'] = $frags;
         self::$fragments = $frags;
 
+        // get last fragment - this will be the controller
         $controller_frags = self::getControllerPathAry($frags);
-        self::$info['controller_frags'] = $controller_frags;
         self::$info['controller'] = self::getControllerFrag($controller_frags);
-        self::$info['module_frag'] = self::getModuleFrag($controller_frags);
-        
-        
-        
+
+        // controller as a full string
         self::$info['controller_path_str'] = self::getControllerPathStr($controller_frags);
+        
+        // set module name
         self::$info['module_name'] = self::getModuleName($controller_frags);
         
+        // set module base and module base name
         self::$info['module_base'] = self::getModuleBase($controller_frags);
         self::$info['module_base_name'] = self::getModuleBaseName($controller_frags);
-        $info_isset = true;
     }
 
     /**
@@ -231,16 +226,6 @@ class uri {
         return array_pop($base_fragments);
     }
 
-    /**
-     * method for getting the module fragement
-     *
-     * @param   array   base_fragments fragments that makes up controller
-     * @return  string  last fragment of base_fragments
-     */
-    public static function getModuleFrag($base_fragments){
-        array_pop($base_fragments);
-        return array_pop($base_fragments);
-    }
     /**
      * method for getting controllers path string
      *
