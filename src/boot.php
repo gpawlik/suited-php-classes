@@ -10,6 +10,7 @@ use diversen\uri\dispatch;
 use mainTemplate;
 use diversen\intl;
 use diversen\db;
+use diversen\html\common;
 
 
 class boot {
@@ -20,6 +21,8 @@ class boot {
         $m = new modules();
         $m->autoloadRegister();
 
+        common::defineConstants();
+        
         // define all constant - based on base path and config.ini
         conf::defineCommon();
 
