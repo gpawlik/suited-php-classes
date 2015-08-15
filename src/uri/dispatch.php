@@ -57,7 +57,7 @@ class dispatch {
                 $call_exists = 1;
                 $o = new $class;
                 $o->$method();
-                //$class::$method();
+
                 if (isset(moduleloader::$status[403])){
                     moduleloader::includeModule('error');
                     $e = new errorModule();
@@ -69,10 +69,8 @@ class dispatch {
                     $e = new errorModule();
                     $e->notfoundAction();
                 }   
-            }
-            
+            } 
         }  
-
         return ob_get_clean();
     }
     
