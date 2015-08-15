@@ -334,7 +334,6 @@ class conf {
      * set default include paths. modules/ and base_path
      */
     public static function setIncludePath() {
-        
         $ini_path = get_include_path();
         set_include_path(
                 '.' . PATH_SEPARATOR .

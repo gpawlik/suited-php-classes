@@ -2,8 +2,8 @@
 
 namespace diversen\uri;
 use diversen\moduleloader;
-use diversen\db\q as q;
-use diversen\conf as conf;
+use diversen\db\q;
+use diversen\conf;
 /**
  * simple url dispatch class
  * @package uri 

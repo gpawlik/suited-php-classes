@@ -112,7 +112,8 @@ class user {
                 return;
             } else {
                 moduleloader::includeModule ($profile_system);
-                self::$profile_object = new $profile_system();
+                $class = "modules\\$profile_system\\module";
+                self::$profile_object = new $class();
             }
         }
     }

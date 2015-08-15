@@ -38,31 +38,7 @@ class view {
      */
     public static $view = null;
     
-    /**
-     * method for setting override of normal views
-     * @param string $view the view to override, e.g. account_login_email
-     * @param array $options options array ('module', 'view', 'template', 'folder') 
-     */
-    public static function setOverride ($view, $options = array ()) {
-        
-        self::$override = true;
-        self::$view = $view;
-        if (isset($options['module'])) {
-            self::$options['module'] = $options['module'];
-        }
-        if (isset($options['view'])) {
-            self::$options['view'] = $options['view'];
-        }
-        if (isset($options['template'])) {
-            self::$options['template'] = $options['template'];
-        }
-        if (isset($options['folder'])) {
-            self::$options['folder'] = $options['folder'];
-        }
-        if (isset($options['ext'])) {
-            self::$options['ext'] = $options['ext'];
-        }
-    }
+
     
     /**
      * get override view name

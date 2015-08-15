@@ -1118,7 +1118,7 @@ $(document).ready(function() {
         }
         
         $options = self::parseExtra($options);
-        $link = "<a href=\"$url\" $options>$title</a>";
+        $link = "<a href=\"$url\" $options >$title</a>";
         return $link;
     }
 

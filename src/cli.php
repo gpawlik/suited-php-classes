@@ -52,13 +52,6 @@ class cli {
      */
     static $command;
 
-    
-    
-    /**
-     * var holding ini settings for modules
-     * @var array $ini
-     */
-    //public static $ini = array();
 
         
     /**
@@ -176,8 +169,7 @@ EOF;
 
     /**
      * method for running the commandline parser
-     * @param  array    $options array ('disable_base_modules' => true, 
-     *                                  'disable_db_modules => true) 
+     * @param  array    $options array
      * 
      *                  If we only use the coslib as a lib we may 
      *                  disable loading of base or db modules
@@ -187,10 +179,6 @@ EOF;
     public static function run($options = array ()){
         try {
             $ret = 0;
-            
-           
-            // reload config - as this may be need if we install
-            //conf::loadMainCli();
             
             // load all modules
             if (!isset($options['disable_base_modules'])) {

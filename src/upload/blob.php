@@ -38,8 +38,7 @@ class blob extends upload {
             }
 
             // check maxsize. Note: Will overrule php ini settings
-            if (isset(self::$options['maxsize'])) {
-                
+            if (isset(self::$options['maxsize'])) {               
                 $res = self::checkMaxSize($filename);
                 if (!$res) { 
                     return false;

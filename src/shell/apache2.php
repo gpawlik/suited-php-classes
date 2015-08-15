@@ -1,6 +1,11 @@
 <?php
 
+namespace diversen\shell;
 use diversen\apache2;
+
+class apache2Command {
+    
+}
 
 /**
  * File contains shell commands for apache2 on Debian systems for fast

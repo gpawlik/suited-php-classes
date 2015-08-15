@@ -580,15 +580,14 @@ class assets extends template {
      */
     public static function setModuleInlineCss($module, $css, $order = null, $options = array()){
         
-        $module_css = conf::pathModules() . "/$module/$css";
-        
+        $module_css = conf::pathModules() . "/$module/$css";   
         $template_name = layout::getTemplateName();
-        $template_override =  "/templates/$template_name/$module$css";
-        
+        $template_override =  "/templates/$template_name/$module$css";  
         if (file_exists(conf::pathHtdocs() . $template_override) ) {
             self::setCss($template_override);
             return;
-        }        
+        }
+        
         self::setInlineCss($module_css);
     }
     

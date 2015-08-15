@@ -1,6 +1,7 @@
 <?php
 
 namespace diversen;
+
 use diversen\moduleloader;
 use diversen\conf;
 use diversen\template;
@@ -12,6 +13,8 @@ use diversen\lang;
 use diversen\uri;
 use diversen\view;
 use diversen\html;
+
+use modules\blocks\module as blocks;
 
 /**
  * File contains contains class for creating layout, which means menus and
@@ -650,7 +653,7 @@ class layout {
             // numeric is custom block added to database
             if (is_numeric($val)) {
                 moduleloader::includeModule('blocks');
-                $row = \blocks::getOne($val); 
+                $row = blocks::getOne($val); 
                 $row['content_block'] = moduleloader::getFilteredContent(
                     conf::getModuleIni('blocks_filters'), $row['content_block']
                 );

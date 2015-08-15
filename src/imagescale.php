@@ -67,7 +67,9 @@ class imagescale {
     public static function resize ($image, $thumb, $x, $y){
         //create transform driver object
         $driver = conf::getMainIni('image_driver');
-        if (!$driver) $driver = 'GD';
+        if (!$driver) {
+            $driver = 'GD';
+        }
         $it = \Image_Transform::factory($driver);
         if (isset(self::$options)) {
             $it->_options = self::$options;           

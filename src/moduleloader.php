@@ -5,7 +5,6 @@ namespace diversen;
 use diversen\conf;
 use diversen\db;
 use diversen\lang;
-use diversen\moduleloader\reference;
 use diversen\uri;
 /**
  * File contains class for loading modules
@@ -179,29 +178,6 @@ class moduleloader {
         return $children[$parent];
     }
 
-    /**
-     * method for getting a modules parent name.
-     * @deprecated 2.4
-     * @param string    $module the module to examine for a parent
-     * @return mixed    $res if a parent module is found we return the parent module name
-     *                       else we return null
-     */
-    public static function getParentModule ($module){        
-        static $parent = null;
-        if (isset($parent)) { 
-            return $parent;
-        }
-        foreach (self::$modules as $val){
-            if ($val['module_name'] != $module) { 
-                continue;
-            } else {
-                if (isset($val['parent'])){
-                    return $val['parent'];
-                }
-            }
-        }
-        return null;
-    }
 
     /**
      * 
@@ -248,8 +224,11 @@ class moduleloader {
         foreach($this->levels[$level] as $val){
 
             $this->includeModule($val);
-            $class = new $val;
-            $class->runLevel($level);
+            
+            $class = "modules\\$val\\module";
+            
+            $object = new $class;
+            $object->runLevel($level);
         }
     }
 
@@ -317,17 +296,17 @@ class moduleloader {
     
 
     /**
-     * Method for setting the requested module info
+     * Examine url and set correct module to load
      */
     public function setModuleInfo ($route = null){
 
-        // check if user has been locked in early run level
-        
+        // check if user already is denied
         if (isset(self::$status[403]) || isset(self::$status[404])){                     
             $this->setErrorModuleInfo(); 
             return;
         } 
         
+        // enable uri 
         $uri = uri::getInstance($route);
         $info = uri::getInfo();
        
@@ -338,35 +317,26 @@ class moduleloader {
             return;
         }
 
-        // if we only have one fragment 
-        // means we are need to load the frontpage module
+        
+        // if we only have one fragment, then load frontpage module
         $frontpage_module = conf::getMainIni('frontpage_module');
         $this->info['module_name'] = $info['module_name'];
+        
         if ($uri->numFragments() == 1){         
             $this->info['module_base_name'] = $frontpage_module;
-            $this->info['module_class'] = $this->info['module_name'];
             $this->info['base'] = conf::pathModules() . "/$frontpage_module";
         } else {
             $this->info['module_base_name'] = $info['module_base_name'];
-            $this->info['module_class'] = str_replace('/', '_', $this->info['module_name']);
             $this->info['base'] = conf::pathModules();
         }
-
-        $this->info['language_file'] = conf::pathModules() . $info['module_base'] . '/lang/' . conf::getMainIni('language'). '/language.inc';
+        
+        // generel info
+        $this->info['module_class'] = "modules\\" . str_replace('/', '\\', $this->info['module_name']) . "\\module";
         $this->info['ini_file'] =  conf::pathModules() . $info['module_base'] . $info['module_base'] . '.ini';
         $this->info['ini_file_php'] =  conf::pathModules() . $info['module_base'] . $info['module_base'] . '.php.ini';
-        $controller_file = conf::pathModules() . $info['controller_path_str'] . '/' . $info['controller'] . '.php';
-        
-        $this->info['controller_file'] = $controller_file;
         $this->info['controller'] = $info['controller'];
         
-        // set module class name from path e.g. content/admin will become contentAdmin 
-        // But only if module path exists. In order to prevent clash with web file system. 
-        $module_full_path = conf::pathModules() . "/" . $this->info['module_name'];
-        if (file_exists($module_full_path)) {
-            $this->info['module_class'] = self::modulePathToClassName($this->info['module_name']);
-        }
-        
+        // check if installed
         if (!self::isInstalledModule($this->info['module_base_name'])){          
             self::$status[404] = 1;
             $this->setErrorModuleInfo(); 
@@ -374,10 +344,7 @@ class moduleloader {
     }
 
     /**
-     * method for initing a module
-     * loads module
-     * set module specific template
-     * set controller specific page
+     * Init module. Set it as running and include it. 
      */
     public function initModule(){
         
@@ -385,82 +352,17 @@ class moduleloader {
         self::$running = $module;
         self::includeModule($module);    
     }
-    
-    /**
-     * var holding a reference name
-     * @var mixed $reference 
-     */
-    public static $reference = null;
-    
-    /**
-     * var holding a referenceId
-     * @var int $referenceId 
-     */
-    public static $referenceId = 0;
-    
-    /**
-     * var id holding inline parent id
-     * @var int $id
-     */
-    public static $id;
-    
-    /**
-     * var holding referenceLink. E.g. for pointing back to parent modules
-     * page
-     * @var string $referenceLink
-     */
-    public static $referenceLink = null;
-    
-    /**
-     * var holding redirect reference when called object has performed
-     * e.g. a correct submission
-     * @var string $referenceRedirect
-     */
-    public static $referenceRedirect = null;
-    
-    /**
-     * var holding reference options sent to called object
-     * @var array $referenceOptions
-     */
-    public static $referenceOptions = null;
-    
-    /**
-     * method for including a reference module
-     * @param int $frag_reference_id
-     * @param int $frag_id
-     * @param string $frag_reference_name
-     */
-    public static function includeRefrenceModule (
-            $frag_reference_id = 2, 
-            
-            // reserved. Will be set by the module in reference
-            // e.g. will be set in files when used in content.
-            
-            $frag_id = 3,
-            $frag_reference_name = 4) {    
-        
-        return reference::includeRefrenceModule($frag_reference_id, $frag_id, $frag_reference_name);
-    }
-    
-    /** 
-     * return all set reference info as an array 
-     * @return array $ary array 
-     *                      (parent_id, inline_parent_id, reference, link, redirect)
-     */
-    public static function getReferenceInfo () {
-        return reference::getReferenceInfo();
-    }
+
 
     /**
-     * return modules classname from a modules path.
-     * e.g. account_profile will return accountProfile
-     * e.g. content/article will return contentArticle
+     * return a module classname from a module path.
+     * e.g. content/article will return modules\content\article
      * 
      * @param  string   $path (e.g. account/profile)
      * @return string   $classname (e.g. accountProfile)
      */
     public static function modulePathToClassName ($path){
-        return str_replace('/', '_', $path);
+        return str_replace('/', '\\', $path);
     }
     
     /**
@@ -481,7 +383,7 @@ class moduleloader {
     public function getParsedModule(){
      
         $action_str = $this->getParsedModuleAction();  
-        if (!file_exists($this->info['controller_file']) && !$this->info['module_action_exists'] ){ 
+        if (!$this->info['module_action_exists'] ){ 
             self::$status[404] = 1;
             $this->setErrorModuleInfo(); 
         }  else {
@@ -525,6 +427,7 @@ class moduleloader {
     
     public function getParsedModuleAction () {
         
+
         $controller = $this->info['controller'];
         $action = $controller. 'Action';
         $module_class = self::modulePathToClassName($this->info['module_class']);
@@ -639,19 +542,25 @@ class moduleloader {
     public static function subModuleGetPreContent ($modules, $options) {
         $str = '';
         $ary = array();
-        if (!is_array($modules)) return array ();
+        if (!is_array($modules)) { 
+            return array ();
+        }
         foreach ($modules as $val){
             $str = '';
             
             if (!self::isInstalledModule($val)) {
                 continue;
             }
-            if (method_exists($val, 'subModulePreContent')){
-                $str = $val::subModulePreContent($options);
+          
+            $class = "modules\\$val\\module";
+            if (method_exists($class, 'subModulePreContent')){
+                
+                $str = $class::subModulePreContent($options);
                 if (!empty($str)) {
                     $ary[] = $str;
                 }
-            }
+            } 
+            
         }       
         return $ary;
     }
@@ -664,19 +573,22 @@ class moduleloader {
      * @return array $ary array containing submodule links
      */
     public static function subModuleGetAdminOptions ($modules, $options) {
-        $str = '';
+        
         $ary = array();
         
         if (!is_array($modules)) { 
             return array ();
         }
-        
+
         foreach ($modules as $val){
+            $str = '';
             if (!self::isInstalledModule($val)) {
                 continue;
             }
-            if (method_exists($val, 'subModuleAdminOption')){
-                $str = $val::subModuleAdminOption($options);
+            
+            $class = "modules\\$val\\module";
+            if (method_exists($class, 'subModuleAdminOption')){
+                $str = $class::subModuleAdminOption($options);
                 if (!empty($str)) { 
                     $ary[] = $str;
                 }
@@ -706,8 +618,9 @@ class moduleloader {
                 continue;
             }
             
-            if (method_exists($val, 'subModuleAdminOption')){
-                $a = $val::subModuleAdminOptionAry($options);
+            $class = "modules\\$val\\module";
+            if (method_exists($class, 'subModuleAdminOption')){
+                $a = $class::subModuleAdminOptionAry($options);
                 if (!empty($a)) { 
                     $ary[] = $a;
                 }
@@ -732,31 +645,7 @@ class moduleloader {
         $url = $base . "/$params[parent_id]/$extra/$params[reference]";
         return $url;
     }
-    
-    /**
-     * method for parsing the admin options. As there can be more modules
-     * we iritate over an array of sub modules and return the admin menu
-     * as a string. 
-     * 
-     * @param array $ary the array of strings
-     * @return string $str string
-     */
-    public static function parseAdminOptions ($ary = array()){
-        $num = count($ary);
-        $str = "<div id =\"content_menu\">\n";
-        $str.= "<ul>\n";
-        foreach ($ary as $val){
-            $num--;
-            if ($num) {
-                $str.= "<li>" . $val . MENU_SUB_SEPARATOR .  "</li>\n";
-            } else {
-                $str.= "<li>" . $val . "</li>\n";
-            }
-        }
-        $str.= "</ul>\n";
-        $str.= "</div>\n";
-        return $str;
-    }
+
 
     /**
      * method for setting inline content
@@ -765,10 +654,14 @@ class moduleloader {
      * @return string 
      */
     public static function subModuleGetInlineContent ($modules, $options){
+        
+        // only load array
         $ary = array ();
         if (!is_array($modules)) { 
             return $ary;
         }
+        
+        // traverse array, and call subModuleInlineContent
         foreach ($modules as $val){
             if (!self::isInstalledModule($val)) {
                 continue;
@@ -794,8 +687,17 @@ class moduleloader {
         $ary = array ();
         if (!is_array($modules)) return $ary;
         foreach ($modules as $val){
-            if (@method_exists($val, 'subModulePostContent') && self::isInstalledModule($val)){
-                $str = $val::subModulePostContent($options);
+            if (!self::isInstalledModule($val)) {
+                continue;
+            }
+            
+            if (!self::isInstalledModule($val)) {
+                return;
+            }
+            
+            $class = "modules\\$val\\module";
+            if (method_exists($class, 'subModulePostContent')){
+                $str = $class::subModulePostContent($options);
                 if (!empty($str)) { 
                     $ary[] = $str;
                 }
@@ -818,22 +720,7 @@ class moduleloader {
             self::includeModule ($val);
         }
     }
-    
-    /**
-     * returns running modules reference info which is an array e.g.
-     * array ('reference' => 'content/article', 'parent_id' => 24);
-     * @return array $ary e.g. array ('reference' => 'content/article', 'parent_id' => 24);
-     */
-    public static function getRunningModuleReferenceInfo () {
-        // get module running
-        $module = self::$running;
-        self::includeModule($module);
-        $class_name = self::modulePathToClassName($module);
-        
-        // get reference info (reference, parent_id) from running module
-        $obj = new $class_name();
-        return $obj->getReferenceInfo();
-    }
+
 
      
     /**
@@ -848,26 +735,20 @@ class moduleloader {
         }
         
         // find base module. 
-        // only in base modules we set language and ini settings
-        
+        // only in base modules does ini settings exists
         $ary = explode('/', $module);
         $base_module = $ary[0]; 
         
         // lang and ini only exists in base module
-
         self::setModuleIniSettings($base_module);
         
-        // new include style
-
+        // include module file
         $module_file = conf::pathModules() . "/$module/module.php";
         if (file_exists($module_file)) {    
             self::$loadedModules['loaded'][$module] = true;
-            include_once $module_file;
-        }
-        
+            require_once $module_file;
+        } 
         return true;
-
-        
     }
     
     /**
@@ -892,16 +773,7 @@ class moduleloader {
         }
         $included[$template] = true;
     }
-    
-    /**
-     * method for including a controller
-     * @param string $controller
-     */
-    public static function includeController ($controller) {
-        $module_path = conf::pathModules() . '/' . $controller;
-        $controller_file = $module_path . '.php';
-        include_once $controller_file;
-    }
+
     
     /**
      * method for including filters

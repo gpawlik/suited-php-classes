@@ -249,6 +249,10 @@ class moduleinstaller  {
         $modules = $db->selectAll('modules');
         return $modules;
     }
+    
+    public static function getModulesFromDir () {
+        return file::getDirsGlob(conf::pathModules(), array('basename' => 1));
+    }
 
 
     

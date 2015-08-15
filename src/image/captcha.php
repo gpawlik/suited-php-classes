@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen\image;
-use diversen\conf as conf;
+use diversen\conf;
 /**
  * file contains a simple image captcha class
  * @package image
