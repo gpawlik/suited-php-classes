@@ -209,6 +209,8 @@ class layout {
      */
     public static function setMenuFromClassPath ($path) {
         $ary = explode("/", $path);
+        
+        moduleloader::includeModule($ary[0]);
         if (count($ary) == 1) {
             $menu = self::getBaseModuleMenu($ary[0]);
             self::$menu['module'] = $menu;

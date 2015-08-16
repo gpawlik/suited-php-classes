@@ -605,24 +605,6 @@ class moduleloader {
         }
         return $ary;
     }
-    
-    /**
-     * method for building a reference url
-     * @param string $base
-     * @param array $params
-     * @return string $url 
-     */
-    public static function buildReferenceURL ($base, $params) {
-        if (isset($params['id'])) {
-            $extra = $params['id'];
-        } else {
-            $extra = 0;
-        }
-        
-        $url = $base . "/$params[parent_id]/$extra/$params[reference]";
-        return $url;
-    }
-
 
     /**
      * method for setting inline content
@@ -643,8 +625,10 @@ class moduleloader {
             if (!self::isInstalledModule($val)) {
                 continue;
             }
-            if (method_exists($val, 'subModuleInlineContent')){
-                $str = $val::subModuleInlineContent($options);
+            
+            $class = "modules\\$val\\module";
+            if (method_exists($class, 'subModuleInlineContent')){
+                $str = $class::subModuleInlineContent($options);
                 if (!empty($str)) { 
                     $ary[] = $str;
                 }
