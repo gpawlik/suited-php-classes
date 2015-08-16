@@ -9,6 +9,7 @@ use diversen\moduleloader;
 use diversen\uri\dispatch;
 //use mainTemplate;
 use diversen\intl;
+use divesen\db\connect;
 use diversen\db;
 use diversen\html\common;
 use diversen\view;
@@ -78,7 +79,15 @@ class boot {
         // init module loader. 
         // after this point we can check if module exists and fire events connected to
         // installed modules
+        //$options = conn
+        
         $db = new db();
+        
+        
+        $db->connect();
+        
+        
+        $db->connect();
         $ml = new moduleloader();
         
         // initiate uri

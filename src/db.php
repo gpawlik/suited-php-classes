@@ -2,8 +2,8 @@
 
 namespace diversen;
 
-use diversen\conf;
 use diversen\db\admin;
+use diversen\db\connect;
 use PDO;
 use PDOException;
 
@@ -20,22 +20,7 @@ use PDOException;
  * 
  * @package    db
  */
-class db {
-    
-    public static $con = false;
-    /**
-     * Database handle for the database connection. 
-     *
-     * static $dbh that holds the connection to the database
-     * @var false|object
-     */
-    public static $dbh = false;
-
-    /**
-     * holds all sqlstatements
-     * @var  array  $debug
-     */
-    public static $debug = array();
+class db extends connect {
 
     /**
      * gets a db object. Mostly so that we can use the db class in the static 
@@ -43,21 +28,20 @@ class db {
      * @param array $options options to give constructor
      * @return object $db
      */
-    static public function init($options = array ()){
+    public static function init($options = array ()){
         static $db = null;
         if (!$db) {
             $db = new self($options);
         } 
         return $db;
     }
-
     
     /**
      * constructor will try to call method connect
      * @param array $options
      */
     public function __construct($options = null){
-
+        $this->options = $options;
     }
     
     /**
@@ -100,86 +84,6 @@ class db {
         return self::$debug;
     }
 
-    /**
-     * Method for connecting a mysql database
-     * if a connection is open we use that connection
-     * connection string is read from config/config.ini
-     * 
-     * @param array $options You can prevent the connection from halting on 
-     *              error by setting $options['dont_die'] = true. If there
-     *              is no connection NO_DB_CONN will be returned
-     *              
-     *              if you set $options[url] the class will try to connect to
-     *              database with connection string given, e.g. 
-     *              
-     *              $options = array ('url' => 'conn_url',
-     *                                'username => 'username',
-     *                                'password' => 'password);
-     * 
-     * 
-     * 
-     *
-     */
-    public static function connect($options = null){
-        self::$debug[] = "Trying to connect with " . conf::$vars['coscms_main']['url'];
-        if (isset($options['url'])) {
-            $url = $options['url'];
-            $username = $options['username'];
-            $password = $options['password'];
-        } else {
-            $url = conf::getMainIni('url');
-            $username = conf::getMainIni('username');
-            $password = conf::getMainIni('password');
-            
-        }
-
-        try {
-            
-            if (conf::getMainIni('db_dont_persist') == 1) {
-                $con_options = array ();
-            } else {
-                $con_options = array ('PDO::ATTR_PERSISTENT' => true);
-            }
-            
-            
-            self::$dbh = new PDO(
-                $url,
-                $username,
-                $password, 
-                    $options
-            );
-            self::$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            
-            self::setSsl();
-	        if (isset(conf::$vars['coscms_main']['db_init'])) {
-                self::$dbh->exec(conf::$vars['coscms_main']['db_init']);
-
-            }
-
-        } catch (PDOException $e) {
-            if (!$options){
-                self::fatalError ('Connection failed: ' . $e->getMessage());
-            } else {
-                if (isset($options['dont_die'])){
-                    self::$debug[] = $e->getMessage();
-                    self::$debug[] = 'No connection';
-                    return "NO_DB_CONN";
-                }
-            }
-        }
-        self::$con = true;
-        self::$debug[]  = 'Connected!';
-    }
-
-    public static function setSsl () {
-
-	    $attr = conf::getMainIni('mysql_attr');
-            if (isset($attr['mysql_attr'])) {
-                self::$dbh->setAttribute(PDO::MYSQL_ATTR_SSL_KEY, $attr['ssl_key']);
-                self::$dbh->setAttribute(PDO::MYSQL_ATTR_SSL_CERT, $attr['ssl_cert']);
-                self::$dbh->setAttribute(PDO::MYSQL_ATTR_SSL_CA, $attr['ssl_ca']);
-            }   
-    }    
     /**
      * checks if a field exists in a table
      * @param string $table the db table

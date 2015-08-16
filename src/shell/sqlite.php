@@ -42,10 +42,11 @@ function db_to_sqlite ($options = array ()) {
 
     $ret = common::systemCommand($command);
     
+    $base = conf::pathBase();
     if (!$ret) {
         $fs->chmod('sqlite/database.sql', 0777, 0000, true);
         common::echoMessage('Sqlite database created. Edit config.ini and add:'); 
-        common::echoMessage("sqlite://sqlite/database.sql");
+        common::echoMessage("sqlite:/$base/sqlite/database.sql");
     }    
 }
 
