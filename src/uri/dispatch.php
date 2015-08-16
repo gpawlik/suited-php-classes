@@ -52,6 +52,7 @@ class dispatch {
             
             $class = self::getModuleName($module);
             moduleloader::includeModule($module);
+            moduleloader::$running = $module;
             
             if (method_exists($class, $method)) {
                 $call_exists = 1;

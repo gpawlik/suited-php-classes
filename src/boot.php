@@ -158,8 +158,6 @@ class boot {
 
         // init blocks
         $layout->initBlocks();
-
-        $db_route = dispatch::getMatchRoutes();
         
         // if any matching route was found we check for a method or function
         if ($db_route) {
