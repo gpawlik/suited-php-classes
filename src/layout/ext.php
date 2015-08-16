@@ -1,6 +1,7 @@
 <?php
 
 namespace diversen\layout;
+
 use diversen\layout;
 use diversen\html;
 use diversen\uri;

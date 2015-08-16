@@ -7,11 +7,11 @@ use diversen\conf;
 use diversen\log;
 use diversen\moduleloader;
 use diversen\uri\dispatch;
-use mainTemplate;
+//use mainTemplate;
 use diversen\intl;
 use diversen\db;
 use diversen\html\common;
-
+use diversen\view;
 
 class boot {
 
@@ -81,9 +81,8 @@ class boot {
         $db = new db();
         $ml = new moduleloader();
         
-        //
+        // initiate uri
         uri::getInstance();
-
 
         // runlevel 1: merge db config
         $ml->runLevel(1);
@@ -120,17 +119,15 @@ class boot {
 
         // load a 'language_all' file or load all module system language
         // depending on configuration
-        
         $l = new lang();
         $base = conf::pathBase();
         $htdocs = conf::pathHtdocs();
         $l->setDirsInsideDir("$base/modules/");
         $l->setDirsInsideDir("$htdocs/templates/");
         $l->setSingleDir("$base/vendor/diversen/simple-php-classes");
-        
-        
         $l->loadLanguage(conf::getMainIni('language'));
 
+        // runlevel 5
         $ml->runLevel(5);
 
         // load url routes if any
@@ -159,6 +156,7 @@ class boot {
         // init blocks
         $layout->initBlocks();
         
+        
         // if any matching route was found we check for a method or function
         if ($db_route) {
             $str = dispatch::call($db_route['method']);
@@ -167,11 +165,17 @@ class boot {
             $str = $ml->getParsedModule();
         }
 
-        mainTemplate::printHeader();
-        echo '<div id="content_module">' . $str . '</div>';
+        // set view vars
+        $vars['content'] = $str;
+        
+        // get template name
+        $file = conf::pathHtdocs() . "/templates/" . layout::getTemplateName() . "/template.php";
+        
+        // get view
+        echo $str = view::getFileView($file, $vars);
+        //die;
 
         $ml->runLevel(7);
-        mainTemplate::printFooter();
         conf::$vars['final_output'] = ob_get_contents();
         ob_end_clean();
 
