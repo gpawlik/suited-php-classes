@@ -18,16 +18,17 @@ class boot {
 
     public function run() {
 
-       
+        // Register an autoloader for loading modules from mopdules dir
         $m = new modules();
         $m->autoloadRegister();
 
+        // define HTML constants
         common::defineConstants();
         
-        // define all constant - based on base path and config.ini
+        // define global constants - based on base path
         conf::defineCommon();
 
-        // set include path - based on config.ini
+        // set include paths
         conf::setIncludePath();
         
         // load config file 
@@ -76,18 +77,11 @@ class boot {
         // catch all output
         ob_start();
 
-        // init module loader. 
-        // after this point we can check if module exists and fire events connected to
-        // installed modules
-        //$options = conn
-        
+        // Create a db connection
         $db = new db();
-        
-        
         $db->connect();
-        
-        
-        $db->connect();
+
+        // init module loader. 
         $ml = new moduleloader();
         
         // initiate uri
@@ -126,8 +120,7 @@ class boot {
         // run level 4 - load language
         $ml->runLevel(4);
 
-        // load a 'language_all' file or load all module system language
-        // depending on configuration
+        // load all language files
         $l = new lang();
         $base = conf::pathBase();
         $htdocs = conf::pathHtdocs();
@@ -142,6 +135,7 @@ class boot {
         // load url routes if any
         dispatch::setDbRoutes();
 
+        // runlevel 6
         $ml->runLevel(6);
         
         // check db routes or load by defaults
@@ -165,7 +159,6 @@ class boot {
         // init blocks
         $layout->initBlocks();
         
-        
         // if any matching route was found we check for a method or function
         if ($db_route) {
             $str = dispatch::call($db_route['method']);
@@ -180,10 +173,10 @@ class boot {
         // get template name
         $file = conf::pathHtdocs() . "/templates/" . layout::getTemplateName() . "/template.php";
         
-        // get view
+        // get main content
         echo $str = view::getFileView($file, $vars);
-        //die;
 
+        // run level 7
         $ml->runLevel(7);
         conf::$vars['final_output'] = ob_get_contents();
         ob_end_clean();
