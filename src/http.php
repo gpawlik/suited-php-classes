@@ -18,16 +18,26 @@ class http {
      * @return string $path path and query
      */
     private static function getRedirect(){
-        $info = parse_url($_SERVER['REQUEST_URI']);
+
+        $path = $_SERVER['PATH_INFO'];
+        
         $ary = array();
         foreach($_GET as $key => $val) {
+            if ($key == 'q') {
+                continue;
+            }
+            
             if ($key =='prg' OR $key == 'uniqid') {
                 continue;
             }
             $ary[$key] = $val;
         }
         $query = http_build_query($ary);
-        return $info['path'] . '?' . $query . '&';
+        $ret = $path . '?' . $query;
+        if (!empty($ary)) {
+            $ret.='&';
+        }
+        return $ret;
     }
     /**
      * simple function for creating prg pattern. 
