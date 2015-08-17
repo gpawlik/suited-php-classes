@@ -8,7 +8,7 @@ use diversen\db;
 use diversen\db\q;
 use diversen\date;
 use diversen\moduleloader;
-use diversen\event;
+
 
 /**
  * File contains contains class for doing checks on seesions
@@ -197,17 +197,7 @@ class session {
                     $_SESSION['admin'] = $account['admin'];
                     $_SESSION['super'] = $account['super'];
                     $_SESSION['type'] = $account['type'];
-                    
-                    $args = array (
-                        'action' => 'account_login',
-                        'user_id' => $account['id']
-                    );
-
-                    // trigger session_events
-                    $login_events = conf::getMainIni('session_events');
-                    event::getTriggerEvent(
-                        $login_events, $args
-                    );
+                                        
                 } else {
                     // keep anon user in session
                     $_SESSION['id'] = 0;
