@@ -132,7 +132,7 @@ class boot {
         // runlevel 5
         $ml->runLevel(5);
 
-        // load url routes if any
+        // load routes if any
         dispatch::setDbRoutes();
 
         // runlevel 6
@@ -145,10 +145,8 @@ class boot {
             $ml->initModule();
         }
         
-
-        // include template class found in conf::pathHtdocs() . '/templates'
-        // only from here we should use template class. 
-        // template translation will override module translations
+        // Init layout. Sets template name
+        // load correct CSS. St menus if any. Etc. 
         $layout = new layout();
         
         // we first load menus here so we can se what happened when we
@@ -173,7 +171,7 @@ class boot {
         // get template name
         $file = conf::pathHtdocs() . "/templates/" . layout::getTemplateName() . "/template.php";
         
-        // get main content
+        // echo module content
         echo $str = view::getFileView($file, $vars);
 
         // run level 7

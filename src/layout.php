@@ -57,7 +57,7 @@ class layout {
         if (!isset($template)) {
             $template = self::getTemplateName();
         }
-        //self::includeTemplateCommon($template);
+
         template::init($template);
         template::loadTemplateIniAssets();
 
