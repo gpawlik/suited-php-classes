@@ -38,7 +38,7 @@ function cos_menu_install_menu($options){
 function cos_menu_install_all (){
 
     $mods = moduleinstaller::getModules();
-    foreach ($mods as $key => $val){   
+    foreach ($mods as $val){   
         $options = array('module' => $val['module_name']);
         cos_menu_install_menu($options);
     }
@@ -48,7 +48,7 @@ function cos_menu_install_all (){
 function cos_menu_uninstall_all (){
 
     $mods = moduleinstaller::getModules();
-    foreach ($mods as $key => $val){
+    foreach ($mods as $val){
         $options = array('module' => $val['module_name']);
         cos_menu_uninstall_menu($options);
     }

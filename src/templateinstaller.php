@@ -2,7 +2,7 @@
 
 namespace diversen;
 
-use diversen\conf as conf;
+use diversen\conf;
 use diversen\moduleinstaller;
 use diversen\cli\common;
 use diversen\git;
@@ -21,13 +21,6 @@ use diversen\git;
  * @package    installer
  */
 class templateinstaller extends moduleinstaller {
-    /**
-     * holding array of info for the install
-     * this is loaded from install.inc file and will read
-     * the $_INSTALL var
-     * @var array $installInfo
-     */
-    public $installInfo = null;
 
     /**
      * constructor which will take the template to install, upgrade or delete
@@ -41,34 +34,31 @@ class templateinstaller extends moduleinstaller {
         }
     }
 
-/**
+    /**
      * reads install info from modules/module_name/install.inc
-     *
      * @param   array $options
      */
     public function setInstallInfo($options){
+        
+        // In profile all templates are also modules
         if (isset($options['module_name'])) {
             $template_name = $options['module_name'];
         } else {
             $template_name = $options['template'];
         }
         
+        // Set dir and ini files
         $template_dir = conf::pathHtdocs()  . "/templates/$template_name";
         $ini_file = $template_dir . "/$template_name.ini";
         $ini_file_dist = $template_dir . "/$template_name.ini-dist";
 
+        // Profile
         if (isset($options['profile'])){
             $ini_file_dist = conf::pathBase() . "/profiles/$options[profile]/$template_name.ini-dist";
         }
-
-        if (!file_exists($ini_file)){
-            if (file_exists($ini_file_dist)){
-                copy ($ini_file_dist, $ini_file);
-                conf::$vars['coscms_main']['template'] = conf::getIniFileArray($ini_file);
-            } 
-        } else {
-            conf::$vars['coscms_main']['template'] = conf::getIniFileArray($ini_file);
-        }
+        
+        // Generate ini file
+        $this->generateInifile($ini_file, $ini_file_dist);
 
         if (file_exists($template_dir)){
             $install_file = "$template_dir/install.inc";
@@ -80,50 +70,36 @@ class templateinstaller extends moduleinstaller {
             
              // if no version we check if this is a git repo
             if (!isset($this->installInfo['VERSION'])) {
-
-                $command = "cd " . conf::pathHtdocs() . "/templates/"; 
-                $command.= $this->installInfo['NAME'] . " ";
-                $command.= "&& git config --get remote.origin.url";
-
-                $git_url = shell_exec($command);
-                // git config --get remote.origin.url
-                $tags = git::getTagsRemote($git_url);
-                
-                //git_get_latest_remote_tag($repo);
-
-                if (empty($tags)) {
-                    $latest = 'master';
-                } else {
-                    $latest = array_pop($tags);
-                }
-
-                $this->installInfo['VERSION'] = $latest;
-
+                $this->setInstallInfoFromRemote('template');
             }
-            
             
             if (file_exists($install_file)) {
                 include $install_file;
-
                 $this->installInfo = $_INSTALL;
-                $this->installInfo['NAME'] = $template_name;
-                
-                if (empty($this->installInfo['MAIN_MENU_ITEM'])){
-                    $this->installInfo['menu_item'] = 0;
-                } else {
-                    $this->installInfo['menu_item'] = 1;
-                }
-
-                if (empty($this->installInfo['RUN_LEVEL'])){
-                    $this->installInfo['RUN_LEVEL'] = 0;
-                }
+                $this->installInfo['NAME'] = $template_name;               
+                $this->installInfo['RUN_LEVEL'] = 0;
             } 
-
-            
-            
         } else {
-            common::echoMessage ("Notice: No module dir: $template_dir\n");
+            common::echoMessage ("Notice: No template dir: $template_dir\n");
         }
+    }
+    
+    public function setInstallInfoFromRemote() {
+
+        $command = "cd " . conf::pathHtdocs() . "/templates/";
+        $command.= $this->installInfo['NAME'] . " ";
+        $command.= "&& git config --get remote.origin.url";
+
+        $git_url = shell_exec($command);
+        $tags = git::getTagsRemote($git_url);
+
+        if (empty($tags)) {
+            $latest = 'master';
+        } else {
+            $latest = array_pop($tags);
+        }
+
+        $this->installInfo['VERSION'] = $latest;
     }
     
     /**

@@ -1,15 +1,13 @@
 <?php
 
-namespace diversen;
 /**
- * Common methods for manipulating strings
- * @package strings
+ * @desciption 
+ * class for doing string operations
  */
 
-/**
- * class for manipulating strings
- * @package strings
- */
+namespace diversen;
+
+
 class strings {
     
     /**
@@ -148,19 +146,16 @@ class strings {
      * @return  string  $str the substringed string
      * 
      */
-    public static function substr2($str, $length, $minword = 3, $use_dots = true)
-    {
+    public static function substr2($str, $length, $minword = 3, $use_dots = true){
         $sub = '';
         $len = 0;
 
-        foreach (explode(' ', $str) as $word)
-        {
+        foreach (explode(' ', $str) as $word) {
             $part = (($sub != '') ? ' ' : '') . $word;
             $sub .= $part;
             $len += self::strlen($part);
 
-            if (self::strlen($word) > $minword && self::strlen($sub) >= $length)
-            {
+            if (self::strlen($word) > $minword && self::strlen($sub) >= $length) {
                 break;
             }
         }
@@ -208,7 +203,6 @@ class strings {
     }
 
     /**
-     * 
      * encrypts a string
      * @url http://stackoverflow.com/a/4244629
      * @param string $text

@@ -62,17 +62,16 @@ class moduleinstaller  {
     public $confirm;
 
     /**
-     * constructor which will take the module to install, upgrade or delete
-     * as param and set info about module to be installed, upgraded, etc.
-     * if module is set
+     * Connect to database
+     * Set some install options
      *
      * @param   array $options
+     *                array ('module', 'profile'
      */
-    function __construct($options = null){
+    public function __construct($options = null){
         
         $db = new db();
         $db->connect();
-        
         
         if (isset($options)){
             return $this->setInstallInfo($options);
@@ -80,102 +79,42 @@ class moduleinstaller  {
     }
 
     /**
-     * reads install info from modules/module_name/install.inc
-     *
+     * 
      * @param   array $options
      */
     public function setInstallInfo($options){
         
-        // set module name
-        // set module dir
-        // set ini 
-        // set ini dist
-        
+        // Base info
         $module_name = $options['module'];
         $module_dir = conf::pathModules() . "/$module_name";
+        
+        // ini file info
         $ini_file = $module_dir . "/$module_name.ini";
         $ini_file_dist = $module_dir . "/$module_name.ini-dist";
 
-        // if profile we use profile's module ini-dist
+        // If profile is set. Then use profile's module ini dist settings
         if (isset($options['profile'])){
             $ini_file_dist = conf::pathBase() . "/profiles/$options[profile]/$module_name.ini-dist";
         }
 
-        // check if module dir exists 
+        // If module_dir already exists, then try to load ini settings of the module
         if (file_exists($module_dir)){
             
-            // check for an existing ini file
-            // copy if we found if ini is found
-            if (!file_exists($ini_file)){
-                if (file_exists($ini_file_dist)){
-                    copy ($ini_file_dist, $ini_file);
-                    conf::$vars['coscms_main']['module'] = conf::getIniFileArray($ini_file);
-                } 
-            } else {
-                conf::$vars['coscms_main']['module'] = conf::getIniFileArray($ini_file);
-            }
+            // load base module settings
+            $this->generateInifile($ini_file, $ini_file_dist);
             
-            // check for a locale ini file which only
-            // can be added by end user. 
-            $ini_locale = $module_dir . "/locale.ini";
-            if (file_exists($ini_locale)) {
-                $locale = conf::getIniFileArray($ini_locale, true);
-                conf::$vars['coscms_main']['module'] =
-                    array_merge(
-                    conf::$vars['coscms_main']['module'],
-                    $locale
-                );
-            }
+            // merge in locale.ini settings if found
+            $this->loadLocaleIniSettings($module_dir);
             
-            // load install.inc if exists
+            // load install.inc if found
             $install_file = "$module_dir/install.inc";
             if (!file_exists($install_file)){
                 $status = "Notice: No install file '$install_file' found in: '$module_dir'";
                 common::echoStatus('NOTICE', 'y', $status);
             }
+            $this->loadInstallFile($module_name, $install_file);
             
-            // set a defaukt module_name - which is the module dir
-            $this->installInfo['NAME'] = $module_name;
             
-            // load install.inc if found
-            if (file_exists($install_file)) {
-                include $install_file;
-
-                $this->installInfo = $_INSTALL;
-                $this->installInfo['NAME'] = $module_name;
-                
-                // is menu item
-                if (empty($this->installInfo['MAIN_MENU_ITEM'])){
-                    $this->installInfo['menu_item'] = 0;
-                } else {
-                    $this->installInfo['menu_item'] = 1;
-                }
-
-                // run levels
-                if (empty($this->installInfo['RUN_LEVEL'])){
-                    $this->installInfo['RUN_LEVEL'] = 0;
-                }
-            } 
-            
-            // if no version we check if this is a git repo
-            // as there is no version from a install.inc file
-            // we always just use the latest tag
-            if (!isset($this->installInfo['VERSION']) && conf::isCli()) {
-                
-                $command = "cd " . conf::pathModules() . "/"; 
-                $command.= $this->installInfo['NAME'] . " ";
-                $command.= "&& git config --get remote.origin.url";
-
-                $git_url = shell_exec($command);
-                $tags = git::getTagsRemote($git_url);
-
-                if (empty($tags)) {
-                    $latest = 'master';
-                } else {
-                    $latest = array_pop($tags);
-                }
-                $this->installInfo['VERSION'] = $latest;
-            }
         } else {
             $status = "No module dir: $module_dir";
             common::echoStatus('NOTICE', 'y', $status);
@@ -184,26 +123,108 @@ class moduleinstaller  {
     }
     
     /**
-     * checks if module source exists
-     * @param string $module
-     * @return boolean $res true if exists else false
+     * overload ini settings with locale.ini, if file is found in module_dir
+     * @param string $module_dir
      */
-    public function sourceExists ($module) {
-        $module_path = conf::pathModules() . "/$module";
-        if (file_exists($module_path)) {
-            return true;
+    public function loadLocaleIniSettings($module_dir) {
+
+        // If locale.ini is found, theń merge configuration
+        $ini_locale = $module_dir . "/locale.ini";
+        if (file_exists($ini_locale)) {
+            $locale = conf::getIniFileArray($ini_locale, true);
+            conf::$vars['coscms_main']['module'] = array_merge(
+                    conf::$vars['coscms_main']['module'], $locale
+            );
         }
-        return false;
     }
+
     /**
-     * method for checking if a module is installed or not
-     * checking is just done by looking into the modules table of database
+     * Generate an ini file if one is not found, and load module ini settings
+     * @param string $ini_file
+     * @param string $ini_file_dist
+     */
+    public function generateInifile($ini_file, $ini_file_dist) {
+        if (!file_exists($ini_file)) {
+            if (file_exists($ini_file_dist)) {
+                copy($ini_file_dist, $ini_file);
+                conf::$vars['coscms_main']['module'] = conf::getIniFileArray($ini_file);
+            }
+        } else {
+            conf::$vars['coscms_main']['module'] = conf::getIniFileArray($ini_file);
+        }
+    }
+
+    /**
+     * load install.inc file, and set installInfo
+     * @param type $module_name
+     * @param type $install_file
+     */
+    public function loadInstallFile($module_name, $install_file) {
+        // set a defaukt module_name - which is the module dir
+        $this->installInfo['NAME'] = $module_name;
+
+        // load install.inc if found
+        if (file_exists($install_file)) {
+            include $install_file;
+
+            $this->installInfo = $_INSTALL;
+            $this->installInfo['NAME'] = $module_name;
+
+            // Has menu item
+            if (empty($this->installInfo['MAIN_MENU_ITEM'])) {
+                $this->installInfo['menu_item'] = 0;
+            } else {
+                $this->installInfo['menu_item'] = 1;
+            }
+
+            // run levels
+            if (empty($this->installInfo['RUN_LEVEL'])) {
+                $this->installInfo['RUN_LEVEL'] = 0;
+            }
+        }
+
+        // If no version is found, then check if this is a git repo
+        // If it is, then use latest tag for install
+
+        if (!isset($this->installInfo['VERSION']) && conf::isCli()) {
+            $this->setInstallInfoFromRemote();
+            
+        }
+    }
+    
+    /**
+     * If no version info was found in install.inc, try to fetch a version
+     * from a git repo, and set the version in installInfo
+     */
+    public function setInstallInfoFromRemote($type = 'module') {
+        if ($type == 'module') {
+            $base = conf::pathModules();
+        } else {
+            $type = conf::pathHtdocs();
+        }
+        
+        $command = "cd " .  $base . "/";
+        $command.= $this->installInfo['NAME'] . " ";
+        $command.= "&& git config --get remote.origin.url";
+
+        $git_url = shell_exec($command);
+        $tags = git::getTagsRemote($git_url);
+
+        if (empty($tags)) {
+            $latest = 'master';
+        } else {
+            $latest = array_pop($tags);
+        }
+        $this->installInfo['VERSION'] = $latest;
+    }
+
+    /**
+     * Check if module is installed
      * @param string $module 
-     * @return  boolean true or false
+     * @return  boolean $res true or false
      */
     public function isInstalled($module = null){
-        // test if a module with $this->installInfo['MODULE_NAME']
-        // already is installed.
+
         if (!isset($module)){
             $module = $this->installInfo['NAME'];
         }
@@ -218,15 +239,11 @@ class moduleinstaller  {
     }
 
     /**
-     * method for getting module info. Info is read from database
-     *
-     * @return array|false  false or array
-     *                      if module we search for exists, we return the
-     *                      install row else we return false
+     * get module info from db
+     * @return array|false  $res
      */
-    public function getModuleInfo(){
-        // test if a module with $this->installInfo['MODULE_NAME']
-        // already is installed.
+    public function getModuleDbInfo(){
+
         $db = new db();
         try {
             $row = $db->selectOne('modules', 'module_name', $this->installInfo['NAME'] );
@@ -240,7 +257,7 @@ class moduleinstaller  {
     }
 
     /**
-     * get array of all modules
+     * Get an array of all modules
      * @return array  $modules assoc array of all modules
      */
     public static function getModules(){
@@ -250,22 +267,26 @@ class moduleinstaller  {
         return $modules;
     }
     
+    /**
+     * Get array of modules from file system.
+     * @return array $base_dirs
+     */
     public static function getModulesFromDir () {
         return file::getDirsGlob(conf::pathModules(), array('basename' => 1));
     }
 
-
-    
+    /**
+     * get all templates from file system
+     * @return array $templates
+     */
     public function getTemplates () {
         $dir = conf::pathHtdocs() . "/templates";
         $templates = file::getFileList($dir, array('dir_only' => true));
         return $templates;
     }
     
-
-    
     /**
-     * reloads config for all modules
+     * Reloads install config for all modules
      */
     public function reloadConfig () {
         $db = new db();
@@ -303,17 +324,17 @@ class moduleinstaller  {
     /**
      * method for upgrading all modules.
      */
+    /*
     public function upgradeAll(){
         $modules = $this->getModules();
         foreach($modules as $val){
-            // testing if this is working
             $upgrade = new moduleinstaller($val['module_name']);
             $upgrade->upgrade();
         }
-    }
+    }*/
     
     /**
-     * method for deleting routes for a module
+     * Method for deleting DB routes for a module
      */
     public function deleteRoutes () {
         $db = new db();
@@ -321,31 +342,38 @@ class moduleinstaller  {
     }
     
     /**
-     * method for inserting routes for modules
+     * Method for inserting routes for a module
      */
     public function insertRoutes () {
-        $db = new db();
+
         
         if (isset($this->installInfo['ROUTES'])) {
             $db->delete('system_route', 'module_name', $this->installInfo['NAME']);
             $routes = $this->installInfo['ROUTES'];
-            foreach ($routes as $val) {
-                foreach ($val as $route => $value) {
-                    $insert = array (
-                        'module_name' => $this->installInfo['NAME'],
-                        'route' => $route,
-                        'value' => serialize($value));
-                    
-                    $db->insert('system_route', $insert);
-                }
-            }  
+            $this->insertRoutesDb($routes);
+        }
+    }
+    
+    /**
+     * Insert routes into route table
+     * @param array $routes
+     */
+    public function insertRoutesDb($routes) {
+        $db = new db();
+        foreach ($routes as $val) {
+            foreach ($val as $route => $value) {
+                $insert = array(
+                    'module_name' => $this->installInfo['NAME'],
+                    'route' => $route,
+                    'value' => serialize($value));
+
+                $db->insert('system_route', $insert);
+            }
         }
     }
 
-
-
     /**
-     * get single sql file name from module, version, and action
+     * get single SQL file name from 'module_name', 'version', and action
      * @param  string   $module
      * @param  float    $version
      * @param  string   $action (up or down)
@@ -357,7 +385,7 @@ class moduleinstaller  {
     }
 
     /**
-     * get a sql file string from module, version, action
+     * Get a SQL string from module, version, action
      * @param   string   $module
      * @param   float    $version
      * @param   string   $action (up or down)
@@ -372,10 +400,10 @@ class moduleinstaller  {
     }
 
     /**
-     * get a sql file list from module, action
+     * Get a SQL file list from module, and action
      * @param   string   $module
      * @param   string   $action (up or down)
-     * @return  array    array with file list
+     * @return  array    $ary array with file list
      */
     public function getSqlFileList($module, $action){
         $sql_dir = conf::pathModules() . "/$module/mysql/$action";
@@ -388,7 +416,7 @@ class moduleinstaller  {
     }
 
     /**
-     * get sql file list ordered by floats
+     * Get sql file list ordered by floats
      * @param   string   $module
      * @param   string   $action
      * @param   float    specific version
@@ -428,7 +456,6 @@ class moduleinstaller  {
     /**
      * method for inserting values into module registry
      * adds a row to module register in database
-     *
      * @return  boolean true on success false on failure
      */
     public function insertRegistry (){
@@ -459,28 +486,19 @@ class moduleinstaller  {
         if (isset($this->installInfo['PARENT'])){
             $values['parent'] = $this->installInfo['PARENT'];
         }
-        try {
-            $db->insert('modules', $values);
-        } catch (PDOException $e) {
-            $db->fatalError($e->getMessage());
-        }
-        return true;
+
+        return $db->insert('modules', $values);
     }
 
     /**
-     * method for creating the modules main menu items
-     * create new row to module register
-     *
-     * @return  boolean true on success false on failure
+     * Method for creating the modules main menu items
+     * @return  boolean $res true on success false on failure
      */
     public function insertMenuItem(){
         $res = null;
 
         $db = new db();
         moduleloader::setModuleIniSettings($this->installInfo['NAME']);
-        
-        // XXX rm load system language
-        // Load all language
         
         if (!empty($this->installInfo['MAIN_MENU_ITEM'])){
             $values = $this->installInfo['MAIN_MENU_ITEM'];
@@ -500,27 +518,14 @@ class moduleinstaller  {
                 }
                 $res = $db->insert('menus', $val);
             }
-        }
-
-        
-        if (!empty($this->installInfo['SUB_MENU_ITEM'])){
-            $values = $this->installInfo['SUB_MENU_ITEM'];
-            $values['title'] = $values['title'];
-            
-            if (empty($values['title_human'])) {
-                $values['title_human'] = '';
-            }
-            $res = $db->insert('menus', $values);
-        }
-        
+        }      
         return $res;
     }
 
     /**
-     * method for deling modules menu item when uninstalling
-     *
-     * @param   string  modulename to uninstall
-     * @return boolean true or throws an error on failure
+     * Delete a menu item from database
+     * @param  string $module 
+     * @return boolean $res 
      */
     public function deleteMenuItem($module = null){
 
@@ -528,16 +533,12 @@ class moduleinstaller  {
         if (!isset($module)){
             $module = $this->installInfo['NAME'];
         }
-        try {
-            $result = $db->delete('menus', 'module_name', $module);
-        } catch (PDOException $e) {
-            $this->fatalError($e->getMessage());
-        }
+        $result = $db->delete('menus', 'module_name', $module);
         return $result;
     }
 
     /**
-     * method for updating version of module in module registry
+     * method for updating module version in module registry
      *
      * @param float $new_version the version to upgrade to
      * @param int $id the id of the module to be upgraded
@@ -549,27 +550,18 @@ class moduleinstaller  {
             'module_version' => $new_version,
             'run_level' => $this->installInfo['RUN_LEVEL']);
 
-        try {
-            $result = $db->update('modules', $values, $id);
-        } catch (PDOException $e) {
-            $db->fatalError($e->getMessage());
-        }
-        return true;
+        $result = $db->update('modules', $values, $id);
+        return $result;
     }
 
     /**
-     * method for delting a module from registry
-     *
+     * Delete a module from registry
      * @return boolean true or throws an error on failure
      */
     public function deleteRegistry (){
         $db = new db();
-        try {
-            $result = $db->delete('modules', 'module_name', $this->installInfo['NAME']);
-        } catch (PDOException $e) {
-            $db->fatalError($e->getMessage());
-        }
-        return true;
+        $result = $db->delete('modules', 'module_name', $this->installInfo['NAME']);
+        return $result;
     }
     
     /**
@@ -579,13 +571,10 @@ class moduleinstaller  {
     public function createIniFile () {
 
         $module = $this->installInfo['NAME'];
-        
         $module_path = conf::pathModules();
         
         $ini_file = "$module_path/$module/$module.ini";
-        $ini_file_php = "$module_path/$module/$module.ini.php";
         $ini_file_dist = "$module_path/$module/$module.ini-dist";
-        $ini_file_dist_php = "$module_path/$module/$module.ini.php-dist";
 
         if (!file_exists($ini_file)){
             if (!copy($ini_file_dist, $ini_file)){
@@ -594,61 +583,45 @@ class moduleinstaller  {
                 return false;
             }
         }
-        
-        // create php ini file if a php.ini-dist file exists
-        if (!file_exists($ini_file_php)){
-            if (file_exists($ini_file_dist_php)){
-                copy($ini_file_dist_php, $ini_file_php);
-            }
-        }
         return true;
     }
 
     /**
      * create SQL on module install
-     * There is not much error checking, because we can not commit and
-     * rollback on table creation (at leat on mysql which we most likely 
-     * are using. 
+     * There is not much error checking, because it is not possible to enable 
+     * commit and rollback on table creation (Not with MySQL)
      */
-    public function createSQL () {
-
+    public function executeInstallSQL () {
 
         $updates = $this->getSqlFileListOrdered($this->installInfo['NAME'], 'up');
 
         // perform sql upgrade. We upgrade only to the version nmber
         // set in module file install.inc. 
         if (!empty($updates)){            
-            foreach ($updates as $key => $val){
-                $version = substr($val, 0, -4);
-                if ($this->installInfo['VERSION'] >= $version ) {
-                    $sql =  $this->getSqlFileString(
-                                $this->installInfo['NAME'],
-                                $version,
-                                'up');
-                    
-                    // all sql statements are executed one after one. 
-                    // in your sql file any statement is seperated with \n\n
-                    $sql_ary = explode("\n\n", $sql);
-
-                    foreach ($sql_ary as $sql_key => $sql_val) {
-                        try {
-                            
-                            $result = db::$dbh->exec($sql_val);
-                        } catch (Exception $e) {
-                            echo "Error in install $val: ";
-                            echo $e->getMessage();
-                            die();
-                        }
-                        if ($result === false) {
-                            die("error");
-                        }
-                    }
-                }
+            foreach ($updates as $val){
+                $this->executeSqlUp($val);
             }
         }
         return true;
     }
     
+    /**
+     * run SQL statements for a single version, e.g. 1.02 
+     * @param string $val path to file to read sql from
+     */
+    public function executeSqlUp($val) {
+        $version = substr($val, 0, -4);
+        if ($this->installInfo['VERSION'] >= $version) {
+            $sql = $this->getSqlFileString(
+                    $this->installInfo['NAME'], $version, 'up');
+
+            $sql_ary = explode("\n\n", $sql);
+            foreach ($sql_ary as $sql_val) {
+                db::$dbh->exec($sql_val);
+            }
+        }
+    }
+
     /**
      * method for installing a module.
      * checks if module already is installed, if not we install it.
@@ -659,59 +632,49 @@ class moduleinstaller  {
 
         $ret = $this->isInstalled();
         if ($ret){
-            $info = $this->getModuleInfo();
+            $info = $this->getModuleDbInfo();
             $this->error = "Error: module '" . $this->installInfo['NAME'] . "' version '$info[module_version]'";
             $this->error.= " already exists in module registry!";
             return false;
         }
 
+        // create ini file
         $res = $this->createIniFile ();
         if (!$res) {
             $this->confirm.= "module '" . $this->installInfo['NAME'] . "' does not have an ini file";        
         }
 
-        $res = $this->createSQL () ;
+        // generate SQL
+        $res = $this->executeInstallSQL () ;
         if (!$res) { 
             return false;
         }
-        
-        if (isset($this->installInfo['VERSIONS'])) {
-            // run anonymous functions for each version
-            foreach ($this->installInfo['VERSIONS'] as $val) {          
-                $this->installInfo['INSTALL']($val);
-                if ($val == $this->installInfo['VERSION']) { 
-                    break;
-                }
-            }
-        } 
         
         // insert into registry. Set menu item and insert language.
         $this->insertRegistry();
         $this->insertMenuItem();
         $this->insertRoutes();
         
-        $this->confirm = "module '" . $this->installInfo['NAME'] . "' ";
-        $this->confirm.= "version '"  . $this->installInfo['VERSION'] . "' ";
-        $this->confirm.= "installed";
+        // Confirm message
+        $this->confirm = "Module: '" . $this->installInfo['NAME'] . "' ";
+        $this->confirm.= "Version: '"  . $this->installInfo['VERSION'] . "' ";
+        $this->confirm.= "was installed";
         return true;  
     }
 
     /**
      * method for uninstalling a module
-     *
-     * @return boolean   true on success or false on failure
+     * @return boolean $res true on success or false on failure
      */
     public function uninstall(){
-        // checks if module exists in registry
-        $db = new db();
-        $specific = 0;
+        
         if (!$this->isInstalled()){
-            $this->error = "module '" . $this->installInfo['NAME'];
+            $this->error = "Module '" . $this->installInfo['NAME'];
             $this->error .= "' does not exists in module registry!";
             return false;
         }
 
-        $row = $this->getModuleInfo();
+        $row = $this->getModuleDbInfo();
         $current_version = $row['module_version'];
         $downgrades = $this->getSqlFileListOrdered(
                 $this->installInfo['NAME'], 'down',
@@ -721,38 +684,7 @@ class moduleinstaller  {
         $this->deleteMenuItem();
         $this->deleteRoutes();
         
-        // delete module language
-        $db->delete('language', 'module_name', $this->installInfo['NAME']);
-        
-        if(isset($this->installInfo['UNINSTALL'])) {
-            $this->installInfo['UNINSTALL']($this->installInfo['VERSION']);
-        }
-        
-        if (!empty($downgrades)) {
-            foreach ($downgrades as $key => $val){
-                $version = substr($val, 0, -4);
-                if ($version <= $specific) continue;
-                    $sql =  $this->getSqlFileString(
-                    $this->installInfo['NAME'],
-                    $version,
-                        'down');
-                    if (isset($sql)) {
-                        $sql_ary = explode ("\n\n", $sql);
-                        foreach ($sql_ary as $sql_key => $sql_val){
-                            try {
-                                $result = db::$dbh->query($sql_val);
-                            } catch (Exception $e) {
-                                echo "Error in uninstall $version: ";
-                                echo $e->getMessage();
-                                
-                                die();
-                            }
-                        }
-                        
-                    $commit = true;
-                }
-            }
-        }
+        $this->executeUninstallSQL($downgrades);        
         
         $commit = 1;
 
@@ -766,65 +698,71 @@ class moduleinstaller  {
             return false;
         }
     }
-
+    
+    /**
+     * execute all downgrades in order to uninstall the module
+     * @param array $downgrades
+     */
+    public function executeUninstallSQL($downgrades = array()) {
+        $specific = 0;
+        if (!empty($downgrades)) {
+            foreach ($downgrades as $val) {
+                $version = substr($val, 0, -4);
+                if ($version <= $specific) {
+                    continue;
+                }
+                $sql = $this->getSqlFileString(
+                        $this->installInfo['NAME'], 
+                        $version, 
+                        'down');
+                
+                $this->executeSqlDown($sql);
+            }
+        }
+    }
+    
+    /**
+     * execute a single SQL string from file 
+     * @param string $sql
+     */
+    public function executeSqlDown($sql) {
+        if (isset($sql)) {
+            $sql_ary = explode("\n\n", $sql);
+            foreach ($sql_ary as $sql_val) {
+                db::$dbh->query($sql_val);
+            }
+        }
+    }
 
     /**
-     * method for upgrading a module
-     *
-     * @param   float   if $specific_version isset, then only upgrade to this version
-     * @return  int     0 if no upgrade $i >= 1 if upgrades were made
-     *
-     *
-     *          current version is fetched from database
-     *          new version is found in list of mysql/up files
-     *
-     *          if (current version is less than any database version
-     *          it means we upgrade. We also upgrade modules table in database
-     *          so we know at which version we are.
-     *
-     *          Therefore: Current version is the version found in the database.
-     *          If we have downloadéd a more recent version of module then specified
-     *          in modules table we will examine list of up files. And upgrade to
-     *          latest.
-     *
-     *          Current version should be backed up when downloaded.
-     *          This will always happen if you use  the following script
-     *          scripts/commands/module.php
-     * 
-     *          Configuration if we have downloaded a new version and unpacked
-     *          it there may be new configuration. Therefore remember to look 
-     *          at new config.ini-dist
-     * 
-     *          You will see if there is any new configuration which needs 
-     *          to be set.
-     *
-     *
+     * Upgrade to a specific version of a module
+     * @param float $specific, e.g. '5.06'
+     * @return boolean $res
      */
     public function upgrade ($specific = null){
         
+        // Only upgrade if module is installed
         if (!moduleloader::isInstalledModule($this->installInfo['NAME'])) {
             common::echoMessage("Notice: Can not upgrade. You will need to install module first");
             return;
         }
         
+        // Get specific version
         if (!isset($specific)){
             $specific = $this->installInfo['VERSION'] ;
         }
         
-        // get current module version from registry
-        $row = $this->getModuleInfo();
+        // Get current module version from registry
+        $row = $this->getModuleDbInfo();
         $current_version = $row['module_version'];
 
-        
+        // Same version. Return
         if ($current_version == $specific) {
-            $this->confirm = "Module '" . $this->installInfo['NAME'] ."' version is $specific and registry has same version. No upgrade to perform";
+            $this->confirm = "Module '" . $this->installInfo['NAME'] ."' version is '$specific' ,and the registry has the same version. No upgrade to perform";
             return true;
         }
         
-          // echo ;
-        
-        // get a list of sql updates to perform or an empty array if no sql
-        // updates exists
+        // Get a list of SQL updates to perform
         $updates = $this->getSqlFileListOrdered($this->installInfo['NAME'], 'up');
 
         // perform sql upgrade
@@ -840,7 +778,7 @@ class moduleinstaller  {
             }
             
             if (!isset($version_exists)){
-                $this->error = 'module SQL ' . $this->installInfo['NAME'] . " ";
+                $this->error = 'Module SQL ' . $this->installInfo['NAME'] . " ";
                 $this->error.= 'does not have such a version. Possible version are: ';
                 $this->error.= $possible_versions;
             }
@@ -849,45 +787,40 @@ class moduleinstaller  {
             foreach ($updates as $key => $val){
                 $version = substr($val, 0, -4);
                 if ($current_version < $version ) {
-                    $sql =  $this->getSqlFileString(
-                                $this->installInfo['NAME'],
-                                $version,
-                                'up');
-                    $sql_ary = explode ("\n\n", $sql);
-                    foreach ($sql_ary as  $sql_val) {
-                        if (empty($sql_val)) continue;
-                        try {
-                            db::$dbh->query($sql_val);
-                        } catch (Exception $e) {
-                            echo 'Caught exception: ',  $e->getMessage(), "\n";
-                            echo "SQL = $sql_val\n";
-                            echo "version of sql: $version";
-                            die;
-                        }
-                    }
+                    $this->executeSqlUpgrade($version);
                 }
             }   
         }
-
-        // perform function based upgrades
-        if (isset($this->installInfo['VERSIONS'])) {
-            foreach ($this->installInfo['VERSIONS'] as $val) {
-                if ($val > $current_version) {
-                    $this->installInfo['INSTALL']($val);
-                }       
-            }
-        } 
        
         // update registry
         $this->updateRegistry($specific, $row['id']);
         if ( $specific > $current_version ){
-            $this->confirm = "module: '" . $this->installInfo['NAME'] . "' ";
+            $this->confirm = "Module: '" . $this->installInfo['NAME'] . "' ";
             $this->confirm.= "version: '" . $specific . " Installed. " . "' ";
-            $this->confirm.= "Upgraded from $current_version";
+            $this->confirm.= "upgraded from $current_version";
             return true;
         } else {
-            $this->confirm = "module: " . $this->installInfo['NAME'] . " Nothing to upgrade. module version is still $current_version";
+            $this->confirm = "Module: " . $this->installInfo['NAME'] . " Nothing to upgrade. module version is still $current_version";
             return true;
+        }
+    }
+    
+    /**
+     * execute SQL upgrades
+     * @param float $version e.g. 1.04
+     */
+    public function executeSqlUpgrade($version) {
+        $sql = $this->getSqlFileString(
+                $this->installInfo['NAME'], 
+                $version, 
+                'up');
+        $sql_ary = explode("\n\n", $sql);
+        foreach ($sql_ary as $sql_val) {
+            if (empty($sql_val)) {
+                continue;
+            }
+
+            db::$dbh->query($sql_val);
         }
     }
 }
