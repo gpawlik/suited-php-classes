@@ -82,14 +82,14 @@ class git {
      * @return  array   $ary array of remote tags
      */
     public static function getTagsRemote($url = null, $clear = null) {
-        static $tags = null;
+        //static $tags = null;
 
         // clear tags if operation will be used more than once.
-        if ($clear) {
-            $tags = null;
-        }
+        //if ($clear) {
+        //    $tags = null;
+        //}
 
-        if ($tags == null) {
+        //if ($tags == null) {
             $tags = array();
             $output = array();
             $ret = 0;
@@ -103,7 +103,7 @@ class git {
                     $tags[] = $reg[1];
                 }
             }
-        }
+        //}
         return $tags;
     }
 

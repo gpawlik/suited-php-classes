@@ -70,7 +70,7 @@ class templateinstaller extends moduleinstaller {
             
              // if no version we check if this is a git repo
             if (!isset($this->installInfo['VERSION'])) {
-                $this->setInstallInfoFromRemote('template');
+                $this->setInstallInfoFromGit('template');
             }
             
             if (file_exists($install_file)) {
@@ -84,14 +84,9 @@ class templateinstaller extends moduleinstaller {
         }
     }
     
-    public function setInstallInfoFromRemote() {
+    public function setInstallInfoFromGit() {
 
-        $command = "cd " . conf::pathHtdocs() . "/templates/";
-        $command.= $this->installInfo['NAME'] . " ";
-        $command.= "&& git config --get remote.origin.url";
-
-        $git_url = shell_exec($command);
-        $tags = git::getTagsRemote($git_url);
+        $tags = git::getTagsModule($this->installInfo['NAME'], 'template');
 
         if (empty($tags)) {
             $latest = 'master';

@@ -167,7 +167,7 @@ class moduleinstaller  {
         // If it is, then use latest tag for install
 
         if (!isset($this->installInfo['VERSION']) && conf::isCli()) {
-            $this->setInstallInfoFromRemote();           
+            $this->setInstallInfoFromGit();           
         }
     }
     
@@ -175,20 +175,15 @@ class moduleinstaller  {
      * If no version info was found in install.inc, try to fetch a version
      * from a git repo, and set the version in installInfo
      */
-    public function setInstallInfoFromRemote($type = 'module') {
+    public function setInstallInfoFromGit($type = 'module') {
         if ($type == 'module') {
             $base = conf::pathModules();
         } else {
             $type = conf::pathHtdocs();
         }
         
-        $command = "cd " .  $base . "/";
-        $command.= $this->installInfo['NAME'] . " ";
-        $command.= "&& git config --get remote.origin.url";
-
-        $git_url = shell_exec($command);
-        $tags = git::getTagsRemote($git_url);
-
+        
+        $tags = git::getTagsModule($this->installInfo['NAME'], 'module');
         if (empty($tags)) {
             $latest = 'master';
         } else {
