@@ -364,68 +364,6 @@ function cos_git_tag ($val, $type = 'module'){
 }
 
 /**
- * tags all files
- * @param type $options
- */
-function cos_git_tag_all_files ($options){
-    $version = common::readSingleline('Enter tag version to use ');
-
-    $profile = new profile();
-    $modules = $profile->getModules();
-    foreach ($modules as $key => $val){
-        $val['module'] = $val['module_name'];
-        $val['new_version'] = $version;
-        cos_git_tag_install_file($val, 'module');
-    }
-
-    $templates = $profile->getTemplates();
-    foreach ($templates as $key => $val){
-        $val['module'] = $val['module_name'];
-        $val['new_version'] = $version;
-        cos_git_tag_install_file($val, 'template');
-    }
-}
-
-/**
- * change all install.inc files with a new version
- * @param array $val
- * @param string $type
- * @return void
- */
-function cos_git_tag_install_file ($val, $type = 'module'){
-    $repo_path = cos_get_repo_path($val['module_name'], $type);
-
-    if (!cos_git_is_repo ($repo_path)){
-        common::echoMessage("$repo_path is not a git repo");
-        return;
-    }
-
-    $install_file = $repo_path . "/install.inc";
-    if (!file_exists($install_file)) {
-        common::echoStatus('NOTICE', 'y', "No install file exists ($install_file). We can not set a version");
-        return;
-    }
-    
-    $handle = @fopen($install_file, "r");
-    $str = '';
-    if ($handle) {
-        while (($buffer = fgets($handle, 4096)) !== false) {
-            if (strstr($buffer, "\$_INSTALL['VERSION']")) {
-                $str.= "\$_INSTALL['VERSION'] = $val[new_version];\n";
-            } else {
-                $str.= $buffer;
-            }
-        }
-        if (!feof($handle)) {
-            echo "Error: unexpected fgets() fail\n";
-        }
-        fclose($handle);
-    }
-    file_put_contents($install_file, $str);
-    common::echoMessage("Tagged file $install_file with version $val[new_version]");
-}
-
-/**
  * function for upgrading a module, template or profile according to latest tag
  * or master
  *
@@ -607,19 +545,7 @@ self::setOption('cos_git_tag_all', array(
     'action'      => 'StoreTrue'
 ));
 
-self::setOption('cos_git_tag_all_files', array(
-    'long_name'   => '--all-tag-files',
-    'description' => 'Will tag all install files with new version.',
-    'action'      => 'StoreTrue'
-));
 
-/*
-mainCli::setOption('cos_git_echo_remote_tags', array(
-    'long_name'   => '--remote-tags',
-    'description' => 'Will echo remote tags',
-    'action'      => 'StoreTrue'
-));
-*/
 self::setArgument(
     'repo',
     array('description'=> 'Specify the git repo | module to be used',
