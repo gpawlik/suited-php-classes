@@ -20,7 +20,6 @@ class http {
     private static function getRedirect(){
 
         $path = $_SERVER['PATH_INFO'];
-        
         $ary = array();
         foreach($_GET as $key => $val) {
             if ($key == 'q') {
