@@ -232,7 +232,12 @@ class profile  {
             $val['public_clone_url'] = $_INSTALL['PUBLIC_CLONE_URL'];
             $val['private_clone_url'] = $_INSTALL['PRIVATE_CLONE_URL'];
             if (!self::$master) {
-                $val['module_version'] = "$_INSTALL[VERSION]";
+                if (isset($_INSTALL['VERSION'])) {
+                    $val['module_version'] = "$_INSTALL[VERSION]";
+                } else {
+                    $tags = git::getTagsModule($template, 'template');
+                    $val['module_version'] = array_pop($tags);
+                }
             } else {
                 $val['module_version'] = "master";
             }
