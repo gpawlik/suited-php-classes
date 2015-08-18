@@ -6,11 +6,6 @@ use diversen\conf;
 use diversen\db;
 use diversen\lang;
 use diversen\uri;
-/**
- * File contains class for loading modules
- *
- * @package    moduleloader
- */
 
 /**
  * Class for loading modules
