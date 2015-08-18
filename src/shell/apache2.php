@@ -1,6 +1,6 @@
 <?php
 
-namespace diversen\shell;
+
 use diversen\apache2;
 
 class apache2Command {
