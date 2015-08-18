@@ -80,7 +80,7 @@ class db extends connect {
      * return all sql statements as an array
      * @return array $debug
      */
-    static function getDebug() {
+    public static function getDebug() {
         return self::$debug;
     }
 

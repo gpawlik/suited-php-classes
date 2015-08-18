@@ -4,6 +4,7 @@ namespace diversen\db;
 
 use diversen\conf;
 use PDO;
+use PDOException;
 
 class connect {
     
