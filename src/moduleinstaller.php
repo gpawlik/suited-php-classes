@@ -181,8 +181,7 @@ class moduleinstaller  {
         } else {
             $type = conf::pathHtdocs();
         }
-        
-        
+               
         $tags = git::getTagsModule($this->installInfo['NAME'], 'module');
         if (empty($tags)) {
             $latest = 'master';

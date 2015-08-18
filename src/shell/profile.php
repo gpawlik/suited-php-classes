@@ -53,7 +53,6 @@ function upgrade_from_profile ($options){
         $val['version'] = $val['module_version'];
         if (isset(conf::$vars['profile_use_master'])) {
             $val['version'] = 'master';
-            //$val['module_version'] = 'master';
         }
                
         $val['module'] = $val['module_name'];
