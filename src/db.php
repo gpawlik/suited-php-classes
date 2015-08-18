@@ -607,20 +607,4 @@ class db extends connect {
     private function __clone(){
         self::fatalError('Clone is not allowed.', E_USER_ERROR);
     }
-
-    /**
-     * Method for showing errors
-     * @param   string  $msg the message to show with the backtrace
-     */
-    protected static function fatalError($msg) {
-        self::$debug[] = "Fatal error encountered";
-        echo "<pre>Error!: $msg\n";
-        $bt = debug_backtrace();
-        foreach($bt as $line) {
-            $args = var_export($line['args'], true);
-            echo "{$line['function']}($args) at {$line['file']}:{$line['line']}\n";
-        }
-        echo "</pre>";
-        die();
-    }
 }
