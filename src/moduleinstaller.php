@@ -6,32 +6,12 @@ use diversen\cli\common;
 use diversen\conf;
 use diversen\db;
 use diversen\git;
-use Exception;
 use PDOException;
 
 /**
- * *
- * File which contains class for installing modules
- *
- * @package    installer
- */
-
-
-
-/**
- * class for installing a module or upgrading it.
- * base actions are:
- *
- * install: registers the module into the database
- *
- * update: checks module version in database and
- * perform any needed updates e.g. from version
- * 1.04 to 1.07 or 0.01 to 0.07
- * If more upgrades exist. Upgrade all one after one.
- *
- * remove: removes the module from the modules table
- * and also tables connected to module.
- * @package    installer
+ * Class for installing modules.
+ * Copy configuration, and install SQL
+ * @package  moduleinstaller
  */
 class moduleinstaller  {
 
@@ -156,11 +136,11 @@ class moduleinstaller  {
 
     /**
      * load install.inc file, and set installInfo
-     * @param type $module_name
-     * @param type $install_file
+     * @param string $module_name
+     * @param string $install_file
      */
     public function loadInstallFile($module_name, $install_file) {
-        // set a defaukt module_name - which is the module dir
+        // set a default module_name - which is the module dir
         $this->installInfo['NAME'] = $module_name;
 
         // load install.inc if found
@@ -187,8 +167,7 @@ class moduleinstaller  {
         // If it is, then use latest tag for install
 
         if (!isset($this->installInfo['VERSION']) && conf::isCli()) {
-            $this->setInstallInfoFromRemote();
-            
+            $this->setInstallInfoFromRemote();           
         }
     }
     
@@ -231,7 +210,6 @@ class moduleinstaller  {
 
         $db = new db();
         $row = $db->selectOne('modules', 'module_name', $module);
-
         if (!empty($row)){    
             return true;
         }
@@ -245,11 +223,7 @@ class moduleinstaller  {
     public function getModuleDbInfo(){
 
         $db = new db();
-        try {
-            $row = $db->selectOne('modules', 'module_name', $this->installInfo['NAME'] );
-        } catch (PDOException $e) {
-            $db->fatalError($e->getMessage());
-        }
+        $row = $db->selectOne('modules', 'module_name', $this->installInfo['NAME'] );
         if (!empty($row)){
             return $row;
         }
@@ -276,7 +250,7 @@ class moduleinstaller  {
     }
 
     /**
-     * get all templates from file system
+     * Get all templates from file system
      * @return array $templates
      */
     public function getTemplates () {
@@ -319,19 +293,6 @@ class moduleinstaller  {
             $this->insertRoutes();
         }
     }
-
-
-    /**
-     * method for upgrading all modules.
-     */
-    /*
-    public function upgradeAll(){
-        $modules = $this->getModules();
-        foreach($modules as $val){
-            $upgrade = new moduleinstaller($val['module_name']);
-            $upgrade->upgrade();
-        }
-    }*/
     
     /**
      * Method for deleting DB routes for a module
@@ -345,8 +306,7 @@ class moduleinstaller  {
      * Method for inserting routes for a module
      */
     public function insertRoutes () {
-
-        
+        $db = new db();
         if (isset($this->installInfo['ROUTES'])) {
             $db->delete('system_route', 'module_name', $this->installInfo['NAME']);
             $routes = $this->installInfo['ROUTES'];
@@ -502,20 +462,13 @@ class moduleinstaller  {
         
         if (!empty($this->installInfo['MAIN_MENU_ITEM'])){
             $values = $this->installInfo['MAIN_MENU_ITEM'];
-            $values['title'] = $values['title'];
-            if (empty($values['title_human'])) {
-                $values['title_human'] = '';
-            }
+            $values['title'] = $values['title'];          
             $res = $db->insert('menus', $values);
         }
-
-        
+ 
         if (!empty($this->installInfo['MAIN_MENU_ITEMS'])) {
             foreach ($this->installInfo['MAIN_MENU_ITEMS'] as $val) {
                 $val['title'] = $val['title'];
-                if (empty($val['title_human'])) {
-                    $val['title_human'] = '';
-                }
                 $res = $db->insert('menus', $val);
             }
         }      
@@ -565,7 +518,7 @@ class moduleinstaller  {
     }
     
     /**
-     * checks and creates ini file if not exists. 
+     * Checks if an ini file exists, and creates an ini file if it not exists. 
      * @return boolean $res true on success and false on failure. 
      */
     public function createIniFile () {
@@ -575,11 +528,18 @@ class moduleinstaller  {
         
         $ini_file = "$module_path/$module/$module.ini";
         $ini_file_dist = "$module_path/$module/$module.ini-dist";
-
-        if (!file_exists($ini_file)){
+        if (!file_exists($ini_file) && file_exists($ini_file_dist)){
             if (!copy($ini_file_dist, $ini_file)){
                 $this->error = "Error: Could not copy $ini_file to $ini_file_dist" . PHP_EOL;
-                $this->error.= "Make sure your module has an ini-dist file: $ini_file_dist";
+                return false;
+            }
+        }
+        
+        $ini_file_php = "$module_path/$module/config.php";
+        $ini_file_dist_php = "$module_path/$module/config.php-dist";
+        if (!file_exists($ini_file_php) && file_exists($ini_file_dist_php)){
+            if (!copy($ini_file_dist_php, $ini_file_php)){
+                $this->error = "Error: Could not copy $ini_file_php to $ini_file_dist_php" . PHP_EOL;
                 return false;
             }
         }

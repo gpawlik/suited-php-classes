@@ -7,9 +7,8 @@ use diversen\cli\common;
 use diversen\git;
 
 /**
- * class for installing a profile or creating one from current install
- *
- * @package    profile
+ * Class for install, creation, and updating profiles
+ * @package profile
  */
 class profile  {
 
@@ -42,19 +41,7 @@ class profile  {
      * @var string  
      */
     public $profileTemplates;
-    
-    /**
-     * if true we use home if false we don't.
-     * @var boolean  $profileUseHome
-     */
-    public $profileUseHome;
 
-    /**
-     * var holding db 
-     * @var object $db
-     */
-    public $db = null;
-    
     /**
      * hide default secrets like url, user, password etc when building profile
      * @var int $hideSecrets
@@ -68,82 +55,100 @@ class profile  {
     public static $master = null;
 
     /**
-     * @ignore
-     * constructor 
+     * Method for setting master flag
      */
-    function __construct(){
-        
-    }
-
-    /**
-     * method for setting master
-     */
-    function setMaster (){
+    public static function setMaster (){
         self::$master = 1;
     }
     
     /**
-     * method for setting master
+     * Flag which indicates if using master
      */
-    function setNoHideSecrets (){
+    public static function setNoHideSecrets (){
         self::$hideSecrets = null;
     }
 
     /**
-     * method for getting all installed modules with repo info set
-     * which we will base our profile on.
-     * @return array $ary assoc array of all modules
+     * Get all moduls from database
+     * @return array $ary Array of all modules
      */
-    public static function getModules(){
+    public static function getModules(){      
         $db = new db();
         $db->connect();
         $modules = $db->selectAll('modules');
-
-        foreach ($modules as $key => $val){
-            $options['module'] = $val['module_name'];
-            $mi = new moduleinstaller($options);
-
-            // check for a public clone url
-            if (isset($mi->installInfo['PUBLIC_CLONE_URL'])) {
-                $modules[$key]['public_clone_url'] = $mi->installInfo['PUBLIC_CLONE_URL'];
-            } else {
-                
-                // try to find public clone url
-                $status = "module $val[module_name] has no public clone url set. We try to guess it.";
-                common::echoStatus('NOTICE', 'y', $status);
-                $module_path = conf::pathModules() . "/$val[module_name]";
-                if (!file_exists($module_path)) {
-                    common::echoStatus('NOTICE', 'y', "module $val[module_name] has no module source");
-                    continue;
-                } 
-                
-                $command = "cd $module_path && git config --get remote.origin.url";              
-                $ret = common::execCommand($command, null, 0);
-                if (!$ret) { 
-                    $git_url = shell_exec($command);
-                    $modules[$key]['public_clone_url'] = $git_url;
-                }
-
-            }
-            
-            if (isset($mi->installInfo['PRIVATE_CLONE_URL'])) {
-                $modules[$key]['private_clone_url'] = $mi->installInfo['PRIVATE_CLONE_URL'];
-            } else {
-                $status = "No private clone url is set for module $val[module_name]";
-                common::echoStatus('NOTICE', 'y', $status);
-            }
-            
-            if (self::$master){
-                $modules[$key]['module_version'] = 'master';
-            }
+        return self::getModulesInfo($modules);
+    }
+    
+    /**
+     * Set module info for all modules
+     * @param array $modules modules direct from database 'modules' table
+     * @return array $modules modules with info set
+     */
+    public static function getModulesInfo($modules) {
+        foreach ($modules as $key => $val) {
+            $modules[$key] = self::setSingleModuleInfo($val);         
         }
         return $modules;
     }
     
     /**
-     * get a single module from modules table with repo info set
-     * @param string $module
-     * @return array|false $ary array with info if module exists else false
+     * Sets clone URLs for a single module
+     * @param array $val module
+     * @return array $val module
+     */
+    public static function setSingleModuleInfo($val) {
+        $options['module'] = $val['module_name'];
+        $mi = new moduleinstaller($options);
+
+        // Find a public clone URL
+        if (isset($mi->installInfo['PUBLIC_CLONE_URL'])) {
+            $val['public_clone_url'] = $mi->installInfo['PUBLIC_CLONE_URL'];
+        } else {
+            $val = self::setPublicCloneUrl($val);    
+        }
+
+        // Set private clone URL
+        if (isset($mi->installInfo['PRIVATE_CLONE_URL'])) {
+            $val['private_clone_url'] = $mi->installInfo['PRIVATE_CLONE_URL'];
+        } else {
+            $status = "No private clone url is set for module $val[module_name]";
+            common::echoStatus('NOTICE', 'y', $status);
+        }
+
+        if (self::$master) {
+            $val['module_version'] = 'master';
+        }
+        return $val;
+    }
+
+    /**
+     * Try to set a public clone URL in a module array
+     * @param array $val module info
+     * @return array $val module info with a public clone URL. If a public clone URL exists
+     */
+    public static function setPublicCloneUrl($val) {
+
+        $status = "module $val[module_name] has no public clone url set. We try to guess it.";
+        common::echoStatus('NOTICE', 'y', $status);
+        $module_path = conf::pathModules() . "/$val[module_name]";
+        if (!file_exists($module_path)) {
+            common::echoStatus('NOTICE', 'y', "module $val[module_name] has no module source");
+            return $val;
+        }
+
+        $command = "cd $module_path && git config --get remote.origin.url";
+        $ret = common::execCommand($command, null, 0);
+        if (!$ret) {
+            $git_url = shell_exec($command);
+            $val['public_clone_url'] = $git_url;
+        }
+        return $val;
+    }
+
+    /**
+     * Get a single row from 'modules' table
+     * @param string $module the module row to get
+     * @return array|false $ary module
      */
     public function getModule ($module) {
         $mods = $this->getModules();
@@ -156,13 +161,12 @@ class profile  {
     }
     
     /**
-     * get a single template from templates dir with repo info set
-     * @param string $module
-     * @return array|false $ary array with info if template exists else false
+     * Get a single template
+     * @param string $template
+     * @return array|false $ary template
      */
     public function getTemplate ($template) {
         $temps = $this->getTemplates();
-        
         foreach ($temps as $temp) {
             if ($temp['module_name'] == $template) {
                 return $temp;
@@ -172,35 +176,26 @@ class profile  {
     }
 
     /**
-     * method for creating a profile from profile name
-     * @param string $profile
+     * Create profile with specified profile name
+     * @param string $profile the profile name
      */
     public function createProfile($profile){
-
-        // create all files
         $this->createProfileFiles($profile);
-        
-        // create install script
         $this->createProfileScript($profile);
-        // copy config.ini
-
         $this->createConfigIni($profile);
     }
 
     /**
-     * method for recreating a profile
-     * just means that we recreate all except config.ini
-     * @param string $profile
+     * Re-ceate profile with specified profile name
+     * Re-create don't touch config.ini
+     * @param string $profile the profile name
      */
     public function recreateProfile($profile){
-        // create all files
         $this->createProfileFiles($profile);
-        // create install script
         $this->createProfileScript($profile);
     }
 
-    
-    
+   
     /**
      * method for getting all templates located in conf::pathHtdocs()/template
      * used for settings current templates in profiles/profile/profile.inc file
@@ -209,68 +204,80 @@ class profile  {
         $dir = conf::pathHtdocs() . "/templates";
         $templates = file::getFileList($dir, array('dir_only' => true));
 
-        foreach ($templates as $key => $val){
-            $install = $dir . "/$val/install.inc";
-            if (file_exists($install)){
-                include $install;
-                $templates[$key] = array ();
-                $templates[$key]['public_clone_url'] = $_INSTALL['PUBLIC_CLONE_URL'];
-                $templates[$key]['private_clone_url'] = $_INSTALL['PRIVATE_CLONE_URL'];
-                if (!self::$master){
-                    $templates[$key]['module_version'] = "$_INSTALL[VERSION]";
-                } else {
-                    $templates[$key]['module_version'] = "master";
-                }
-                $templates[$key]['module_name'] = $val;
-            } else {
-                
-                $templates[$key] = array ();
-                
-                // check if this a git repo
-                $path = conf::pathHtdocs() . "/templates/$val";
-                $command = "cd $path && git config --get remote.origin.url";
-                $ret = null;
-                exec($command, $output, $ret);
-                if ($ret != 0) continue;
-               
-                $git_url = shell_exec($command);
-                $tags = git::getTagsModule($val, 'template');
-                
-                $latest = array_pop($tags);
-                
-                if (!self::$master){
-                    $templates[$key]['module_version'] = $latest;
-                } else {
-                    $templates[$key]['module_version'] = "master";
-                }
-                
-                $templates[$key]['module_name'] = $val;
-                $templates[$key]['public_clone_url'] = trim($git_url);
-
+        $ary = array ();
+        foreach ($templates as $val){
+            $info = $this->getSingleTemplate($val);
+            if (empty($info)) {
+                continue;
             }
-
+            $ary[] = $info;
         }
-
-        return $templates;
+        return $ary;
     }
     
-    
+    /**
+     * Get install info for a single template
+     * @param string $template
+     * @return array $val template info
+     */
+    public function getSingleTemplate($template) {
+        
+        $template_dir = conf::pathHtdocs() . "/templates";
+        $install_file = $template_dir . "/$template/install.inc";
+        
+        $val = array();
+        if (file_exists($install_file)) {
+            
+            include $install_file;
+            $val['public_clone_url'] = $_INSTALL['PUBLIC_CLONE_URL'];
+            $val['private_clone_url'] = $_INSTALL['PRIVATE_CLONE_URL'];
+            if (!self::$master) {
+                $val['module_version'] = "$_INSTALL[VERSION]";
+            } else {
+                $val['module_version'] = "master";
+            }
+            $val['module_name'] = $template;
+        } else { 
+
+            // check if this a git repo
+            $path = conf::pathHtdocs() . "/templates/$template";
+            $command = "cd $path && git config --get remote.origin.url";
+            exec($command, $output, $ret);
+            if ($ret != 0) {
+                return false;
+            }
+            
+            $git_url = shell_exec($command);
+            $tags = git::getTagsModule($template, 'template');
+            $latest = array_pop($tags);
+
+            if (!self::$master) {
+                $val['module_version'] = $latest;
+            } else {
+                $val['module_version'] = "master";
+            }
+
+            $val['module_name'] = $template;
+            $val['public_clone_url'] = trim($git_url);
+        }  
+        return $val;
+    }
 
     /**
-     * method for creating a profile script. The profile script
-     * is a php array of all modules, versions, git repos, templates,
-     * set template etc. 
-     * @param string $profile
+     * Create a profile. A PHP file with configuration about an profile install
+     * @param string $profile the profile name
      */
     public function createProfileScript($profile){
+        
+        // Get moduls as a string
         $modules = $this->getModules();
+        $module_str = var_export($modules, true); 
         
-        
-        $module_str = var_export($modules, true);
-        
+        // Get tempaltes as a string
         $templates = $this->getTemplates();
         $template_str = var_export($templates, true);
         
+        // Compose profile script
         $profile_str = '<?php ' . "\n\n";
         $profile_str.= '$_PROFILE_MODULES = ' . $module_str . ";";
         $profile_str.= "\n\n";
@@ -278,18 +285,15 @@ class profile  {
         $profile_str.= "\n\n";
         $profile_str.= '$_PROFILE_TEMPLATE = ' . "'" . $this->getProfileTemplate() . "'" . ';';
         $profile_str.= "\n\n";
-        $profile_str.= '$_PROFILE_USE_HOME = ' . $this->getProfileUseHome() . ';';
-        $profile_str.= "\n\n";
         $file = conf::pathBase() . "/profiles/$profile/profile.inc";
         if (!file_put_contents($file, $profile_str)){
-            print "Could not write to $file";
+            common::abort("Could not write to file: $file");
         }
     }
 
     /**
-     * method getting a profiles template
-     *
-     * @return  string  name of profiles template extracted from database settings.
+     * Method getting a profile's template
+     * @return string $str name of current running template
      */
     public function getProfileTemplate (){
         $db = new db();
@@ -299,26 +303,9 @@ class profile  {
     }
 
     /**
-     * method for determine weather we use a home url or not in main menu
-     * this just means do we have a link in main menu which says "home"
-     *
-     * return   int     1 on yes and 0 on no
-     */
-    public function getProfileUseHome (){
-        $db = new db();
-        $db->connect();
-        $row = $db->selectOne('menus', 'url', '/');
-        if (!empty($row)){
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    /**
-     * method for setting a profiles template
+     * Method for setting a profile's template
      * @param string $template
-     * @return  boolean $res true on success and false on failure
+     * @return boolean $res
      */
     public function setProfileTemplate ($template = null){
         $db = new db();
@@ -347,47 +334,45 @@ class profile  {
      */
     private function createProfileFiles($profile){
         
-        $modules = $this->getModules();
+        // Create profile dir
         $profile_dir = conf::pathBase() . "/profiles/$profile";
-        
-        if (!file_exists($profile_dir) || !is_dir($profile_dir)) {
+        if (!file_exists($profile_dir)) {
             $mkdir = @mkdir($profile_dir);
-            if ($mkdir){
-                $this->confirm[] = "Created dir $profile_dir"; 
-            } else {
-                $this->error[] = "Could not create dir $profile_dir";
+            if (!$mkdir){
+                common::abort("Could not make dir: '$profile_dir'");
             }
         }
         
-        // use config.ini-dist with modules with personal configuration
-        //$secrets = array ('remote');
+        $modules = $this->getModules();
         foreach ($modules as $key => $val){
 
             $source = conf::pathModules() . "/$val[module_name]/$val[module_name].ini";
 
             // if no ini we just skip           
-            if (!file_exists($source)) continue;
+            if (!file_exists($source)) { 
+                continue;
+            }
             
             $ary = conf::getIniFileArray($source, true);
             $ary = $this->iniArrayPrepare($ary);               
             $config_str = conf::arrayToIniFile($ary);
 
+            // Module ini file
             $dest = $profile_dir . "/$val[module_name].ini-dist";
             file_put_contents($dest, $config_str);
 
-            // if php ini file exists copy that to.
+            // PHP config file
             $source = conf::pathModules() . "/$val[module_name]/config.php";
             $dest = $profile_dir . "/$val[module_name].php-dist";
 
             if (file_exists($source)){
                 copy($source, $dest);
             }
-
         }
         
         $templates = $this->getTemplates();
         foreach ($templates as $key => $val){
-            //$template_ini_file = conf::pathBase() . "/templates/$val[module_name]/$val[module_name].ini";
+
             $source = conf::pathHtdocs() . "/templates/$val[module_name]/$val[module_name].ini";
             $dest = $profile_dir . "/$val[module_name].ini-dist";
             
@@ -403,8 +388,8 @@ class profile  {
     }
 
     /**
-     * method for creating a main config.ini file
-     * @param   string   name of the profile
+     * Method for creating a main config.ini file
+     * @param string $profile name of the profile
      */
     private function createConfigIni($profile){
         $profile_dir = conf::pathBase() . "/profiles/$profile";
@@ -413,7 +398,6 @@ class profile  {
         $ary = $this->iniArrayPrepare($ary);  
         $config_str = conf::arrayToIniFile($ary);     
         file_put_contents($profile_dir . "/config.ini-dist", $config_str);
-
     }
     
     /**
@@ -460,9 +444,8 @@ class profile  {
     }
 
     /**
-     * method for setting info about profile
-     *
-     * @param string    profile name
+     * Method for setting info about profile
+     * @param string $profile name of the profile
      */
     public function setProfileInfo($profile){
         $profile_dir = conf::pathBase() . "/profiles/$profile";
@@ -474,9 +457,13 @@ class profile  {
         $this->profileModules = $_PROFILE_MODULES;
         $this->profileTemplates = $_PROFILE_TEMPLATES;
         $this->profileTemplate = $_PROFILE_TEMPLATE;
-        $this->profileUseHome = $_PROFILE_USE_HOME;
     }
     
+    /**
+     * Checks if a module exists in a memory loaded profile 
+     * @param string $module
+     * @return boolean $res
+     */
     public function isModuleInProfile ($module) {
         foreach ($this->profileModules as $val){
             if ($val['module_name'] == $module){
@@ -485,7 +472,12 @@ class profile  {
         }
         return false;      
     }
-    
+
+    /**
+     * Checks if a template exists in a memory loaded profile
+     * @param string $template
+     * @return boolean $res
+     */
     public function isTemplateInProfile ($template) {
         foreach ($this->profileTemplates as $val){
             if ($val['module_name'] == $template){
@@ -496,8 +488,8 @@ class profile  {
     }
 
     /**
-     *  method for loading a profile
-     * @param string     profile
+     * Method for loading a profile
+     * @param string $profile the name of the profile
      */
     public function loadProfile($profile){
         $this->setProfileInfo($profile);
@@ -506,20 +498,18 @@ class profile  {
     }
 
     /**
-     * method for reloading a profile. Reloads all ini file except config.ini
+     * Method for reloading a profile. 
+     * Same as loadProfile except that this does not copy main config.ini
      * @param   string   profile
      */
     public function reloadProfile($profile){
         $this->setProfileInfo($profile);
-        // install all ini files except config.ini
         $this->loadProfileFiles($profile);
     }
     
     /**
-     * method for loading a profiles configuration files, which means all
-     * modules configuration files.
-     *
-     * @param   string    name of profile to be installed
+     * Method for loading all module's configuration, contained in a profile 
+     * @param string $profile name of the profile
      */
     public function loadProfileFiles($profile){
         $profile_dir = conf::pathBase() . "/profiles/$profile";
@@ -534,9 +524,10 @@ class profile  {
                 $this->error[] = "Could not copy $source to $dest";
             }
 
-            // If a PHP config file exists, then copy that to.
-            $dest = conf::pathModules() . "/$val[module_name]/$val[module_name].php.ini";
-            $source = $profile_dir . "/$val[module_name].php.ini-dist";
+            // If a PHP config.php file exists, then copy that too.
+            $source = $profile_dir . "/$val[module_name].php-dist";
+            $dest = conf::pathModules() . "/$val[module_name]/config.php";
+            
 
             if (file_exists($source)){
                 copy($source, $dest);
@@ -558,12 +549,10 @@ class profile  {
     }
 
     /**
-     * method for loading main configuration file for a profile
-     *
-     * @param string name of profile to be installed
+     * Method for loading main configuration file for a profile
+     * @param string $profile the name of profile
      */
     public function loadConfigIni($profile){
-        // copy config,ini
         $profile_dir = conf::pathBase() . "/profiles/$profile";
         $dest = conf::pathBase() . "/config/config.ini";
         $source = $profile_dir . "/config.ini-dist";
