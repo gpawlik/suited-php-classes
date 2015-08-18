@@ -124,4 +124,53 @@ class git {
         }
         return null;
     }
+    
+    /**
+     * get a SSH clone URL from a HTTPS clone URL
+     * @param string $url
+     * @return string $url
+     */
+    public static function getSshFromHttps($url) {
+        
+        $ary = parse_url(trim($url));
+        $num = count($ary);
+        if ($num == 1) {
+            return $ary['path'];
+        }
+        return "git@$ary[host]:" . ltrim($ary['path'], '/');
+    }
+
+    
+       /**
+     * get a SSH clone URL from a HTTPS clone URL
+     * @param string $url
+     * @return string $url
+     */
+    public static function getHttpsFromSsh($url) {
+
+        $ary = parse_url(trim($url));
+        
+        // Is it already https
+        if (isset($ary['scheme']) && $ary['scheme'] == 'https') {
+            return $url;
+        }
+
+        $num = count($ary);
+        if ($num == 1) {          
+            return self::parsePrivateUrl($url);
+        }
+        return "$ary[scheme]@$ary[host]:$ary[path]";
+    }
+    
+    /**
+     * return a SSH path from a HTTPS URL
+     * @param string $url
+     * @return string $path
+     */
+    public static function parsePrivateUrl ($url) {
+        $ary = explode('@', $url);
+        $ary = explode(':', $ary[1]);
+        $url = 'https://' . $ary[0] . "/$ary[1]";
+        return $url;
+    }
 }

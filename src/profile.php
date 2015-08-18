@@ -86,7 +86,12 @@ class profile  {
      */
     public static function getModulesInfo($modules) {
         foreach ($modules as $key => $val) {
-            $modules[$key] = self::setSingleModuleInfo($val);         
+            $ret = self::getModuleInfo($val); 
+            if (!$ret) {
+                common::echoStatus('WARNING', $color, "We could not find any legel git repo for module $val");
+                unset($modules[$key]);
+            }
+            $modules[$key] = $ret;   
         }
         return $modules;
     }
@@ -96,7 +101,7 @@ class profile  {
      * @param array $val module
      * @return array $val module
      */
-    public static function setSingleModuleInfo($val) {
+    public static function getModuleInfo($val) {
         $options['module'] = $val['module_name'];
         $mi = new moduleinstaller($options);
 
@@ -104,20 +109,22 @@ class profile  {
         if (isset($mi->installInfo['PUBLIC_CLONE_URL'])) {
             $val['public_clone_url'] = $mi->installInfo['PUBLIC_CLONE_URL'];
         } else {
-            $val = self::setPublicCloneUrl($val);    
+            $val['public_clone_url'] = self::getCloneUrl($val['module_name']);
+            $val['public_clone_url'] = git::getHttpsFromSsh($val['public_clone_url']);           
         }
 
         // Set private clone URL
         if (isset($mi->installInfo['PRIVATE_CLONE_URL'])) {
             $val['private_clone_url'] = $mi->installInfo['PRIVATE_CLONE_URL'];
         } else {
-            $status = "No private clone url is set for module $val[module_name]";
-            common::echoStatus('NOTICE', 'y', $status);
+            $val['private_clone_url'] = self::getCloneUrl($val['module_name']);
+            $val['private_clone_url'] = git::getSshFromHttps($val['private_clone_url']);
         }
 
         if (self::$master) {
             $val['module_version'] = 'master';
         }
+        
         return $val;
     }
 
@@ -126,23 +133,21 @@ class profile  {
      * @param array $val module info
      * @return array $val module info with a public clone URL. If a public clone URL exists
      */
-    public static function setPublicCloneUrl($val) {
+    public static function getCloneUrl($module_name) {
 
-        $status = "module $val[module_name] has no public clone url set. We try to guess it.";
-        common::echoStatus('NOTICE', 'y', $status);
-        $module_path = conf::pathModules() . "/$val[module_name]";
+        $module_path = conf::pathModules() . "/$module_name";
         if (!file_exists($module_path)) {
-            common::echoStatus('NOTICE', 'y', "module $val[module_name] has no module source");
+            common::echoStatus('NOTICE', 'y', "module $module_name has no module source");
             return $val;
         }
 
         $command = "cd $module_path && git config --get remote.origin.url";
-        $ret = common::execCommand($command, null, 0);
-        if (!$ret) {
+        $ret = common::execCommand($command, array('silence' => 1), 0);
+        if ($ret == 0) {
             $git_url = shell_exec($command);
-            $val['public_clone_url'] = $git_url;
+            return trim($git_url);
         }
-        return $val;
+        return false;
     }
 
     /**
