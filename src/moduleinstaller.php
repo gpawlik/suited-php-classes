@@ -712,7 +712,7 @@ class moduleinstaller  {
 
         // Same version. Return
         if ($current_version == $specific) {
-            $this->confirm = "Module '" . $this->installInfo['NAME'] ."' version is '$specific' ,and the registry has the same version. No upgrade to perform";
+            $this->confirm = "Module '" . $this->installInfo['NAME'] ."'. Version is '$specific'. No upgrade to perform";
             return true;
         }
         
@@ -749,12 +749,12 @@ class moduleinstaller  {
         // update registry
         $this->updateRegistry($specific, $row['id']);
         if ( $specific > $current_version ){
-            $this->confirm = "Module: '" . $this->installInfo['NAME'] . "' ";
-            $this->confirm.= "version: '" . $specific . " Installed. " . "' ";
-            $this->confirm.= "upgraded from $current_version";
+            $this->confirm = "Module '" . $this->installInfo['NAME'] . "'. ";
+            $this->confirm.= "Version '" . $specific . "' installed. ";
+            $this->confirm.= "Upgraded from $current_version";
             return true;
         } else {
-            $this->confirm = "Module: " . $this->installInfo['NAME'] . " Nothing to upgrade. module version is still $current_version";
+            $this->confirm = "Module '" . $this->installInfo['NAME'] . "'. Nothing to upgrade. Module version is still $current_version";
             return true;
         }
     }
