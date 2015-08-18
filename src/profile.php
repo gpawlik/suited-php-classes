@@ -534,7 +534,7 @@ class profile  {
                 $this->error[] = "Could not copy $source to $dest";
             }
 
-            // if php ini file exists copy that to.
+            // If a PHP config file exists, then copy that to.
             $dest = conf::pathModules() . "/$val[module_name]/$val[module_name].php.ini";
             $source = $profile_dir . "/$val[module_name].php.ini-dist";
 
