@@ -1,40 +1,41 @@
-### Simple-php-classes
+# Simple php classes
 
-Some simple php classes.
+A simple framework, and a set of simple php classes. 
 
-### TODO
+No docs yet. 
 
-Some docs
+# Refactor
 
-### Refactor
-
-PHP as ini files. 
+PHP as ini files. OK
 Remove constants.
 Load from base dir. Mv logs/ backup/ etc.  
 
-### Dependencies
+# Dependencies
 
         "ext-mbstring": "*",
         "ext-gd": "*",
 
-mobile detection
+Libs to remember
+
+# mobile detection
 
         "mobiledetect/mobiledetectlib": "2.8.*",
         "donatj/phpuseragentparser": "*",
 
-google oauth
+# google oauth
 
         "google/apiclient": "1.0.*@beta",
 
-facebook oauth
+# facebook oauth
 
         "facebook/php-sdk-v4" : "4.0.20",
 
-yaml and filesystem
+# yaml and filesystem
 
         "symfony/yaml": "2.*",
         "symfony/filesystem": "2.*",
 
+# PEAR
 
         "pear-pear.php.net/PEAR": "1.9.*",
         "pear-pear.php.net/Pager": "2.4.*",
@@ -48,15 +49,15 @@ yaml and filesystem
         "pear-pear.php.net/Mail": "1.2.*",
         "pear-pear.php.net/Services_Akismet2": "0.3.*",
 
-markdown
+# markdown
 
         "michelf/php-markdown": "1.*",
 
-using the imap
+using IMAP
 
         "zendframework/zend-mail": "2.*",
 
-dom parsing with php
+DOM parsing with php and Zend
 
         "zendframework/zend-dom": "2.*"
 
