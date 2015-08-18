@@ -186,7 +186,10 @@ EOF;
             }
             
             if (!isset($options['disable_db_modules'])) {
-                self::loadDbModules();
+                $url = conf::getMainIni('url');
+                if (($url)) {
+                    self::loadDbModules();
+                }
             }       
             
             try {
