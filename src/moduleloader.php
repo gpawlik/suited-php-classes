@@ -215,7 +215,9 @@ class moduleloader {
      * @param int $level the runlevel to run [1- 7]
      */
     public function runLevel($level){
-        if (!isset($this->levels[$level])) return;
+        if (!isset($this->levels[$level])) { 
+            return;
+        }
         foreach($this->levels[$level] as $val){
 
             $this->includeModule($val);

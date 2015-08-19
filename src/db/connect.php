@@ -11,7 +11,7 @@ class connect {
     /** database handle */
     public static $dbh = null;
     
-    /** connection if any */
+    /** Flaf indicating if there is a connection */
     public static $con = null;
     
     /** var thar holds all sqlstatements */
@@ -35,6 +35,7 @@ class connect {
      * @return string
      */
     public static function connect($options = null){
+
         self::$debug[] = "Trying to connect with " . conf::$vars['coscms_main']['url'];
         if (isset($options['url'])) {
             $url = $options['url'];

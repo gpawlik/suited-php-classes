@@ -8,23 +8,25 @@ use diversen\conf;
 class git {
     
     /**
-     * get a module name from a git repo url
+     * Get a module name from a git repo url
+     * Works with e.g. 
+     * git@github.com:diversen/debug.git
+     * git@github.com:diversen/debug
+     * https://github.com/diversen/debug.git
+     * https://github.com/diversen/debug
+     * git://github.com/diversen/debug.git
+     * git://github.com/diversen/debug
      * @param string $repo url
-     * @return boolean
+     * @return string $module_name
      */
     public static function getModulenameFromRepo($repo) {
         $url = parse_url($repo);
         $parts = explode('/', $url['path']);
 
-        if (count($parts) == 1) {
-            return false;
-        }
-        
-        
-        
         $module_name = array_pop($parts);
+        
         if (strstr($module_name, '.git')) {
-            $module_name = substr($last, 0, -4);
+            $module_name = substr($module_name, 0, -4);
         }
         return $module_name;
     }

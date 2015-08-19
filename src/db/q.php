@@ -1,9 +1,13 @@
 <?php
 
 namespace diversen\db;
-use diversen\db;
+
 use diversen\conf;
+use diversen\db\connect;
 use diversen\log;
+use Exception;
+use PDO;
+
 /**
  * contains db_q class fro creating db queries fairly simply
  * @package db
@@ -15,7 +19,7 @@ use diversen\log;
  * 
  * @package db
  */
-class q  {
+class q extends connect {
     /**
      * holder for query being built
      * @var string $query holding query 
@@ -39,18 +43,6 @@ class q  {
      * @var string|null  $where 
      */
     public static $where = null;
-    
-    /**
-     * object holding db handle
-     * @var object $dbh
-     */
-    public static $dbh = null;
-    
-    /**
-     * array holding debug messages
-     * @var array $debug
-     */
-    public static $debug = array();
     
     /**
      * var holding method (SELECT, UPDATE, INSERT, DELETE) 
@@ -77,10 +69,9 @@ class q  {
      * @param array $options 
      */
     public static function init($options = null) {
-        static $db = null;
-        if (!isset($db)) {
-            $db = new db();
-            self::$dbh = db::$dbh;  
+        //static $db = null;
+        if (!self::$dbh) {
+            self::connect($options);
         } 
     }
     
@@ -340,7 +331,9 @@ class q  {
             self::$query.=" ? ";
             self::$bind[] = array ('value' => $val, 'bind' => null);
             $num_val--;
-            if ($num_val) self::$query.=",";
+            if ($num_val) { 
+                self::$query.=",";
+            }
         }
         self::$query.=")";
         return new self();
@@ -417,14 +410,14 @@ class q  {
             self::prepare();
 
             self::$stmt->execute();
-            $rows = self::$stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $rows = self::$stmt->fetchAll(PDO::FETCH_ASSOC);
             if (self::$method == 'select_one') {
                 if (!empty($rows)) {
                     $rows = $rows[0];
                 } 
             }
             self::unsetVars();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $message = $e->getTraceAsString();
             log::error($message);
             $last = self::getLastDebug();
@@ -459,7 +452,7 @@ class q  {
         try {
             self::prepare(); 
             $res = self::$stmt->execute();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $message = $e->getMessage();
             $message.= $e->getTraceAsString();
             log::debug($message);
@@ -614,8 +607,8 @@ class q  {
      * method for unsetting static vars when an operation is compleate.
      */
     public static function unsetVars (){
-        if (isset(conf::$vars['coscms_main']['debug'])) {
-            //cos_debug(self::$query);
+        if (conf::getMainIni('debug')) {
+            //self::(self::$query);
         }
         self::$query = self::$isset = self::$bind = self::$where = self::$stmt = null;
     }

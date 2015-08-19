@@ -79,7 +79,6 @@ class boot {
 
         // Create a db connection
         $db = new db();
-        $db->connect();
 
         // init module loader. 
         $ml = new moduleloader();
@@ -171,11 +170,13 @@ class boot {
         // get template name
         $file = conf::pathHtdocs() . "/templates/" . layout::getTemplateName() . "/template.php";
         
+        // run level 7
+        $ml->runLevel(7);
+        
         // echo module content
         echo $str = view::getFileView($file, $vars);
 
-        // run level 7
-        $ml->runLevel(7);
+        
         conf::$vars['final_output'] = ob_get_contents();
         ob_end_clean();
 

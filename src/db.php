@@ -173,13 +173,11 @@ class db extends connect {
             $sql .= "`$table` WHERE ";
             if (is_array($search)){
                 foreach ($search as $key => $val){
-                //array('username' => 1, $key => '2343');
                     $params[] ="`$key`=:$key";
                 }
                 $params = implode(' AND ', $params);
                 $sql .= $params;
             } else {
-                //
                 $sql .= "`$fieldname`=:search";
             }
             self::$debug[]  = "Trying to prepare select sql: $sql";
@@ -199,7 +197,7 @@ class db extends connect {
     
     /**
      * Method for deleting from a database table. If $fieldname is 
-     * a string e.g. id then $search will be used to find which row to delete 
+     * a string e.g. an id then $search will be used to find which row to delete 
      * e.g. '3' which should be set in $search. If $search is an array you can 
      * add more conditions, e.g. array ('id' => 3, 'title' => 'test');
      *
