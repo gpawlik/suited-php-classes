@@ -19,8 +19,13 @@ class git {
         if (count($parts) == 1) {
             return false;
         }
-        $last = array_pop($parts);
-        $module_name = substr($last, 0, -4);
+        
+        
+        
+        $module_name = array_pop($parts);
+        if (strstr($module_name, '.git')) {
+            $module_name = substr($last, 0, -4);
+        }
         return $module_name;
     }
 
