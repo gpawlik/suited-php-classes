@@ -144,6 +144,12 @@ class git {
         if ($num == 1) {
             return $ary['path'];
         }
+        
+        // E.g. git://github.com/diversen/vote.git
+        if (isset($ary['scheme']) && $ary['scheme'] == 'git') {
+            return "git@$ary[host]:" . ltrim($ary['path'], '/');
+        }
+        
         return "git@$ary[host]:" . ltrim($ary['path'], '/');
     }
 
@@ -161,6 +167,12 @@ class git {
         if (isset($ary['scheme']) && $ary['scheme'] == 'https') {
             return $url;
         }
+        
+        // E.g. git://github.com/diversen/vote.git
+        if (isset($ary['scheme']) && $ary['scheme'] == 'git') {
+            return 'https://' . $ary['host'] . $ary['path'];
+        }
+        
 
         $num = count($ary);
         if ($num == 1) {          

@@ -88,10 +88,7 @@ class moduleinstaller  {
             
             // load install.inc if found
             $install_file = "$module_dir/install.inc";
-            if (!file_exists($install_file)){
-                $status = "Notice: No install file '$install_file' found in: '$module_dir'";
-                common::echoStatus('NOTICE', 'y', $status);
-            }
+            
             $this->loadInstallFile($module_name, $install_file);
             
             
