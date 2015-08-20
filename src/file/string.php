@@ -60,4 +60,34 @@ class string {
         } 
         return false;
     }
+    
+    /**
+     * returns tail of file
+     * @param type $filename
+     * @param type $num_lines
+     * @return type
+     */
+    public static function getTail($filename, $num_lines = 10) {
+        $file = fopen($filename, "r");
+        fseek($file, -1, SEEK_END);
+
+        for ($line = 0, $lines = array(); $line < $num_lines && false !== ($char = fgetc($file));) {
+            if ($char === "\n") {
+                if (isset($lines[$line])) {
+                    $lines[$line][] = $char;
+                    $lines[$line] = implode('', array_reverse($lines[$line]));
+                    $line++;
+                }
+            } else {
+                $lines[$line][] = $char;
+            }
+            fseek($file, -2, SEEK_CUR);
+        }
+
+        if ($line < $num_lines){
+            $lines[$line] = implode('', array_reverse($lines[$line]));
+        }
+
+        return array_reverse($lines);
+    }
 }
