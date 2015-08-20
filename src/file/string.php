@@ -62,7 +62,8 @@ class string {
     }
     
     /**
-     * returns tail of file
+     * From: http://stackoverflow.com/questions/11068203/php-retrieving-lines-from-the-end-of-a-large-text-file
+     * returns tail of file as array of lines
      * @param type $filename
      * @param type $num_lines
      * @return type
