@@ -2,8 +2,6 @@
 
 A simple framework, and a set of simple php classes. 
 
-No docs yet. 
-
 # Refactor
 
 PHP as ini files. OK

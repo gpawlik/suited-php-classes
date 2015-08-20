@@ -49,4 +49,16 @@ class helpers {
         }
         return $ary;
     }
+    
+    //http://php.net/manual/en/function.array-search.php
+    public static function searchRecursive($needle, $haystack) {
+        foreach ($haystack as $key => $value) {
+            $current_key = $key;
+            if ($needle === $value OR ( is_array($value) && self::searchRecursive($needle, $value) !== false)) {
+                return $current_key;
+            }
+        }
+        return false;
+    }
+
 }
