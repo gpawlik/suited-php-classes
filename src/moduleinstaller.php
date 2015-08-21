@@ -80,10 +80,10 @@ class moduleinstaller  {
         // If module_dir already exists, then try to load ini settings of the module
         if (file_exists($module_dir)){
             
-            // load base module settings
+            // Generate an ini file
             $this->generateInifile($ini_file, $ini_file_dist);
             
-            // merge in locale.ini settings if found
+            // Merge in locale.ini settings if found
             $this->loadLocaleIniSettings($module_dir);
             
             // load install.inc if found
@@ -163,7 +163,7 @@ class moduleinstaller  {
         // If no version is found, then check if this is a git repo
         // If it is, then use latest tag for install
 
-        if (!isset($this->installInfo['VERSION']) && conf::isCli()) {
+        if (!isset($this->installInfo['VERSION'])) {
             $this->setInstallInfoFromGit();           
         }
     }

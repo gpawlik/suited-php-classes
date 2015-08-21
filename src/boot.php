@@ -4,14 +4,12 @@ namespace diversen;
 
 use diversen\autoloader\modules;
 use diversen\conf;
+use diversen\db;
+use diversen\html\common;
+use diversen\intl;
 use diversen\log;
 use diversen\moduleloader;
 use diversen\uri\dispatch;
-//use mainTemplate;
-use diversen\intl;
-use divesen\db\connect;
-use diversen\db;
-use diversen\html\common;
 use diversen\view;
 
 class boot {

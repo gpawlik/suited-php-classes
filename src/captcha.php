@@ -52,23 +52,31 @@ class captcha {
         
         $_SESSION['ctries']++;
         if (isset($_SESSION['cstr']) && $_SESSION['ctries'] != '3'){
-            if (conf::getMainIni('captcha_image_module')) {
+            if (conf::getMainIni('captcha_image_module') && moduleloader::isInstalledModule('image')) {
                 return self::createCaptchaImage();
             }
-            return "* " . lang::translate('Enter number') . $_SESSION['cstr'];
+            return "* " . lang::translate('Enter number ') . $_SESSION['cstr'];
         }
+        
+        $new_str = self::getNewStr();
+        
+        if (conf::getMainIni('captcha_image_module') && moduleloader::isInstalledModule('image')) {
+            return self::createCaptchaImage();
+        }
+        return "* " . lang::translate('Enter number ') . $new_str;
+    }
+    
+    public static function getNewStr () {
         $num_1 = mt_rand  ( 20  , 40  );
         $num_2 = mt_rand  ( 20  , 40  );
         $str = "$num_1 + $num_2 = ?";
         $res = $num_1 + $num_2;
         $_SESSION['cstr'] = $str;
         $_SESSION['ckey'] = md5($res);
-        
-        if (conf::getMainIni('captcha_image_module')) {
-            return self::createCaptchaImage();
-        }
-        return "* " . lang::translate('Enter number') . $str;
+        return $str;
     }
+    
+    
 
     /**
      * very simple captcha function doing a multiplication
