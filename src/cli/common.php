@@ -15,6 +15,9 @@ class common {
      * @return boolean $res true if yes else no
      */
     public static function isRoot() {
+        if (!function_exists('posix_getuid')){
+            return true;
+        }
         if (0 == posix_getuid()) {
             return true;
         } else {
