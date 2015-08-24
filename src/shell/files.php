@@ -27,7 +27,7 @@ function cos_chmod_files(){
     // Try to get login username
     // As it is easier for the current user to examine
     // the files which belongs to the web user
-    if (function_exists('posix_getlogin'))
+    if (function_exists('posix_getlogin')){
         $owner = posix_getlogin();
     } else {
         $owner = exec('whoami');
@@ -59,7 +59,7 @@ function cos_chmod_files(){
  */
 function cos_chmod_files_owner(){
     common::needRoot();
-    if (function_exists('posix_getlogin'))
+    if (function_exists('posix_getlogin')){
         $owner = posix_getlogin();
     } else {
         $owner = exec('whoami');
