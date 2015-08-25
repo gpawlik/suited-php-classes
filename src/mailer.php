@@ -3,10 +3,12 @@
 namespace diversen;
 
 use diversen\conf;
+use diversen\log;
 use diversen\mailer\mailmime;
 use diversen\mailer\queue;
 use Mail;
 use PEAR;
+
 
 /**
  * contains mail class and mail functions
