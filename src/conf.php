@@ -832,15 +832,8 @@ class conf {
     public static function getServerUser () {
         $server_name = self::getMainIni('server_name');
         $url = 'http://' . $server_name . '/whoami.php';
-        $handle = fopen($url, "r");
-        if ($handle) {
-            while (!feof($handle)) {
-                $group = fgets($handle, 4096);
-            }
-        } else {
-            return false;
-        }
-        fclose($handle);
-        return $group;
+        $str = file_get_contents($url);
+        return $str;
+
     }
 }

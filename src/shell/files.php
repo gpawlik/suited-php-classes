@@ -24,9 +24,21 @@ function cos_chmod_files(){
     
     $group = conf::getServerUser();
 
-    common::needRoot();
-    $owner = posix_getlogin();
+    // Try to get login username
+    // As it is easier for the current user to examine
+    // the files which belongs to the web user
+    if (function_exists('posix_getlogin')){
+        $owner = posix_getlogin();
+    } else {
+        $owner = exec('whoami');
+    }
+    
+    if (!$owner) {
+        $owner = $group;
+    }
 
+    common::needRoot();
+    
     $files_path = conf::pathBase() . '/htdocs/files ';
     $files_path.= conf::pathBase() . '/logs ';
     $files_path.= conf::pathBase() . '/private ';
@@ -47,7 +59,11 @@ function cos_chmod_files(){
  */
 function cos_chmod_files_owner(){
     common::needRoot();
-    $owner = posix_getlogin();
+    if (function_exists('posix_getlogin')){
+        $owner = posix_getlogin();
+    } else {
+        $owner = exec('whoami');
+    }
     $files_path = conf::pathBase() . '/htdocs/files ';
     $files_path.= conf::pathBase() . '/logs ';
     $files_path.= conf::pathBase() . '/private ';

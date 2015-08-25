@@ -201,7 +201,6 @@ class moduleloader {
         }
         foreach (self::$modules as $val){
             if ($val['module_name'] == $module){
-                $installed[$module] = true;
                 return true;
             }
         }
