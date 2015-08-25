@@ -2,10 +2,10 @@
 
 namespace diversen;
 
-use diversen\upload;
-use diversen\lang;
-use diversen\html\helpers;
 use diversen\html\common;
+use diversen\html\helpers;
+use diversen\lang;
+use diversen\upload;
 
 common::defineConstants();
 
@@ -138,7 +138,7 @@ class html {
      * sets auto encode to a value
      * @param boolean $val true or false 
      */
-    public function setAutoEncode($val = true) {
+    public static function setAutoEncode($val = true) {
         self::$autoEncode = $val;
     }
 
@@ -189,7 +189,6 @@ class html {
         }
         
         //accept-charset
-        
         self::$internal['form_id'] = $options['id'];
 
         if (!isset($options['method'])) {
@@ -228,6 +227,7 @@ class html {
     }
 
    
+    
     /**
      * method for starting a html form
      * @param string $name name of the form
@@ -265,7 +265,38 @@ class html {
                 $options);
         
         self::$fields[] = array ('value' => $str);
+        self::csrfHidden();
+        self::csrfValidate();
+        
     }
+    
+    /**
+     * Add hidden csrf field to a form
+     */
+    public static function csrfHidden () {
+        if (class_exists('\Riimu\Kit\CSRF\CSRFHandler')) {
+            $csrf = new \Riimu\Kit\CSRF\CSRFHandler();
+            $token = $csrf->getToken();
+            self::hidden('csrf_token', htmlspecialchars($token, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        }
+    }
+    
+    /**
+     * Validates a csrf enabled form
+     */
+    public static function csrfValidate () {
+        if (class_exists('\Riimu\Kit\CSRF\CSRFHandler')) {            
+            $csrf = new \Riimu\Kit\CSRF\CSRFHandler(); 
+            try {
+                $csrf->validateRequest(true);
+            } catch (\Riimu\Kit\CSRF\InvalidCSRFTokenException $ex) {           
+                http::locationHeader('/error/accessdenied', 'Bad request');
+                return;
+            }
+        }
+        return true;
+    }
+
     
     /**
      * method for starting a clean html form where we get the string

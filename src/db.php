@@ -572,6 +572,7 @@ class db extends connect {
             if ($key == 'captcha') continue;
             if ($key == 'MAX_FILE_SIZE') continue;
             if ($key == 'APC_UPLOAD_PROGRESS') continue;
+            if ($key == 'csrf_token') continue;
             if (strstr($key, 'method')) continue;
             if (strstr($key, 'ignore')) continue;
                         

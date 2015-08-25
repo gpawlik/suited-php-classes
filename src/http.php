@@ -2,6 +2,7 @@
 
 namespace diversen;
 use diversen\session;
+use diversen\html;
 /**
  * File containg methods for doing http work
  * @package http
@@ -45,7 +46,10 @@ class http {
      */
     public static function prg ($max_time = 0){
         
-        // POST
+        if (!html::csrfValidate()) {
+            http::locationHeader('/error/accessdenied', 'Bad request');
+            return;
+        }
         // genrate a session var holding the _POST
         if ($_SERVER['REQUEST_METHOD'] == 'POST'){
             $uniqid = uniqid();
