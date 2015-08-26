@@ -228,10 +228,8 @@ class mailer {
 
         $body = $mime->getBody();
         $mime_headers = $mime->getHeaders($headers);
-        //unset($mime);
         
         return self::send($to, $mime_headers, $body);
-
     }  
    
    /**

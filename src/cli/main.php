@@ -73,19 +73,6 @@ EOF;
                 )
         );
         
-        
-        // Adding a main option for setting domain
-        self::$parser->addOption(
-            'domain', array(
-            'short_name' => '-d',
-            'long_name' => '--domain',
-            'description' => 'Domain to use if using multi hosts. If not set we will use default domain',
-            'action' => 'StoreString',
-            'default' => 'default',
-                )
-        );
-        
-        
         self::beforeParse();
     }
     

@@ -7,7 +7,7 @@ use diversen\mailer\helpers;
 /**
  * contains mail queue
  * used for sending messages delayed
- * @package cosMail
+ * @package mailer
  */
 
 /**
@@ -24,9 +24,9 @@ use diversen\mailer\helpers;
     
     $to = "test@example.com";
     
-    cosMail::enableQueue();
-    cosMail_queue::setSendTime("+2 days");
-    $res = cosMail::multipart($to, $subject, $message);
+    mailer::enableQueue();
+    //cosMail_queue::setSendTime("+2 days");
+    $res = mailer::multipart($to, $subject, $message);
     // returns last insert id
  </code>
  * 
@@ -64,7 +64,7 @@ class queue {
      */
     public static function add ($to, $mime_headers, $body) {
         rb::connect();
-        $bean = rb::getBean('cosmail_queue');
+        $bean = rb::getBean('mailerqueue');
         $bean->to = $to;
         $bean->mimeheaders = serialize($mime_headers);
         $bean->body = $body;

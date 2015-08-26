@@ -51,7 +51,7 @@ class valid  {
     }
     
     /**
-     * validate email rfc822
+     * validate email according to rfc822
      * @param string $email
      * @return boolean $res true if ok else false
      */
@@ -128,13 +128,10 @@ class valid  {
     }
     
     /**
-     * validates a hostname
+     * validates a hostname with regex
      * @param string $host
      */
     public static function hostname ($host) {
-        
-        // from stackoverflow
-        //$regex = "/^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$/";
         $regex = "/^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$/";  
         return preg_match($regex, $host); 
     }
