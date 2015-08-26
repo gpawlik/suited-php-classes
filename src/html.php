@@ -275,7 +275,7 @@ class html {
      */
     public static function csrfHidden () {
         if (class_exists('\Riimu\Kit\CSRF\CSRFHandler')) {
-            $csrf = new \Riimu\Kit\CSRF\CSRFHandler();
+            $csrf = new \Riimu\Kit\CSRF\CSRFHandler(true);
             $token = $csrf->getToken();
             self::hidden('csrf_token', htmlspecialchars($token, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
         }
@@ -291,7 +291,7 @@ class html {
                 $csrf->validateRequest(true);
             } catch (\Riimu\Kit\CSRF\InvalidCSRFTokenException $ex) {           
                 http::locationHeader('/error/accessdenied', 'Bad request');
-                return;
+                return false;
             }
         }
         return true;
