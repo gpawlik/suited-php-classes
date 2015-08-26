@@ -38,7 +38,7 @@ class gravatar {
         $url .= md5(strtolower(trim($email)));
         $url .= "?s=$s&amp;d=$d&amp;r=$r";
         if ($img) {
-            $url = '<img src="' . $url . '"';
+            $url = '<img alt="Gravatar image" src="' . $url . '"';
             foreach ($atts as $key => $val) {
                 $url .= ' ' . $key . '="' . $val . '"';
             }
