@@ -11,6 +11,10 @@ use diversen\cli\common;
  */
 function cos_structure_dump () {
     $ary = admin::getDbInfo();
+    if (!$ary) {
+        return db_no_url();    
+    }
+
     $user = conf::getMainIni('username');
     $password = conf::getMainIni('password');
     $command = "mysqldump -d -h $ary[host] -u $user -p$password $ary[dbname]";
@@ -23,6 +27,10 @@ function cos_structure_dump () {
  */
 function cos_structure_dump_table ($options) {
     $ary = admin::getDbInfo();
+    if (!$ary) {
+        return db_no_url();    
+    }
+
     $user = conf::getMainIni('username');
     $password = conf::getMainIni('password');
     
@@ -57,9 +65,12 @@ function cos_db_dump_table ($options = null){
         mkdir($dump_dir);
     }
     
-    $dump_name = "backup/sql/$options[table]/" . time() . ".sql";
-    
+    $dump_name = "backup/sql/$options[table]/" . time() . ".sql";  
     $db = admin::getDbInfo();
+    if (!$db) {
+        return db_no_url();    
+    }
+
     $command = 
         "mysqldump --opt -u" . conf::$vars['coscms_main']['username'] .
         " -p" . conf::$vars['coscms_main']['password'];
@@ -93,8 +104,11 @@ function cos_db_load_table($options){
     }
         
     $latest = "backup/sql/$options[table]/" . $latest . ".sql";
-    
     $db = admin::getDbInfo();
+    if (!$db) {
+        return db_no_url();    
+    }
+
     $command = 
         "mysql --default-character-set=utf8  -u" . conf::$vars['coscms_main']['username'] .
         " -p" . conf::$vars['coscms_main']['password'] . " $db[dbname] < $latest";

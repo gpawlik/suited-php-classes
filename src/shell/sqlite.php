@@ -19,6 +19,10 @@ function db_to_sqlite ($options = array ()) {
     
     $ok = false;
     $info = admin::getDbInfo();
+    if (!$info) {
+        return db_no_url();    
+    }
+
     if ($info['scheme'] == 'mysql') {
         $ok = true; 
     } 

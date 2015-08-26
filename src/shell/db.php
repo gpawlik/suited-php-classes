@@ -17,15 +17,29 @@ use diversen\cli\common;
  * @package     shell_db
  */
 
+
+/**
+ * Helper function. Echo that config.ini needs an url if no url exists
+ * @return int
+ */
+function db_no_url () {
+    common::echoMessage('No url in config/config.ini');
+    return 1;
+}
+
 /**
  * shell callback
  * print_r db info
  * @param type $options
  */
 function db_show_con_info ($options) {
-    $info = admin::getDbInfo();
-    print_r($info);
+    $db = admin::getDbInfo();
+    if (!$db) {
+        return db_no_url();
+    }
+    print_r($db);
 }
+
 
 /**
  * function for creating a database for creds in config.ini
@@ -40,8 +54,11 @@ function create_db($options = array()){
  * @return int $res the executed commands shell status 0 on success. 
  */
 function drop_db_default($options = array()){
-    define ('NO_DB', 1);    
+ 
     $db = admin::getDbInfo();
+    if (!$db) {
+        return db_no_url();    
+    }
     $command = 
         "mysqladmin -f -u" . conf::$vars['coscms_main']['username'] .
         " -p" . conf::$vars['coscms_main']['password'] . " -h$db[host] ";
@@ -58,6 +75,10 @@ function drop_db_default($options = array()){
 function load_db_default(){
 
     $db = admin::getDbInfo();
+    if (!$db) {
+        return db_no_url();    
+    }
+    
     $command = 
         "mysql -u" . conf::$vars['coscms_main']['username'] . ' ' .
         "-p" . conf::$vars['coscms_main']['password'] . ' ' .
@@ -75,10 +96,13 @@ function load_db_default(){
  */
 function connect_db(){
     $db = admin::getDbInfo();
+    if (!$db) {
+        return db_no_url();    
+    }
 
     $command = 
-        "mysql --default-character-set=utf8 -u" . conf::$vars['coscms_main']['username'] .
-        " -p" . conf::$vars['coscms_main']['password'] .
+        "mysql --default-character-set=utf8 -u" . conf::getMainIni('username') .
+        " -p" . conf::getMainIni('password') .
         " -h" . $db['host'] . 
         " $db[dbname]";
 
@@ -101,9 +125,13 @@ function dump_db_file ($options = null){
         $dump_name = "backup/sql/" . time() . ".sql";
     } else {
         $dump_name = $options['File'];
-    }
-    
+    }   
+
     $db = admin::getDbInfo();
+    if (!$db) {
+        return db_no_url();    
+    }
+   
     $command = 
         "mysqldump --opt -u" . conf::$vars['coscms_main']['username'] .
         " -p" . conf::$vars['coscms_main']['password'] . 
@@ -136,6 +164,10 @@ function load_db_file($options){
         }
     }
     $db = admin::getDbInfo();
+    if (!$db) {
+        return db_no_url();    
+    }
+
     $command = 
         "mysql --default-character-set=utf8  -u" . conf::$vars['coscms_main']['username'] .
         " -p" . conf::$vars['coscms_main']['password'] . " -h$db[host]  $db[dbname] < $file";

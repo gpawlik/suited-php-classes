@@ -91,9 +91,11 @@ class db extends connect {
      * @return boolean $res true if the field exists false if not. 
      */
     public function fieldExists($table, $field) {
-        
-        
+               
         $info = admin::getDbInfo();
+        if (!$info) {
+            return false;
+        }
         
         if ($info['scheme'] == 'mysql' || $info['scheme'] == 'mysqli') {
             $sql = "SHOW COLUMNS FROM `$table` LIKE '$field'";

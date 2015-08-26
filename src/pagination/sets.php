@@ -4,15 +4,17 @@ namespace diversen\pagination;
 use diversen\html;
 
 /**
- * file contains class for creating simple paging 
- * for e.g. images with prev next
- * @package paginate
+ * File contains class for doing simple pagination of sets 
+ * E.g. images with prev next
+ * 
+ * @package sets
  */
 
 /**
- * class for creating simple paging 
- * for e.g. images with prev next
- * @package paginate
+ * Class for doing simple pagination of sets 
+ * E.g. images with prev next
+ * 
+ * @package sets
  */
 class sets {
     

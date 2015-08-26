@@ -23,6 +23,9 @@ class admin {
         $db = new db();
         if (!$database) {
             $db_curr = self::getDbInfo(); 
+            if (!$db_curr) {
+                return false;
+            }
             $database = $db_curr['dbname'];  
         }
         $sql = "USE `$database`";
@@ -31,11 +34,15 @@ class admin {
     
     /**
      * gets database info from cinfuguration
-     * @return array $ary array ('name' => 'my_db, 'host' => 'localhost')
+     * @return array|false $ary false if no url is given. Array with db url info 
      */
     public static function getDbInfo($url = null) {
         if (!$url) {
-            $url = conf::$vars['coscms_main']['url']; ;
+            $url = conf::getMainIni('url'); 
+        }
+        
+        if (empty($url)) {
+            return false;
         }
         
         $url = parse_url($url);
@@ -157,10 +164,13 @@ class admin {
      */
     public static function createDB ($options = array()) {
         
-        $db = self::getDbInfo();
-        $command = 
-            "mysqladmin -u" . conf::$vars['coscms_main']['username'] .
-            " -p" . conf::$vars['coscms_main']['password'] . " -h$db[host] ";
+        $db = admin::getDbInfo();
+        if (!$db) {
+            return db_no_url();
+        }
+
+        $command = "mysqladmin -u" . conf::$vars['coscms_main']['username'] .
+                " -p" . conf::$vars['coscms_main']['password'] . " -h$db[host] ";
 
         $command.= "--default-character-set=utf8 ";
         $command.= "CREATE $db[dbname]";

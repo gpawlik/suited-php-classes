@@ -42,7 +42,11 @@ function useradd_add ($options = null){
  */
 function useradd_db_insert ($values){
     $database = admin::getDbInfo();
-    
+    if (!$database) {
+        return db_no_url();
+    }
+
+
     admin::changeDB($database['dbname']);
     $db = new db();
     $res = $db->insert('account', $values);
