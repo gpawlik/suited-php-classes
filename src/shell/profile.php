@@ -14,11 +14,6 @@ use diversen\cli\common;
  * @package     shell
  */
 
-/**
- * @ignore
- */
-
-include_once "vendor/diversen/simple-php-classes/src/shell/module.php";
 
 /**
  * wrapper function for loading a profile
@@ -40,7 +35,7 @@ function load_profile($options) {
 
 /**
  * 
- * @param type $options 
+ * @param type $options array ('profile' => 'default', 'clone_only' => false) 
  */
 function upgrade_from_profile ($options){
     // use profile object
@@ -57,14 +52,17 @@ function upgrade_from_profile ($options){
                
         $val['module'] = $val['module_name'];
         
-        
         $module = new moduleinstaller();
         $module->setInstallInfo($val);
 
         if ($module->isInstalled($val['module_name'])){
             cos_git_upgrade($val, $val['version'], 'module');
         } else {
-            cos_git_install($val, 'module');
+            if (isset($options['clone_only'])) {
+                cos_git_clone ($val, 'module');
+            } else {
+                cos_git_install($val, 'module');
+            }  
         }
     }
 
@@ -79,7 +77,11 @@ function upgrade_from_profile ($options){
         }
 
         // no db operations. Just clone version.
-        cos_git_install($val, 'template');
+        if (isset($options['clone_only'])) {
+            cos_git_clone ($val, 'template');
+        } else {
+            cos_git_install($val, 'template');
+        }
     }
 }
 
@@ -251,10 +253,6 @@ function create_profile($options) {
     $pro->createProfile($options['profile']);
 }
 
-
-/**
- * only add commands if we are in CLI mode
- */
 if (conf::isCli()){  
     
     self::setCommand('profile', array(
@@ -317,12 +315,13 @@ if (conf::isCli()){
         'action'      => 'StoreTrue'
     ));
 
+    /*
     self::setOption('upgrade_config_ini_file', array(
         'long_name'   => '--config-up',
         'description' => 'Will upgrade config.ini from profile with any new settings found in profile/{profile}/config.ini-dist',
         'action'      => 'StoreTrue'
     ));
-
+    */
 
 
     self::setArgument('profile',

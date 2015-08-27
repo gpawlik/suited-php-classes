@@ -432,7 +432,7 @@ function cos_git_upgrade ($val, $tag = 'master', $type = 'module'){
     common::execCommand($git_command);
     
     if ($type == 'module'){
-        // sorry - but it is called with a different name in the upgrade_module
+        // It is called with a different name in the upgrade_module
         // function ...
         $val['module'] = $val['module_name'];
 

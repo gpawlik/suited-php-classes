@@ -1,6 +1,7 @@
 <?php
 
 namespace diversen;
+
 use diversen\moduleinstaller;
 use diversen\conf;
 use diversen\cli\common;
@@ -109,7 +110,11 @@ class profile  {
         if (isset($mi->installInfo['PUBLIC_CLONE_URL'])) {
             $val['public_clone_url'] = $mi->installInfo['PUBLIC_CLONE_URL'];
         } else {
-            $val['public_clone_url'] = self::getCloneUrl($val['module_name']);
+            $public = self::getCloneUrl($val['module_name']);
+            if (!$public) {
+                return false;
+            }
+            $val['public_clone_url'] = $public;
             $val['public_clone_url'] = git::getHttpsFromSsh($val['public_clone_url']);           
         }
 
@@ -117,7 +122,11 @@ class profile  {
         if (isset($mi->installInfo['PRIVATE_CLONE_URL'])) {
             $val['private_clone_url'] = $mi->installInfo['PRIVATE_CLONE_URL'];
         } else {
-            $val['private_clone_url'] = self::getCloneUrl($val['module_name']);
+            $private = self::getCloneUrl($val['module_name']);
+            if (!$private) {
+                return false;
+            }
+            $val['private_clone_url'] = $private;
             $val['private_clone_url'] = git::getSshFromHttps($val['private_clone_url']);
         }
 
@@ -138,7 +147,7 @@ class profile  {
         $module_path = conf::pathModules() . "/$module_name";
         if (!file_exists($module_path)) {
             common::echoStatus('NOTICE', 'y', "module $module_name has no module source");
-            return $val;
+            return false;
         }
 
         $command = "cd $module_path && git config --get remote.origin.url";
@@ -572,4 +581,18 @@ class profile  {
             $this->error[] = "Could not Copy $source to $dest";
         }
     }
+    
+    /**
+     * Check tags to see if we should upgrade. 
+     * @return boolean $res
+     */
+    public function upgradePossible () {
+        $locale = git::getTagsInstallLatest();
+        $repo = conf::getModuleIni('system_repo');
+        $remote = git::getTagsRemoteLatest($repo);
+        if ($remote > $locale) {
+            return true;
+        }
+        return false;
+    }    
 }

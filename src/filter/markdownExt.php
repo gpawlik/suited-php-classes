@@ -6,8 +6,6 @@ namespace diversen\filter;
  * @package    filters
  */
 
-use \Michelf\MarkdownExtra;
-
 /**
  * markdownext filter.
  *

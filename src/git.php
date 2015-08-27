@@ -32,13 +32,32 @@ class git {
     }
 
     /**
-     * get tags for a git repo
-     * @return type 
+     * get tags for a system git repo
+     * @return string $tags tags as a string
      */
-    public static function getTags() {
+    public static function getTagsInstall() {
         $command = "git tag -l";
         $ret = exec($command, $output);
         return common::parseShellArray($output);
+    }
+    
+    /**
+     * get system tags as array
+     * @return array $tags
+     */
+    public static function getTagsInstallAsArray () {
+        $tags = self::getTagsInstall();
+        $ary = explode("\n", $tags);
+        return array_filter($ary);
+    }
+    
+    /**
+     * get latest installed tag. This is the latest tag
+     * @return array $tags
+     */
+    public static function getTagsInstallLatest () {
+        $ary = self::getTagsInstallAsArray();
+        return array_pop($ary);
     }
 
     /**
@@ -88,29 +107,22 @@ class git {
      * @param   mixed   $clear set this and tags will not be cached in static var
      * @return  array   $ary array of remote tags
      */
-    public static function getTagsRemote($url = null, $clear = null) {
-        //static $tags = null;
+    public static function getTagsRemote($url = null) {
 
-        // clear tags if operation will be used more than once.
-        //if ($clear) {
-        //    $tags = null;
-        //}
+        $tags = array();
+        $output = array();
+        $ret = 0;
 
-        //if ($tags == null) {
-            $tags = array();
-            $output = array();
-            $ret = 0;
+        $command = "git ls-remote --tags $url";
+        exec($command . ' 2>&1', $output, $ret);
 
-            $command = "git ls-remote --tags $url";
-            exec($command . ' 2>&1', $output, $ret);
-
-            foreach ($output as $line) {
-                trim($line);
-                if (preg_match('~^[0-9a-f]{40}\s+refs/tags/(([a-zA-Z_-]+)?([0-9]+)(\.([0-9]+))?(\.([0-9]+))?([A-Za-z]+[0-9A-Za-z-]*)?)$~', $line, $reg)) {
-                    $tags[] = $reg[1];
-                }
+        foreach ($output as $line) {
+            trim($line);
+            if (preg_match('~^[0-9a-f]{40}\s+refs/tags/(([a-zA-Z_-]+)?([0-9]+)(\.([0-9]+))?(\.([0-9]+))?([A-Za-z]+[0-9A-Za-z-]*)?)$~', $line, $reg)) {
+                $tags[] = $reg[1];
             }
-        //}
+        }
+
         return $tags;
     }
 
@@ -123,13 +135,21 @@ class git {
      * @param   boolean $clear and tags will not be cached in static var
      * @return  array   $tags array of remote tags
      */
-    public static function getTagsRemoteLatest($repo, $clear = null) {
-        $tags = self::getTagsRemote($repo, $clear);
+    public static function getTagsRemoteLatest($repo) {
+        $tags = self::getTagsRemote($repo);
         if (count($tags) > 0) {
             sort($tags);
             return $tags[count($tags) - 1];
         }
         return null;
+    }
+    
+    public static function isMaster () {
+        $branch = shell_exec('git branch');
+        if ('* master' == trim($branch)){
+            return true;
+        }
+        return false;
     }
     
     /**

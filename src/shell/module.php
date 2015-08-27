@@ -184,9 +184,7 @@ function update_ini_file ($options){
     file_put_contents($ini_file_path, $content);
 
     // install profile.
-    if (empty($new_settings)){
-        //cos_cli_print("No new ini file settings for module $options[module]");
-    } else {
+    if (!empty($new_settings)){
         $new_settings_str = conf::arrayToIniFile($new_settings);
         common::echoMessage("New ini file written with updated settings: $ini_file_path");
         common::echoMessage("These are the new ini settings for module $options[module]:");

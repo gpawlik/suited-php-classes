@@ -95,7 +95,6 @@ function cos_reset_install (){
  * change language settings in config/config.ini to load another language. 
  */
 function cos_reload_language(){
-    $reload = new moduleinstaller();
 
 }
 
@@ -103,7 +102,6 @@ function cos_reload_language(){
  * wrapper function for reloading all menus
  */
 function cos_menu_lang_reload(){
-    cos_reload_language();
     cos_menu_uninstall_all();
     cos_menu_install_all();
 }

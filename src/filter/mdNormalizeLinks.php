@@ -5,7 +5,6 @@ namespace diversen\filter;
  * markdown filter. use Michelf markdown
  * @package    filters
  */
-use \Michelf\Markdown;
 
 /**
  * markdown filter.
@@ -24,8 +23,9 @@ class mdNormalizeLinks extends \Michelf\MarkdownExtra {
         #
         # Turn Markdown link shortcuts into XHTML <a> tags.
         #
-		if ($this->in_anchor)
+	if ($this->in_anchor){
             return $text;
+        }
         $this->in_anchor = true;
 
         #
@@ -185,13 +185,6 @@ class mdNormalizeLinks extends \Michelf\MarkdownExtra {
         $md->no_entities = true;
         $md->no_markup = true;
 
-        //$md->
-        $text = $md->doAnchors($text);
-        return $text;
+        return $md->doAnchors($text);
     }
-
-}
-
-class filters_mdNormalizeLinks extends mdNormalizeLinks {
-    
 }

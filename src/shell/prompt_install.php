@@ -14,7 +14,7 @@ function prompt_install(){
     common::echoMessage('The following tags can be used:');
 
     $tags = '';
-    $tags.= git::getTags ();
+    $tags.= git::getTagsInstall ();
     $tags.= "master";
 
     common::echoMessage ($tags);

@@ -1,7 +1,7 @@
 <?php
 
 namespace diversen\filter;
-use diversen\conf as conf;
+use diversen\conf;
 /**
  *
  * file contains method for rewriting language highlights in markdown
@@ -167,13 +167,5 @@ class mdHighlight {
         $newstr.= '```';
         return $newstr;
     }
-
 }
 
-/**
- * extension of mdHighlight for autoloading purpose
- * @package filters
- */
-class filters_mdHighlight extends mdHighlight {
-    
-}

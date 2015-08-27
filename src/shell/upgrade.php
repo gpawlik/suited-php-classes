@@ -1,31 +1,86 @@
 <?php
 
+use diversen\profile;
+use diversen\moduleloader;
+use diversen\git;
+use diversen\cli\common;
+use diversen\conf;
+
 /**
  * reloads lang, menus, module conig
  * @param type $options
  */
 function cos_upgrade_post ($options = array ()) {
-    
-    // check root
-    cos_check_root();
-    
-    // reload menus. cos_menu_lang_reload also reloads language
-    cos_menu_lang_reload();
-    
+
     // reload config
     cos_config_reload();
+}
+
+function cos_upgrade ($options) {
+    moduleloader::includeModule('system');
+    $p = new profile();
+          
+    if (git::isMaster()) {
+        common::abort('Can not make upgrade from master branch');
+    }
+    
+    if ($p->upgradePossible()) {
+        $repo = conf::getModuleIni('system_repo');
+        $remote = git::getTagsRemoteLatest($repo);
+        cos_upgrade_to($remote);
+    } else {
+        $locale = git::getTagsInstallLatest();
+        common::echoMessage("Latest version/tag exists locale: $locale", 'y');
+    }
+}
+
+function cos_upgrade_to($version) {
+    $command = "git checkout master && git pull && git checkout $version";
+    $ret = common::execCommand($command);
+    if ($ret) {
+        $continue = common::readlineConfirm('Command failed. Do you want to continue: ');
+        if (!$continue) {
+            common::abort('Aborting upgrade');
+        }
+    }
+    
+    $command = "composer update";
+    $ret = common::execCommand($command);
+    if ($ret) {
+        $continue = common::readlineConfirm('composer update failed. Do you want to continue: ');
+        if (!$continue) {
+            common::abort('Aborting upgrade');
+        }
+    }
+    
+    // Upgrade all modules and templates
+    $profile = conf::getModuleIni('system_profile');
+    upgrade_from_profile(array (
+        'clone_only' => 1, 
+        'profile' => $profile)
+    );
+    
+    // reload any changes
+    $p = new profile();
+    $p->reloadProfile($profile);
+    cos_config_reload();
+    
+    
+    
+    
+    
+    
 }
 
 self::setCommand('upgrade', array(
     'description' => 'Upgrade existing system',
 ));
 
-self::setOption('cos_upgrade_post', array(
-    'long_name'   => '--post',
+self::setOption('cos_upgrade', array(
+    'long_name'   => '--upgrade',
     'description' => 'Installs new menu items, module config, and language files',
     'action'      => 'StoreTrue'
 ));
-
 
 self::setArgument('profile',
     array('description'=> 'specify the profile to install',
