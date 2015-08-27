@@ -536,7 +536,12 @@ class profile  {
         foreach ($this->profileModules as $key => $val){
             $source = $profile_dir . "/$val[module_name].ini-dist";
             $dest = conf::pathModules() . "/$val[module_name]/$val[module_name].ini";
-    
+            
+            $path_module = conf::pathModules() . "/$val[module_name]";
+            if (!file_exists($path_module)){
+                continue;
+            }
+            
             if (copy($source, $dest)){
                 $this->confirm[] = "Copy $source to $dest";
             } else {
@@ -547,7 +552,6 @@ class profile  {
             $source = $profile_dir . "/$val[module_name].php-dist";
             $dest = conf::pathModules() . "/$val[module_name]/config.php";
             
-
             if (file_exists($source)){
                 copy($source, $dest);
             }
@@ -557,12 +561,13 @@ class profile  {
             $source = $profile_dir . "/$val[module_name].ini-dist";
             $dest = conf::pathHtdocs() . "/templates/$val[module_name]/$val[module_name].ini";
     
-            if (file_exists($source)) {
-                if (copy($source, $dest)){
-                    $this->confirm[] = "Copy $source to $dest";
-                } else {
-                    $this->error[] = "Could not copy $source to $dest";
-                }
+            $path_template = conf::pathHtdocs() . "/templates/$val[module_name]";
+            if (!file_exists($path_template)){
+                continue;
+            }
+            
+            if (file_exists($source)){
+                copy($source, $dest);
             }
         } 
     }
