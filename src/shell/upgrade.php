@@ -24,9 +24,10 @@ function cos_upgrade ($options) {
         common::abort('Can not make upgrade from master branch');
     }
     
+    $repo = conf::getModuleIni('system_repo');
     $remote = git::getTagsRemoteLatest($repo);
     if ($p->upgradePossible()) {
-        $repo = conf::getModuleIni('system_repo');
+        
         cos_upgrade_to($remote);
     } else {
         $locale = git::getTagsInstallLatest();
