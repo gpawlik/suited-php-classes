@@ -24,13 +24,18 @@ function cos_upgrade ($options) {
         common::abort('Can not make upgrade from master branch');
     }
     
+    $remote = git::getTagsRemoteLatest($repo);
     if ($p->upgradePossible()) {
         $repo = conf::getModuleIni('system_repo');
-        $remote = git::getTagsRemoteLatest($repo);
         cos_upgrade_to($remote);
     } else {
         $locale = git::getTagsInstallLatest();
         common::echoMessage("Latest version/tag exists locale: $locale", 'y');
+        
+        $continue = common::readlineConfirm('E.g. Maybe your upgrade was interrupted. Do you want to continue: ');
+        if ($continue) {
+            cos_upgrade_to($remote);
+        }
     }
 }
 
