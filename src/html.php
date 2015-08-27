@@ -275,7 +275,7 @@ class html {
      */
     public static function csrfHidden () {
         if (class_exists('\Riimu\Kit\CSRF\CSRFHandler')) {
-            $csrf = new \Riimu\Kit\CSRF\CSRFHandler(true);
+            $csrf = new \Riimu\Kit\CSRF\CSRFHandler(false);
             $token = $csrf->getToken();
             self::hidden('csrf_token', htmlspecialchars($token, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
         }
@@ -286,7 +286,7 @@ class html {
      */
     public static function csrfValidate () {
         if (class_exists('\Riimu\Kit\CSRF\CSRFHandler')) {            
-            $csrf = new \Riimu\Kit\CSRF\CSRFHandler(); 
+            $csrf = new \Riimu\Kit\CSRF\CSRFHandler(false); 
             try {
                 $csrf->validateRequest(true);
             } catch (\Riimu\Kit\CSRF\InvalidCSRFTokenException $ex) {           
