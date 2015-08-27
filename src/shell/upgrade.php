@@ -32,7 +32,7 @@ function cos_upgrade ($options) {
         $locale = git::getTagsInstallLatest();
         common::echoMessage("Latest version/tag exists locale: $locale", 'y');
         
-        $continue = common::readlineConfirm('E.g. Maybe your upgrade was interrupted. ');
+        $continue = common::readlineConfirm('Continue. Maybe your upgrade was interrupted. ');
         if ($continue) {
             cos_upgrade_to($remote);
         }
@@ -40,6 +40,8 @@ function cos_upgrade ($options) {
 }
 
 function cos_upgrade_to($version) {
+    common::echoMessage("Will now pull source, and checkout latest tag", 'y');
+    
     $command = "git checkout master && git pull && git checkout $version";
     $ret = common::execCommand($command);
     if ($ret) {
@@ -48,6 +50,8 @@ function cos_upgrade_to($version) {
             common::abort('Aborting upgrade');
         }
     }
+    
+    common::echoMessage("Will upgrade vendor with composer according to version", 'y');
     
     $command = "composer update";
     $ret = common::systemCommand($command);
@@ -58,6 +62,8 @@ function cos_upgrade_to($version) {
         }
     }
     
+    common::echoMessage("Will upgrade all modules and templates the versions in the profile", 'y');
+    
     // Upgrade all modules and templates
     $profile = conf::getModuleIni('system_profile');
     upgrade_from_profile(array (
@@ -65,12 +71,14 @@ function cos_upgrade_to($version) {
         'profile' => $profile)
     );
     
+    
+    
     // reload any changes
-    common::echoMessage('Reloading profile');
+    common::echoMessage("Reloading all configuration files", 'y');
     $p = new profile();
     $p->reloadProfile($profile);
     
-    common::echoMessage('Reloading config');
+    common::echoMessage("Load modules changes into database", 'y');
     cos_config_reload();
     
 }
