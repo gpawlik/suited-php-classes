@@ -87,8 +87,9 @@ class git {
             $tags = array();
             foreach ($ary as $line) {
                 trim($line);
-                if (empty($line))
+                if (empty($line)){
                     continue;
+                }
                 $tags[] = $line;
             }
         } else {

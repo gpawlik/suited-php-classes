@@ -18,7 +18,7 @@ function cos_git_install ($options, $type = 'module'){
 
     $options['module'] = $module_name;
 
-    $ret = cos_git_clone ($options, $type);
+    cos_git_clone ($options, $type);
     if ($type == 'module'){
         $str = install_module($options, true);
         common::echoMessage($str);
@@ -314,7 +314,6 @@ function cos_git_tag_all ($options){
         cos_git_tag($val, 'module');
     }
 
-    $profile = new profile();
     $templates = $profile->getTemplates();
     foreach ($templates as $key => $val){
         
