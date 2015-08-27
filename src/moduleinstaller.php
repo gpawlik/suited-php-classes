@@ -62,7 +62,7 @@ class moduleinstaller  {
      * @param   array $options
      */
     public function setInstallInfo($options){
-        
+        $this->installInfo = array();
         // Base info
         $module_name = $options['module'];
         $module_dir = conf::pathModules() . "/$module_name";

@@ -38,11 +38,11 @@ function load_profile($options) {
  * @param type $options array ('profile' => 'default', 'clone_only' => false) 
  */
 function upgrade_from_profile ($options){
-    // use profile object
+
     $pro = new profile();
     $pro->setProfileInfo($options['profile']);
 
-    // install modules
+    // Upgrade modules
     foreach ($pro->profileModules as $key => $val){
         $val['repo'] = $val['public_clone_url'];
         $val['version'] = $val['module_version'];
@@ -76,7 +76,7 @@ function upgrade_from_profile ($options){
             $val['version'] = 'master';
         }
 
-        // no db operations. Just clone version.
+        // No DB operations. Only clone to specific version.
         if (isset($options['clone_only'])) {
             cos_git_clone ($val, 'template');
         } else {
