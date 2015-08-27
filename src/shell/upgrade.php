@@ -33,7 +33,7 @@ function cos_upgrade ($options) {
         $locale = git::getTagsInstallLatest();
         common::echoMessage("Latest version/tag exists locale: $locale", 'y');
         
-        $continue = common::readlineConfirm('E.g. Maybe your upgrade was interrupted. Do you want to continue: ');
+        $continue = common::readlineConfirm('E.g. Maybe your upgrade was interrupted. ');
         if ($continue) {
             cos_upgrade_to($remote);
         }
@@ -73,11 +73,6 @@ function cos_upgrade_to($version) {
     
     common::echoMessage('Reloading config');
     cos_config_reload();
-    
-    
-    
-    
-    
     
 }
 
