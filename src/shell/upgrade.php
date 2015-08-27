@@ -26,8 +26,7 @@ function cos_upgrade ($options) {
     
     $repo = conf::getModuleIni('system_repo');
     $remote = git::getTagsRemoteLatest($repo);
-    if ($p->upgradePossible()) {
-        
+    if ($p->upgradePossible()) {    
         cos_upgrade_to($remote);
     } else {
         $locale = git::getTagsInstallLatest();
@@ -51,7 +50,7 @@ function cos_upgrade_to($version) {
     }
     
     $command = "composer update";
-    $ret = common::execCommand($command);
+    $ret = common::systemCommand($command);
     if ($ret) {
         $continue = common::readlineConfirm('composer update failed. Do you want to continue: ');
         if (!$continue) {
