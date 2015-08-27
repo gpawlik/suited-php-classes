@@ -89,7 +89,7 @@ class profile  {
         foreach ($modules as $key => $val) {
             $ret = self::getModuleInfo($val); 
             if (!$ret) {
-                common::echoStatus('WARNING', 'y', "We could not find any legel git repo for module $val[module_name]");
+                common::echoStatus('NOTICE', 'y', "We could not find any legel git repo for module $val[module_name]");
                 unset($modules[$key]);
             }
             $modules[$key] = $ret;   
