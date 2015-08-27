@@ -2,14 +2,18 @@
 
 namespace diversen\filter;
 /**
- * markdownext filter. using Michelf markdown extra
- * @package    filters
+ * MarkdownExt filter.
+ * Uses MarkdownExtra. 
+ * Gives images the class media_image
+ * Allows entities and markup
+ * @package    filter
  */
 
 /**
- * markdownext filter.
- *
- * @package    filters
+ * MarkdownExt filter.
+ * Uses MarkdownExtra. 
+ * Gives images the class media_image
+ * @package    filter
  */
 class markdownExt extends \Michelf\MarkdownExtra {
     
@@ -60,14 +64,14 @@ class markdownExt extends \Michelf\MarkdownExtra {
 	}
 
     /**
-     *
-     * @param array     array of elements to filter.
-     * @return <type>
+     * Filter
+     * @param string $text markdown
+     * @return string $text
      */
     public static function filter($text){
 
 
-        static $md;
+        static $md = null;
         if (!$md){
             $md = new self();
         }
@@ -75,7 +79,6 @@ class markdownExt extends \Michelf\MarkdownExtra {
         $md->no_entities = false;
         $md->no_markup = false;
 
-        $text = $md->transform($text);
-	return $text; //$parser->transform($text);
+        return $md->transform($text);
     }
 }
