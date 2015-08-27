@@ -6,7 +6,6 @@ use diversen\cli\common;
 use diversen\conf;
 use diversen\db;
 use diversen\git;
-use PDOException;
 
 /**
  * Class for installing modules.
@@ -186,6 +185,7 @@ class moduleinstaller  {
             $latest = array_pop($tags);
         }
         $this->installInfo['VERSION'] = $latest;
+        $this->installInfo['RUN_LEVEL'] = '0';
     }
 
     /**
