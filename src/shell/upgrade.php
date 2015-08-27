@@ -67,8 +67,11 @@ function cos_upgrade_to($version) {
     );
     
     // reload any changes
+    common::echoMessage('Reloading profile');
     $p = new profile();
     $p->reloadProfile($profile);
+    
+    common::echoMessage('Reloading config');
     cos_config_reload();
     
     
