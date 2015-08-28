@@ -155,7 +155,7 @@ class moduleinstaller  {
 
             // run levels
             if (empty($this->installInfo['RUN_LEVEL'])) {
-                $this->installInfo['RUN_LEVEL'] = 0;
+                $this->installInfo['RUN_LEVEL'] = '0';
             }
         }
 
@@ -185,7 +185,7 @@ class moduleinstaller  {
             $latest = array_pop($tags);
         }
         $this->installInfo['VERSION'] = $latest;
-        $this->installInfo['RUN_LEVEL'] = '0';
+
     }
 
     /**
