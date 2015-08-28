@@ -707,8 +707,12 @@ class conf {
      */
     public static function getServerName () {
         $server_name = self::getMainIni('server_name');
-        if (!$server_name) { 
-            $server_name = $_SERVER['SERVER_NAME'];
+        if (!$server_name) {
+            if (!self::isCli()) {
+                $server_name = $_SERVER['SERVER_NAME'];
+            } else {
+                $server_name = 'your-server-name-isn-not-set.com';
+            }
         }
         return $server_name;     
     }
