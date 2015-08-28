@@ -59,7 +59,7 @@ function prompt_install(){
     $password = common::readSingleline('Enter database users password: ');
     $server_name = common::readSingleline('Enter server host name: ');
 
-    common::echoMessage("Writing database connection info to main configuration",'y');
+    common::echoMessage("Writing database connection info to main configuration");
     
     // Assemble configuration info
     conf::$vars['coscms_main']['url'] = "mysql:dbname=$database;host=$host;charset=utf8";
@@ -72,7 +72,7 @@ function prompt_install(){
     $path = conf::pathBase() . "/config/config.ini";
     file_put_contents($path, $content);
 
-    common::echoMessage("Your can also always change the config/config.ini file manually",'y');
+    common::echoMessage("Your can also always change the config/config.ini file manually");
 
     $options = array();
     $options['profile'] = $profile;
@@ -87,12 +87,11 @@ function prompt_install(){
     useradd_add();
     
     $login = "http://$server_name/account/login/index";
-    
-    
 
-    
-    common::echoMessage("If there was no errors you will be able to login at $login", 'y');
-    common::echoMessage("Remember to change file permissions. This will require super user",'y');
+    common::echoMessage("If there was no errors you will be able to login at $login");
+    common::echoMessage("Remember to change file permissions. This will require super user");
+    common::echoMessage("E.g. like this:");
+    common::echoMessage("sudo ./coscli.sh file --chmod-files");
 
 }
 
