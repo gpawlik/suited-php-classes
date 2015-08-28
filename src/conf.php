@@ -835,6 +835,9 @@ class conf {
      */
     public static function getServerUser () {
         $server_name = self::getMainIni('server_name');
+        if (!$server_name) {
+            return false;
+        }
         $url = 'http://' . $server_name . '/whoami.php';
         $str = file_get_contents($url);
         return $str;

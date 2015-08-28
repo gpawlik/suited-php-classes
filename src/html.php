@@ -93,6 +93,13 @@ class html {
     }
     
     /**
+     * shorthand for getStr()
+     */
+    public function get () {
+        return self::getStr();
+    }
+    
+    /**
      * get fieldset tag type or stringt
      * @param mixed $str boolean or string
      */
@@ -273,11 +280,15 @@ class html {
     /**
      * Add hidden csrf field to a form
      */
-    public static function csrfHidden () {
+    public static function csrfHidden ($ret = false) {
         if (class_exists('\Riimu\Kit\CSRF\CSRFHandler')) {
             $csrf = new \Riimu\Kit\CSRF\CSRFHandler(false);
             $token = $csrf->getToken();
-            self::hidden('csrf_token', htmlspecialchars($token, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            if ($ret) {
+                return self::hiddenClean('csrf_token', htmlspecialchars($token, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            } else {
+                self::hidden('csrf_token', htmlspecialchars($token, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            }
         }
     }
     

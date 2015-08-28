@@ -11,10 +11,9 @@ use diversen\git;
  * is a wrapper around other shell functions.
  */
 function prompt_install(){
-    common::echoMessage('The following tags can be used:');
-
-    $tags = '';
-    $tags.= git::getTagsInstall ();
+    common::echoMessage('Pick a version to install:','y');
+    
+    $tags = git::getTagsInstallLatest() . PHP_EOL;
     $tags.= "master";
 
     common::echoMessage ($tags);
@@ -22,53 +21,58 @@ function prompt_install(){
 
     common::execCommand("git checkout $tag");
 
+    // Which profile to install
     $profiles = file::getFileList('profiles', array('dir_only' => true));
-    common::echoMessage("List of profiles: ");
-    foreach ($profiles as $key => $val){
-        common::echoMessage("\t".$val);
+    if (count($profiles) == 1) {
+        $profile = array_pop($profiles);
+    } else {
+        common::echoMessage("List of profiles: ");
+        foreach ($profiles as $val){
+            common::echoMessage("\t".$val);
+        }
+
+        // select profile and load it
+        $profile = common::readSingleline('Enter profile, and hit return: ');
     }
-
-    // select profile and load it
-    $profile = common::readSingleline('Enter profile, and hit return: ');
+    
+    common::echoMessage("Loading the profile '$profile'",'y');
+   
     load_profile(array('profile' => $profile, 'config_only' => true));
-    common::echoMessage("Main config file (config/config.ini) for $profile is loaded");
+    common::echoMessage("Main configuration (placed in config/config.ini) for '$profile' is loaded", 'y');
 
-    
-    
     // Keep base path. Ortherwise we will lose it when loading profile    
     $base_path = conf::pathBase();
     
-    // load profile.
+    // Load the default config.ini settings as a skeleton
     conf::$vars['coscms_main'] = conf::getIniFileArray($base_path . '/config/config.ini', true);
     
-    // reset base path
-    // all commons are set based on base_path
+    // Reset base path
     conf::setMainIni('base_path', $base_path);
     conf::defineCommon();
     
-    // get configuration info
-    $host = common::readSingleline('Enter mysql host, and hit return: ');
-    $database = common::readSingleline('Enter database name, and hit return: ');
-    $username = common::readSingleline('Enter database user, and hit return: ');
-    $password = common::readSingleline('Enter database users password, and hit return: ');
-    $server_name = common::readSingleline('Enter server host name (e.g. www.coscms.org), and hit return: ');
+    common::echoMessage("Enter MySQL credentials",'y');
+    
+    // Get configuration info
+    $host = common::readSingleline('Enter your MySQL host: ');
+    $database = common::readSingleline('Enter database name: ');
+    $username = common::readSingleline('Enter database user: ');
+    $password = common::readSingleline('Enter database users password: ');
+    $server_name = common::readSingleline('Enter server host name: ');
 
-    // assemble configuration info
+    common::echoMessage("Writing database connection info to main configuration",'y');
+    
+    // Assemble configuration info
     conf::$vars['coscms_main']['url'] = "mysql:dbname=$database;host=$host;charset=utf8";
     conf::$vars['coscms_main']['username'] = $username;
     conf::$vars['coscms_main']['password'] = $password;
     conf::$vars['coscms_main']['server_name'] = $server_name;
     
-    // write it to ini file
+    // Write it to ini file
     $content = conf::arrayToIniFile(conf::$vars['coscms_main'], false);
     $path = conf::pathBase() . "/config/config.ini";
     file_put_contents($path, $content);
 
-    // install profile.
-    $confirm_mes = "Configuration rewritten (config/config.ini). More options can be set here, so check it out at some point.";
-    $confirm_mes.= "Will now install system ... ";
-    
-    common::echoMessage($confirm_mes);
+    common::echoMessage("Your can also always change the config/config.ini file manually",'y');
 
     $options = array();
     $options['profile'] = $profile;
@@ -76,10 +80,20 @@ function prompt_install(){
         $options['master'] = true;
     }
 
+    common::echoMessage("Will now clone and install all modules",'y');
     cos_install($options);
+    
+    common::echoMessage("Create a super user",'y');
     useradd_add();
+    
     $login = "http://$server_name/account/login/index";
-    common::echoMessage("You are now able to log in: At $login");
+    
+    
+
+    
+    common::echoMessage("If there was no errors you will be able to login at $login", 'y');
+    common::echoMessage("Remember to change file permissions. This will require super user",'y');
+
 }
 
 function get_password(){
