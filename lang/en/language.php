@@ -27,11 +27,6 @@ $LANG['This Content type is not allowed'] = 'This Content type is not allowed';
 // Translation of file vendor/diversen/simple-php-classes/src/user.php
 
 $LANG['You can not access this page, because your account has been locked!'] = 'You can not access this page, because your account has been locked!';
-// Translation of file vendor/diversen/simple-php-classes/src/pagination.php
-
-$LANG['Previous'] = 'Previous';
-$LANG['Next page'] = 'Next page';
-$LANG['Page'] = 'Page';
 // Translation of file vendor/diversen/simple-php-classes/src/upload.php
 
 $LANG['File exceeds php.ini settings'] = 'File exceeds php.ini settings';
@@ -59,6 +54,7 @@ $LANG['File'] = 'File';
 $LANG['Max size'] = 'Max size';
 // Translation of file vendor/diversen/simple-php-classes/src/captcha.php
 
+$LANG['Enter number '] = 'Enter number ';
 $LANG['Enter number'] = 'Enter number';
 $LANG['CAPTCHA image'] = 'CAPTCHA image';
 // Translation of file vendor/diversen/simple-php-classes/lang/dummy.php
