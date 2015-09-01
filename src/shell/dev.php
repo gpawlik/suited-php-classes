@@ -19,20 +19,51 @@ use diversen\cli\common;
  */
 function dev_test_access($options = null){
     
-    $files = file::getFileListRecursive(conf::pathModules(), "*.php");
-   
-    $base_url = "http://" . conf::getMainIni('server_name');
+    $files = file::getFileListRecursive(conf::pathModules(), "*module.php");
     foreach ($files as $val) {
-        $url = str_replace(conf::pathModules(), '', $val);
-        $url = substr($url, 0, -4);
+
+        $class_path = "modules" . str_replace(conf::pathModules(), '', $val);
+        $class_path = str_replace('.php', '', $class_path);
+        
+        $class = str_replace('/', "\\", $class_path);
+        $ary = get_class_methods($class);
        
-        $url = $base_url . $url;
-        $curl = new mycurl($url);
-        $curl->createCurl();
-       
-        echo $curl->getHttpStatus();
-        common::echoMessage(" Status code recieved on: $url");       
+        if (!is_array($ary)) {
+            continue;
+        }
+        $call_paths = dev_get_actions($ary, $class_path);
+        
+        foreach ($call_paths as $path) {
+
+            $url = conf::getSchemeWithServerName() . "$path";
+            $curl = new mycurl($url);
+            $curl->createCurl();
+
+            echo $curl->getHttpStatus();
+            common::echoMessage(" Status code recieved on: $url");
+
+        }
    }
+}
+
+function dev_get_actions ($methods, $class_path) {
+    $ary = explode("/", $class_path);
+    
+    array_pop($ary);
+    array_shift($ary);
+    
+    $path = "/" . implode('/', $ary);
+
+    foreach($methods as $key => $method) {
+        if (!strstr($method, 'Action')) {
+            unset($methods[$key]);
+            continue;
+        }
+        $methods[$key] = $path . "/"  . str_replace('Action', '', $method);
+    }
+    
+    return $methods;
+    
 }
 
 function dev_env($options = null){
