@@ -68,7 +68,7 @@ class admin {
         $db = new db();
         if ($drop) {
             $sql = "DROP TABLE IF EXISTS $dest";
-            $res = self::rawQuery($sql);
+            $res = $db->rawQuery($sql);
             if (!$res) {
                 return false;
             }
