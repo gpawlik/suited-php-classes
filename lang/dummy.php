@@ -9,3 +9,4 @@ lang::translate('filter_media_help');
 lang::translate('filter_phphl_help');
 lang::translate('filter_markdownNoFollow_help');
 lang::translate('filter_stacklink_help');
+lang::translate('filter_markdownPublic_help');
