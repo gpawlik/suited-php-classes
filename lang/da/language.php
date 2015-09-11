@@ -42,3 +42,4 @@ $LANG['filter_media_help'] = 'Du kan indsætte direkte youtube, Vimeo eller Soun
 $LANG['filter_phphl_help'] = 'Fremhævet PHP kode ved hjælp <span class="notranslate">[hl:php]</span> din php-kode <span class="notranslate">[/hl:php]</span>';
 $LANG['filter_markdownNoFollow_help'] = 'Indhold tilføjet til dette område vil blive filtreret i henhold til markdown syntaks. <a href ="http://daringfireball.net/projects/markdown/syntax">Dette link</a> giver en beskrivelse af syntaksen. Du kan ikke bruge HTML direkte.';
 $LANG['filter_stacklink_help'] = 'Automatisk udskiftning af URL&#39;er med links, f.eks http://os-cms.net bliver <a href="http://os-cms.net">http://os-cms.net</a>';
+$LANG['filter_markdownPublic_help'] = 'Indholdet føjes til dette område vil blive filtreret i henhold til markdown syntaks. <a href ="http://daringfireball.net/projects/markdown/syntax">Dette link</a> giver en beskrivelse af syntaksen. Du kan ikke bruge HTML direkte.';
