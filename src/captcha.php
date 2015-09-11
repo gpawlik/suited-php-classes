@@ -1,10 +1,8 @@
 <?php
 
 namespace diversen;
-use diversen\moduleloader;
-use diversen\html;
-use diversen\conf;
-use diversen\lang;
+
+use Securimage;
 /**
  * File contains very simple captcha class
  *
@@ -18,137 +16,16 @@ use diversen\lang;
  */
 class captcha {
 
-    /**
-     * create the captcha. 
-     * @param string $method
-     * @return  string  $str the catcha to be used in forms
-     */
-    static public function createCaptcha($method = 'stringrandom'){
-        if (moduleloader::moduleExists('image')){
-            moduleloader::includeModule('image');
-        }
-        
-        $method = conf::getModuleIni ('image_captcha_method');
-        if ($method) {
-            return self::$method ();
-        } else {
-            return self::simpleadd();
-        }
-    }
-
-    /**
-     * captcha method which creates a simple modification
-     * @return  string  $str the catcha to be used in forms
-     */
-    static public function simpleadd(){
-        
-        if (!isset($_SESSION['ctries'])) {
-            $_SESSION['ctries'] = 0;
-        }
-        
-        if ($_SESSION['ctries'] == 3) {
-            $_SESSION['ctries'] = 0;
-        }
-        
-        $_SESSION['ctries']++;
-        if (isset($_SESSION['cstr']) && $_SESSION['ctries'] != '3'){
-            if (conf::getMainIni('captcha_image_module') && moduleloader::isInstalledModule('image')) {
-                return self::createCaptchaImage();
-            }
-            return "* " . lang::translate('Enter number ') . $_SESSION['cstr'];
-        }
-        
-        $new_str = self::getNewStr();
-        
-        if (conf::getMainIni('captcha_image_module') && moduleloader::isInstalledModule('image')) {
-            return self::createCaptchaImage();
-        }
-        return "* " . lang::translate('Enter number ') . $new_str;
-    }
-    
-    public static function getNewStr () {
-        $num_1 = mt_rand  ( 20  , 40  );
-        $num_2 = mt_rand  ( 20  , 40  );
-        $str = "$num_1 + $num_2 = ?";
-        $res = $num_1 + $num_2;
-        $_SESSION['cstr'] = $str;
-        $_SESSION['ckey'] = md5($res);
-        return $str;
-    }
-    
-    
-
-    /**
-     * very simple captcha function doing a multiplication
-     * @return  string  the catcha to be used in forms
-     */
-    static public function stringrandom(){
-        if (!isset($_SESSION['ctries'])) {
-            $_SESSION['ctries'] = 0;
-        }
-        
-        if ($_SESSION['ctries'] == 3) {
-            $_SESSION['ctries'] = 0;
-        }
-        
-        $_SESSION['ctries']++;
-        if (isset($_SESSION['cstr']) && $_SESSION['ctries'] != '3'){
-            if (conf::getMainIni('captcha_image_module')) {
-                return self::createCaptchaImage();
-            }
-            return "* " . lang::translate('Enter number') . MENU_SUB_SEPARATOR_SEC . $_SESSION['cstr'];
-        }
-        
-        $_SESSION['cstr'] = $str = self::genRandomString();
-        $_SESSION['ckey'] = md5($str);
-        
-        if (conf::getMainIni('captcha_image_module')) {
-            return self::createCaptchaImage();
-        }
-        return "* " . lang::translate('Enter number') . MENU_SUB_SEPARATOR_SEC  . $str;
-    }
-
-    /**
-     * gets a random string of numbers to use with captcha
-     * @return string $str
-     */
-    public static function genRandomString() {
-        $length = conf::getMainIni('captcha_image_chars');
-        if (!$length) { 
-            $length = 4;
-        }
-        $characters = '0123456789';
-        $string ='';    
-
-        for ($p = 0; $p < $length; $p++) {
-            $string.= $characters[mt_rand(0, strlen($characters)-1)];
-        }
-
-        return $string;
-    }
 
     /**
      * Method for checking if entered answer to captcha is correct
-     *
-     * @param   int  checks if the entered int in a captcha form
-     * @return  int 1 on success and 0 on failure.
      */
-    static public function checkCaptcha($res){
-        if (isset($_SESSION['ckey']) && md5($res) == $_SESSION['ckey']){
-            return 1;
-        } else {
+    static public function checkCaptcha(){
+        $securimage = new Securimage();
+        if ($securimage->check($_POST['captcha_code']) == false) {
             return 0;
+        } else {
+            return 1;
         }
-    }
-    
-    /**
-     * create captcha element with captcha image
-     * @return string $html string with captcha
-     */
-    static public function createCaptchaImage () {
-        $options = array ('align' => 'top');
-        $options['title'] = lang::translate('CAPTCHA image');
-        $options['required'] = true;
-        return "* " . lang::translate('Enter number') . ' ' . html::createImage('/image/captcha/index', $options);
     }
 }

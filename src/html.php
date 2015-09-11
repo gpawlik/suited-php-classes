@@ -532,8 +532,8 @@ class html {
      * @param array $extra extras e.g. array ('class' => 'css and-more')
      * @return string $str the simple captcha input string
      */
-    public static function simpleCaptcha ($name, $value = '', $extra = array()){
-        $str = self::simpleCaptchaClean($name, $value, $extra);
+    public static function captcha (){
+        $str = self::captchaClean();
         self::$fields[] = array ('value' => $str);
     }
     
@@ -545,15 +545,14 @@ class html {
      * @param array $extra extras e.g. array ('class' => 'css and-more')
      * @return string $str the simple captcha input string
      */
-    public static function simpleCaptchaClean ($name, $value = '', $extra = array()){
-        if (!isset($extra['size'])){
-            $extra['size'] = HTML_FORM_TEXT_SIZE;
-        }
+    public static function captchaClean ($name = 'captcha_code', $value = '', $extra = array()){
 
-        $value = self::setValue($name, $value);
-        $extra = self::parseExtra($extra);
-        $str = "<input type=\"text\" name=\"$name\" $extra value=\"$value\" />" . self::$br . "\n";
+        $str = <<<EOF
+<img id="captcha" src="/image/captcha/index" alt="CAPTCHA Image" /><br />
+EOF;
+        $str.= self::textClean('captcha_code');
         return $str;
+
     }
 
     /**
