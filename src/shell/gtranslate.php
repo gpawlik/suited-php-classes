@@ -26,6 +26,7 @@ function google_translate_all_update ($options) {
     $t->setDirsInsideDir('modules/');
     $t->setDirsInsideDir('htdocs/templates/');  
     $t->setSingleDir("vendor/diversen/simple-php-classes");
+    $t->setSingleDir("vendor/diversen/simple-pager");
     $t->updateLang();
 
 }

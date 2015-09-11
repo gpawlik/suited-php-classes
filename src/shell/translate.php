@@ -14,6 +14,7 @@ function translate_all_update($options) {
     $e->setDirsInsideDir('modules/');
     $e->setDirsInsideDir('htdocs/templates/');
     $e->setSingleDir("vendor/diversen/simple-php-classes");
+    $e->setSingleDir("vendor/diversen/simple-pager");
     $e->updateLang();
 }
 
