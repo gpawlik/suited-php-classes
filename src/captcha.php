@@ -22,7 +22,7 @@ class captcha {
      */
     static public function checkCaptcha(){
         $securimage = new Securimage();
-        if ($securimage->check($_POST['captcha_code']) == false) {
+        if ($securimage->check($_POST['captcha']) == false) {
             return 0;
         } else {
             return 1;

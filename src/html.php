@@ -545,12 +545,12 @@ class html {
      * @param array $extra extras e.g. array ('class' => 'css and-more')
      * @return string $str the simple captcha input string
      */
-    public static function captchaClean ($name = 'captcha_code', $value = '', $extra = array()){
+    public static function captchaClean ($name = 'captcha', $value = '', $extra = array()){
 
         $str = <<<EOF
 <img id="captcha" src="/image/captcha/index" alt="CAPTCHA Image" /><br />
 EOF;
-        $str.= self::textClean('captcha_code');
+        $str.= self::textClean('captcha');
         return $str;
 
     }
