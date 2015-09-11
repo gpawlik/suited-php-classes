@@ -52,19 +52,12 @@ $LANG['System could not save image'] = 'System could not save image';
 
 $LANG['File'] = 'File';
 $LANG['Max size'] = 'Max size';
-// Translation of file vendor/diversen/simple-php-classes/src/captcha.php
-
-$LANG['Enter number '] = 'Enter number ';
-$LANG['Enter number'] = 'Enter number';
-$LANG['CAPTCHA image'] = 'CAPTCHA image';
 // Translation of file vendor/diversen/simple-php-classes/lang/dummy.php
-// Hello test
+
 $LANG['filter_autolinkext_help'] = 'Links will be added automaticly, e.g.: http://google.com';
 $LANG['filter_autolink_help'] = 'Automatic replacement of URLs with links, e.g. http://os-cms.net becomes <a href="http://os-cms.net">http://os-cms.net</a>';
 $LANG['filter_geshiHl_help'] = 'Code can be highlighted. e.g. for PHP you will use <span class="notranslate">[hl:php]</span> your php code<span class="notranslate">[/hl:php]</span>';
 $LANG['filter_markdown_help'] = 'Content added to this field will be filtered according to the markdown syntax. <a href ="http://daringfireball.net/projects/markdown/syntax">This link</a> gives a description of the syntax. You can not use HTML directly.';
-
-$LANG['filter_markdownPublic_help'] = 'Content added to this field will be filtered according to the markdown syntax. <a href ="https://michelf.ca/projects/php-markdown/extra/">This link</a> gives a description of the syntax. You can not use HTML directly.';
 $LANG['filter_markdownExt_help'] = 'Content added to this field will be filtered according to the extended markdown syntax. <a href ="http://daringfireball.net/projects/markdown/syntax">This link</a> gives a description of the syntax. You can also use HTML.';
 $LANG['filter_media_help'] = 'You can insert direct youtube, vimeo, or soundcloud links. e.g. http://www.youtube.com/watch?v=xTGKzWDakK8 or http://vimeo.com/39289096, https://soundcloud.com/kaskade/kaskade-quadron-waste-love-ice';
 $LANG['filter_phphl_help'] = 'Highlighted PHP code using <span class="notranslate">[hl:php]</span> your php code<span class="notranslate">[/hl:php]</span>';
