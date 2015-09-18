@@ -8,6 +8,9 @@ namespace diversen;
 
 use Zend\Mail\Storage\Imap as ZendImap;
 use diversen\strings;
+use diversen\log;
+
+
 
 
 
@@ -296,7 +299,7 @@ class imap {
         $parts = array ();
 
         try {
-            foreach (new RecursiveIteratorIterator($message) as $part) {
+            foreach (new \RecursiveIteratorIterator($message) as $part) {
                 $type = $this->getContentType($part);
                 $parts[$type][] = $part->getContent();
             } 
@@ -322,7 +325,7 @@ class imap {
     
     function findPart ($id, $type ='text/plain') {
         $foundPart = null;
-        foreach (new RecursiveIteratorIterator($this->mail->getMessage($id)) as $part) {
+        foreach (new \RecursiveIteratorIterator($this->mail->getMessage($id)) as $part) {
             try {
                 if (strtok($part->contentType, ';') == $type) {
                     $foundPart = $part;
@@ -340,8 +343,8 @@ class imap {
     
     
     function getFolders () {
-            $folders = new RecursiveIteratorIterator($this->mail->getFolders(),
-                                             RecursiveIteratorIterator::SELF_FIRST);
+            $folders = new \RecursiveIteratorIterator($this->mail->getFolders(),
+                                             \RecursiveIteratorIterator::SELF_FIRST);
 
             
             $ary = array ();
