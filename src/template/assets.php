@@ -310,13 +310,15 @@ class assets extends template {
         $md5 = md5($str);
         $domain = conf::getDomain();
             
-        $web_path = "/files/$domain/cached_assets"; 
+        $web_path = "/files/$domain/cached_assets";
         $file = "/css_all-$md5.css";
            
-        $full_path = conf::pathHtdocs() . "/$web_path";
+        $full_path = conf::pathHtdocs() . "$web_path";
+        if (!file_exists($full_path)) {
+            mkdir($full_path, 0770);
+        }
+        
         $full_file_path = $full_path . $file;
-            
-        // create file if it does not exist
         if (!file_exists($full_file_path)) {                  
             file_put_contents($full_file_path, $str, LOCK_EX);
         }            
