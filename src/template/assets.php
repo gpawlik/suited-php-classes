@@ -4,8 +4,7 @@ namespace diversen\template;
 
 use diversen\template;
 use diversen\csspacker;
-use diversen\moduleloader;
-use diversen\conf as conf;
+use diversen\conf;
 use diversen\file;
 use diversen\layout;
 
