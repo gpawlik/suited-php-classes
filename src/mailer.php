@@ -88,7 +88,7 @@ class mailer {
             $params["auth"]     = conf::getMainIni('smtp_params_auth');
             $params["username"] = conf::getMainIni('smtp_params_username');
             $params["password"] = conf::getMainIni('smtp_params_password');
-            $params['debug']    = conf::getMainIni('smtp_params_debug');
+            $params['debug']    = conf::getMainIni('debug');
             $params['persist']  = conf::getMainIni('smtp_params_persist');
             //$params['pipelining'] = config::getMainIni('smtp_params_pipelining');
             if (!conf::getMainIni('smtp_params_persist')) {
