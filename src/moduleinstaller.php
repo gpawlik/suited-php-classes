@@ -153,17 +153,19 @@ class moduleinstaller  {
                 $this->installInfo['menu_item'] = 1;
             }
 
-            // run levels
-            if (empty($this->installInfo['RUN_LEVEL'])) {
-                $this->installInfo['RUN_LEVEL'] = '0';
-            }
+            
         }
 
         // If no version is found, then check if this is a git repo
         // If it is, then use latest tag for install
 
         if (!isset($this->installInfo['VERSION'])) {
-            $this->setInstallInfoFromGit();           
+            $this->setInstallInfoFromGit();
+        }
+
+        // run levels
+        if (empty($this->installInfo['RUN_LEVEL'])) {
+            $this->installInfo['RUN_LEVEL'] = '0';
         }
     }
     
@@ -180,7 +182,7 @@ class moduleinstaller  {
             $latest = array_pop($tags);
         }
         $this->installInfo['VERSION'] = $latest;
-        $this->installInfo['RUN_LEVEL'] = 0;
+        
 
     }
 
