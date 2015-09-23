@@ -70,7 +70,7 @@ class templateinstaller extends moduleinstaller {
             
              // if no version we check if this is a git repo
             if (!isset($this->installInfo['VERSION'])) {
-                $this->setInstallInfoFromGit('template');
+                $this->setInstallInfoFromGit();
             }
             
             if (file_exists($install_file)) {
