@@ -171,12 +171,7 @@ class moduleinstaller  {
      * If no version info was found in install.inc, try to fetch a version
      * from a git repo, and set the version in installInfo
      */
-    public function setInstallInfoFromGit($type = 'module') {
-        if ($type == 'module') {
-            $base = conf::pathModules();
-        } else {
-            $type = conf::pathHtdocs();
-        }
+    public function setInstallInfoFromGit() {
                
         $tags = git::getTagsModule($this->installInfo['NAME'], 'module');
         if (empty($tags)) {
@@ -185,6 +180,7 @@ class moduleinstaller  {
             $latest = array_pop($tags);
         }
         $this->installInfo['VERSION'] = $latest;
+        $this->installInfo['RUN_LEVEL'] = 0;
 
     }
 

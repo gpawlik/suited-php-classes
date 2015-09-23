@@ -444,7 +444,8 @@ class profile  {
             'imap_password',
             'google_translate_key',
             'comment_akismet_key',
-            'session_handler'
+            'session_handler',
+            'emailparse_imap_password'
         );
         
         foreach ($ary as $key => &$val) {
