@@ -272,7 +272,9 @@ class html {
                 $options);
         
         self::$fields[] = array ('value' => $str);
-        self::csrfHidden();
+        if (strtolower($method) == 'post') {
+            self::csrfHidden();
+        }
         self::csrfValidate();
         
     }
