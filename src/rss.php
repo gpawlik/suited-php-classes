@@ -66,8 +66,9 @@ class rss {
      */
     public function getStart() {
         $details = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n";
-        $details.= "<rss version=\"2.0\">\n";
+        $details.= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">' . "\n";
         $details.= "<channel>\n";
+        $details.= '<atom:link href="'.$this->options['link'].'" rel="self" type="application/rss+xml" />' . "\n";
         $details.= "<title>" . $this->options['title'] . "</title>\n";
         $details.= "<link>" . $this->options['link'] . "</link>\n";
         $details.= "<description>" . $this->options['description'] . "</description>";
