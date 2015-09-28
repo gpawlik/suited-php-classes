@@ -52,7 +52,7 @@ class rss {
     /**
      * 
      * set channel info
-     * @param array $ary = array ($title, $link, $description, $lang)
+     * @param array $ary = array ($title, $link, $atom_link, $description, $lang)
      */
     public function __construct($options) {
         $this->options = $options;
@@ -68,7 +68,7 @@ class rss {
         $details = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n";
         $details.= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">' . "\n";
         $details.= "<channel>\n";
-        $details.= '<atom:link href="'.$this->options['link'].'" rel="self" type="application/rss+xml" />' . "\n";
+        $details.= '<atom:link href="'.$this->options['atom_link'].'" rel="self" type="application/rss+xml" />' . "\n";
         $details.= "<title>" . $this->options['title'] . "</title>\n";
         $details.= "<link>" . $this->options['link'] . "</link>\n";
         $details.= "<description>" . $this->options['description'] . "</description>";
