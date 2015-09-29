@@ -3,7 +3,7 @@
 use diversen\moduleloader;
 use diversen\cli\common;
 
-function cron_run ($options) {
+function cron_run () {
     $m = new moduleloader();
     $modules = $m->getAllModules();
     foreach($modules as $module) {
@@ -17,7 +17,7 @@ function cron_run ($options) {
     }
 }
 
-function cron_install($options) {
+function cron_install() {
     
     $mes = "Add the following line to your crontab";
     common::echoMessage($mes);
@@ -41,6 +41,6 @@ self::setOption('cron_run', array(
 
 self::setOption('cron_install', array(
     'long_name'   => '--install',
-    'description' => 'Set this flag and enable SSL mode',
+    'description' => 'See how to install cron line in crontab for this system.',
     'action'      => 'StoreTrue'
 ));
