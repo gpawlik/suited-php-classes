@@ -1,7 +1,8 @@
 <?php
 
 namespace diversen;
-use diversen\micro\conf;
+use diversen\conf;
+
 /**
  * simple wrapper of PHPMailer. 
  * just loads most basic settings from config.php 
@@ -33,6 +34,7 @@ class mailsmtp {
      * returns a PHPHMailer object with settings from config.php
      * @return \PHPMailer
      */
+    /*
     public static function getPHPMailer () {
         $config = conf::get('smtp');
 
@@ -50,24 +52,55 @@ class mailsmtp {
         $mail->FromName = $config['FromName'];
         $mail->isHTML(true);    
         return $mail;
+    }*/
+    
+    public static function getPHPMailer () {
+        
+        $mail = new \PHPMailer;
+        $mail->SMTPDebug = conf::getMainIni('smtp_debug'); 
+        $mail->isSMTP();
+        $mail->Host = conf::getMainIni('smtp_params_host');
+        $mail->SMTPAuth = conf::getMainIni('smtp_params_auth');
+        $mail->Username = conf::getMainIni('smtp_params_username'); // $config['Username'];
+        $mail->Password = conf::getMainIni('smtp_params_password'); // $config['Password'];
+        $mail->SMTPSecure = conf::getMainIni('smtp_secure'); // $config['SMTPSecure'];
+        $mail->Port = conf::getMainIni('smtp_params_port'); 
+        $mail->CharSet = 'UTF-8';
+        $mail->From = conf::getMainIni('smtp_params_email'); // $config['From'];
+        $mail->FromName = conf::getMainIni('smtp_params_name'); // $config['FromName'];
+           
+        return $mail;
     }
+    
     
     /**
      * mail using smtp 
      * @param string $to
      * @param string $subject
-     * @param string $html
      * @param string $text
+     * @param string $html
      * @param array $attachments filenames
      * @return boolean
      */
-    public static function mail ($to, $subject, $html, $text, $attachments = array()) {
+    public static function mail ($to, $subject, $text = null, $html = null, $attachments = array()) {
         $mail = self::getPHPMailer();
         
         $mail->addAddress($to);
         $mail->Subject = $subject;
-        $mail->Body    = $html;
-        $mail->AltBody = $text;
+          
+        $ary = func_get_args();
+        //print_r($ary); die;
+        if ($html) {
+            $mail->isHTML(true);
+            $mail->Body    = $html;
+            
+            if ($text) {
+                $mail->AltBody = $text;
+            }        
+        } else {
+            $mail->isHTML(false);
+            $mail->Body  = $text;
+        }
         
         foreach ($attachments as $val) {
             $mail->addAttachment($val);
@@ -80,4 +113,19 @@ class mailsmtp {
             return true;
         }
     }
+    
+    /**
+     * Send mail to main ini setting 'system_email'
+     * @param string $to
+     * @param string $subject
+     * @param string $text
+     * @param string $html
+     * @param array $attachments filenames
+     * @return boolean
+     */
+    public static function system ($subject, $text = null, $html = null, $attachments = array()) {
+        $system_email = conf::getMainIni('system_email');
+        return self::mail($system_email, $subject, $text, $html, $attachments);
+    }
 }
+
