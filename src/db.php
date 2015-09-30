@@ -534,7 +534,9 @@ class db extends connect {
      */
     public static function selectQueryOne($sql){
         $rows = self::selectQuery($sql);
-        if (isset($rows[0])) return $rows[0];
+        if (isset($rows[0])) { 
+            return $rows[0];
+        }
         return array ();
     }
 
