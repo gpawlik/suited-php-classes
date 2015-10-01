@@ -45,10 +45,7 @@ function cos_upgrade_to($version) {
     $command = "git checkout master && git pull && git checkout $version";
     $ret = common::execCommand($command);
     if ($ret) {
-        $continue = common::readlineConfirm('Command failed. Do you want to continue: ');
-        if (!$continue) {
-            common::abort('Aborting upgrade');
-        }
+        common::abort('Aborting upgrade');
     }
     
     common::echoMessage("Will upgrade vendor with composer according to version", 'y');
@@ -63,9 +60,16 @@ function cos_upgrade_to($version) {
     }
     
     common::echoMessage("Will upgrade all modules and templates the versions in the profile", 'y');
+    $continue = common::readlineConfirm('Do you want to continue: ');
+    if (!$continue) {
+        common::abort('Aborting upgrade');
+    }
     
     // Upgrade all modules and templates
     $profile = conf::getModuleIni('system_profile');
+    if (!$profile) {
+        $profile = 'default';
+    }
     upgrade_from_profile(array (
         'clone_only' => 1, 
         'profile' => $profile)
