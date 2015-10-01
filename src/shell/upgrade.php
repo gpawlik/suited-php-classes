@@ -26,11 +26,18 @@ function cos_upgrade ($options) {
     
     $repo = conf::getModuleIni('system_repo');
     $remote = git::getTagsRemoteLatest($repo);
-    if ($p->upgradePossible()) {    
+    if ($p->upgradePossible()) {
+        
+        common::echoMessage("Latest version/tag: $locale", 'y');
+        $continue = common::readlineConfirm('Continue the upgrade');
+        if ($continue) {
+            cos_upgrade_to($remote);
+        }
+        
         cos_upgrade_to($remote);
     } else {
         $locale = git::getTagsInstallLatest();
-        common::echoMessage("Latest version/tag exists locale: $locale", 'y');
+        common::echoMessage("Latest version/tag: $locale", 'y');
         
         $continue = common::readlineConfirm('Continue. Maybe your upgrade was interrupted. ');
         if ($continue) {
@@ -53,17 +60,10 @@ function cos_upgrade_to($version) {
     $command = "composer update";
     $ret = common::systemCommand($command);
     if ($ret) {
-        $continue = common::readlineConfirm('composer update failed. Do you want to continue: ');
-        if (!$continue) {
-            common::abort('Aborting upgrade');
-        }
+        common::abort('Composer update failed.');
     }
     
     common::echoMessage("Will upgrade all modules and templates the versions in the profile", 'y');
-    $continue = common::readlineConfirm('Do you want to continue: ');
-    if (!$continue) {
-        common::abort('Aborting upgrade');
-    }
     
     // Upgrade all modules and templates
     $profile = conf::getModuleIni('system_profile');
@@ -74,8 +74,6 @@ function cos_upgrade_to($version) {
         'clone_only' => 1, 
         'profile' => $profile)
     );
-    
-    
     
     // reload any changes
     common::echoMessage("Reloading all configuration files", 'y');
