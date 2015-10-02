@@ -384,21 +384,78 @@ class layout {
      * @param array $menu a menu item
      * @return array $options options to be given to html::createLink
      */
-    public static function getMenuLinkOptions ($menu) {
+    public static function isActiveModuleMenu ($menu) {
 
-        $ary = parse_url($menu['url']);
-        $options = array ();
+        if ($menu['url'] == $_SERVER['REQUEST_URI']) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    
 
-        $options['class'] = 'module_menu_link';
-        if ( !empty($ary['path']) && !empty(uri::$info['module_name']) ) {
-            $module_path = '/' . uri::$info['module_name'];
-            if (strstr($ary['path'], $module_path)) {
-                $options['class'] = $options['class'] . ' current';
+    
+    public static $active ='current';
+    
+    /**
+     * function for parsing MAIN menu list.
+     * Main menu is the menu holding all info about modules in database.
+     * Therefore it is also some sort of top level module menu.
+     */
+    public static function parseMainMenuList (){
+
+        $menus = array();
+        $menus = self::$menu['main'];
+        $str = '';
+        foreach($menus as $menu){
+            if (!self::checkMenuAuth($menu)) {
+                continue;
+            }
+            $str.= static::getMainMenuLink($menu);             
+        }
+        return $str;
+    }
+    
+    public static function getMainMenuLink ($menu) {
+        $options = array();
+        $str = '';
+        if (static::isActiveMainMenu($menu)) {
+            $options['class'] = static::$active;
+        }
+
+        $str.= "<li>";
+        $str.= html::createLink($menu['url'], $menu['title'], $options);
+        $str.= "</li>\n";
+        return $str;
+    }
+    
+    public static function isActiveMainMenu($v) {
+
+        $module_frag = uri::$info['module_base'];
+        $url = explode('/', $v['url']);
+        if (isset($url[1]) && isset($module_frag)) {
+            if ("/$url[1]" == $module_frag) {
+                return true;
             }
         }
-        return $options;
-
+        return false;
     }
+
+    /**
+     * method for getting main module menu as html
+     *
+     * @return string containing menu module menu as html
+     */
+    public static function getMainMenu(){
+
+        $str = '';
+        $str.= '<ul>' . "\n";
+        $str.= self::parseMainMenuList();
+        $str.= "</ul>\n";
+        return $str;
+    }
+    
 
     /**
      * function for parsing Admin menu list.
@@ -411,61 +468,26 @@ class layout {
      */
     public static function parseAdminMenuList ($options = array()){
 
-        $menu = array();
-        if (!isset(self::$menu['admin'])) return;
+        
         if (isset($options['menu'])) {
             $menu = $options['menu'];
         } else {
             $menu = self::$menu['admin'];
         }
         
-        $str = $css = '';
-        foreach($menu as $k => $v){
-            if (!self::checkMenuAuth($v)) {
-                continue;
-            }
-
-            $options = self::getMenuLinkOptions($v);
-
-            $str.="<li>";
-            $link = html::createLink( $v['url'], $v['title'], $options);
-
-            $str.=  $link;
-            if (isset($v['sub'])){
-                $str .= self::parseMainMenuList($v['sub']);
-            }
-            $str .= "</li>\n";
-        }
-        return $str;
-
-    }
-
-    /**
-     * function for parsing main menu list
-     * @return string   the main menu. as <li>item</li> etc 
-     */
-    public static function parseMainMenuList (){
-        $menu = array();
-        $menu = self::$menu['main'];
-        $str = $css = $str = '';
+        $str = '';
         foreach($menu as $v){
             if (!self::checkMenuAuth($v)) {
                 continue;
             }
 
-            $str.="<li>";
-            
-            $options = self::getMenuLinkOptions($v);
-            $link = html::createLink( $v['url'], $v['title'], $options);
-            $str.=  $link;
-            if (isset($v['sub'])){
-                $str .= self::parseMainMenuList($v['sub']);
-            }
-            $str .= "</li>\n";
+            $str.= self::getModuleLink($v);
         }
         return $str;
 
     }
+
+
 
 
     /**
@@ -478,32 +500,30 @@ class layout {
      */
     public static function parseModuleMenu($menu, $options = null){
         
-        $str = '';              
-        $num_items = $ex = count($menu);
-
+        $str = '';
         foreach($menu as $v){         
             if (!self::checkMenuAuth($v)) {
                 continue;
             }
-            
-            $str.= "<li>";
-            if ($num_items && ($num_items != $ex) ){
-                $str .= MENU_SUB_SEPARATOR;
-            }
-            
-            $options = self::getMenuLinkOptions($v);
-            $num_items--; 
-            $str.= html::createLink($v['url'], $v['title'], $options);
-            $str.= "</li>\n";
+            $str.= static::getModuleLink($v);
         }
-        
-        if (empty($str)) { 
-            return '';
-        } else {
-            return "<ul>\n$str</ul>\n";
-        }
+
+        return $str;
     }
     
+    public static function getModuleLink($menu) {
+        $options = array();
+        $str = '';
+        if (self::isActiveModuleMenu($menu)) {
+            $options['class'] = 'current';
+        }
+
+        $str.= "<li>";
+        $str.= html::createLink($menu['url'], $menu['title'], $options);
+        $str.= "</li>\n";
+        return  $str;
+    }
+
     /**
      * checks if menu should be displayed to the user depending 
      * on the users credentials
@@ -590,21 +610,26 @@ class layout {
      *
      * @return  string  containing menu as html
      */
-    public static function getModuleMenu(){
+    public static function getModuleMenu() {
         $str = '';
         if (!empty(self::$menu['module'])){            
-            $str.= self::parseModuleMenu(self::$menu['module'], 'module');
+            $str.= static::parseModuleMenu(self::$menu['module'], 'module');
         }
+        return $str;
+    }
+    
+    public static function getModuleMenuSub() {
+        $str = '';
         if (!empty(self::$menu['sub'])){
-            $str.= self::parseModuleMenu(self::$menu['sub'], 'sub');
+            $str.= static::parseModuleMenu(self::$menu['sub'], 'sub');
         }
-        
-        if (!empty(self::$menu['extra'])) {
-            $str.= self::parseModuleMenuExtra();
-        }
-        
+        return $str;
+    }
+    
+    public static function getModuleMenuExtra() {
+        $str = '';
         if (isset(self::$menu['str'])) {
-            $str.=self::$menu['str'];
+            $str.=static::$menu['str'];
         }
         return $str;
     }
@@ -613,22 +638,6 @@ class layout {
         self::$menu['str'] = $str;
     }
 
-    /**
-     * method for getting main module menu as html
-     *
-     * @return string containing menu module menu as html
-     */
-    public static function getMainMenu(){
-        $list = self::parseMainMenuList();
-        if (empty($list)){
-            return '';
-        }
-        $str = '';
-        $str.= '<ul>' . "\n";
-        $str.= $list;
-        $str .= "</ul>\n";
-        return $str;
-    }
     
     /**
      * method for getting all parsed blocks
