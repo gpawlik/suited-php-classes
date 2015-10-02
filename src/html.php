@@ -1324,8 +1324,8 @@ $(document).ready(function() {
      * @return string $html
      */
     public static function getHeadline ($message, $tag = 'h1') {
-        if (method_exists('mainTemplate', 'getHeadline')) {
-            return mainTemplate::getHeadline($message, $tag);
+        if (method_exists('templateOverride', 'getHeadline')) {
+            return templateOverride::getHeadline($message, $tag);
         }
         $str = "<div class=\"headline\">\n";
         $str.= "<$tag>$message</$tag>\n";
@@ -1370,8 +1370,8 @@ $(document).ready(function() {
      */
     public static function getErrors($errors){
 
-        if (method_exists('mainTemplate', 'getErrors')) {
-            return mainTemplate::getErrors($errors);
+        if (method_exists('templateOverride', 'getErrors')) {
+            return templateOverride::getErrors($errors);
         } 
         
         if (is_string($errors)){
@@ -1400,8 +1400,8 @@ $(document).ready(function() {
      * @return string $html
      */
     public static function getConfirm ($message) {
-        if (method_exists('mainTemplate', 'getConfirm')) {
-            return mainTemplate::getConfirm($message);
+        if (method_exists('templateOverride', 'getConfirm')) {
+            return templateOverride::getConfirm($message);
         }
         $str = "<div class=\"form_confirm\">\n";
         $str.= "<ul><li>$message</li></ul>\n";
@@ -1423,8 +1423,8 @@ $(document).ready(function() {
      * @return string $html error message
      */
     public static function getError($message) {
-        if (method_exists('mainTemplate', 'getError')) {
-            return mainTemplate::getError($message);
+        if (method_exists('templateOverride', 'getError')) {
+            return templateOverride::getError($message);
         }
         $str = "<div class=\"form_error\">\n";
         $str.= "<ul><li>$message</li></ul>\n";
