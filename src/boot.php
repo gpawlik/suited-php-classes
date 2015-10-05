@@ -10,7 +10,6 @@ use diversen\intl;
 use diversen\log;
 use diversen\moduleloader;
 use diversen\uri\dispatch;
-use diversen\view;
 
 class boot {
 
@@ -166,14 +165,11 @@ class boot {
         // set view vars
         $vars['content'] = $str;
         
-        // get template name
-        $file = conf::pathHtdocs() . "/templates/" . layout::getTemplateName() . "/template.php";
-        
         // run level 7
         $ml->runLevel(7);
         
         // echo module content
-        echo $str = view::getFileView($file, $vars);
+        echo $str = \mainTemplate::view($vars);
 
         
         conf::$vars['final_output'] = ob_get_contents();

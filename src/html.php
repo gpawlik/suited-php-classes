@@ -1161,6 +1161,11 @@ $(document).ready(function() {
         }
         
         $options = self::parseExtra($options);
+        if (method_exists('mainTemplate', 'createLink')) {
+            return \mainTemplate::createLink($url, $title, $options);
+        }
+        
+        
         $link = "<a href=\"$url\" $options >$title</a>";
         return $link;
     }
@@ -1324,8 +1329,9 @@ $(document).ready(function() {
      * @return string $html
      */
     public static function getHeadline ($message, $tag = 'h1') {
-        if (method_exists('templateOverride', 'getHeadline')) {
-            return templateOverride::getHeadline($message, $tag);
+        if (method_exists('mainTemplate', 'getHeadline')) {
+           
+            return \mainTemplate::getHeadline($message, $tag);
         }
         $str = "<div class=\"headline\">\n";
         $str.= "<$tag>$message</$tag>\n";
@@ -1341,6 +1347,10 @@ $(document).ready(function() {
      */
     public static function getHeadlineEncoded ($message, $tag = 'h3') {
         return self::getHeadline(self::specialEncode($message), $tag);
+    }
+    
+    public static function tableBegin ($class = 'table_class') {
+        return "<table class=\"$class\">";
     }
     
     /**

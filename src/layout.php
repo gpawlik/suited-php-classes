@@ -52,15 +52,16 @@ class layout {
      * loads a template's common file conf::pathHtdocs() . /templates/template/common.inc
      * @param string $template
      */
-    function __construct($template = null){
+    public function __construct($template = null){
         
         if (!isset($template)) {
             $template = self::getTemplateName();
         }
-
+        
         template::init($template);
         template::loadTemplateIniAssets();
-
+        self::includeTemplateCommon($template);
+        
         self::$menu['module'] = array ();
         self::$menu['sub'] = array ();
         self::$menu['main'] = array ();
@@ -73,10 +74,11 @@ class layout {
         }
         // load template. This is done before parsing the modules. Then the 
         // modules still can effect the template. Set header, css, js etc. 
-        $template_path = conf::pathHtdocs(). "/templates/" .
-            $template;
-
-        include_once $template_path . "/template.php";
+        $template_path = conf::pathHtdocs(). "/templates/" . $template . "/template.php";
+        if (file_exists($template_path)) {
+            include_once $template_path;
+        }
+        
     }
     
     /**
@@ -166,6 +168,7 @@ class layout {
                    uri::getInstance()->fragment(1);
             self::$menu['sub'] = self::getSubMenu($sub);
         }
+
     }
     
     /**
@@ -405,6 +408,7 @@ class layout {
      */
     public static function parseMainMenuList (){
 
+        
         $menus = array();
         $menus = self::$menu['main'];
         $str = '';
