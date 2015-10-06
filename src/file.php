@@ -77,8 +77,9 @@ class file {
             $fh = opendir($start_dir);
             while (($file = readdir($fh)) !== false) {
                 // skip hidden files and dirs and recursing if necessary
-                if (strpos($file, '.') === 0)
+                if (strpos($file, '.') === 0) {
                     continue;
+                }
 
                 $filepath = $start_dir . '/' . $file;
                 if (is_dir($filepath)) {
