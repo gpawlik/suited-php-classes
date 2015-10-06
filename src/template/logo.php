@@ -27,20 +27,13 @@ class logo {
      */
     public static function getLogoHTML ($options = array()) {
         $logo = conf::getMainIni('logo');
-        if (!$logo){
-            $logo_method = conf::getMainIni('logo_method');
-            if (!$logo_method) {
-                $title = $_SERVER['HTTP_HOST'];
-                $link = html::createLink('/', $title);
-                return $str = "<div id=\"logo_title\">$link</div>";
-            } else {
-                moduleloader::includeModule ($logo_method);
-                $str =  $logo_method::logo();
-                return $str = "<div id=\"logo_title\">$str</div>";
-            }
-                
+        if (!$logo) {
+
+            $title = $_SERVER['HTTP_HOST'];
+            $link = html::createLink('/', $title);
+            return $str = "<div id=\"logo_title\">$link</div>";
         } else {
-            $file ="/logo/" . conf::$vars['coscms_main']['logo'];
+            $file ="/logo/" . conf::getMainIni('logo');
             $src = conf::getWebFilesPath($file);
             if (!isset($options['alt'])){           
                 $options['alt'] = $_SERVER['HTTP_HOST'];
