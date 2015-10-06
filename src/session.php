@@ -462,21 +462,18 @@ class session {
      * in your template. 
      * @return string $str actionMessage
      */
-    public static function getActionMessage(){
+    public static function getActionMessage($empty = true){
         if (isset($_SESSION['system_message'])){
             $messages = $_SESSION['system_message'];
             $ret = '';
-            if (is_array ($messages)){
-                if (function_exists('template_get_action_message')) {
-                    $ret = template_get_action_message ($messages);
-                } else {
-                
-                    foreach ($messages as $message) {
-                        $ret.= $message;
-                    }
+            if (is_array($messages)) {
+                foreach ($messages as $message) {
+                    $ret.= $message;
                 }
             }
-            unset($_SESSION['system_message']);
+            if ($empty) {
+                unset($_SESSION['system_message']);
+            }
             return $ret;
         }
         return null;
