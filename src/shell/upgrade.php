@@ -28,7 +28,7 @@ function cos_upgrade ($options) {
     $remote = git::getTagsRemoteLatest($repo);
     if ($p->upgradePossible()) {
         
-        common::echoMessage("Latest version/tag: $locale", 'y');
+        common::echoMessage("Latest version/tag: $remote", 'y');
         $continue = common::readlineConfirm('Continue the upgrade');
         if ($continue) {
             cos_upgrade_to($remote);
