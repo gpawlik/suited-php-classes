@@ -1160,12 +1160,12 @@ $(document).ready(function() {
             unset($options['anchor_part']);
         }
         
-        $options = self::parseExtra($options);
+        
         if (method_exists('mainTemplate', 'createLink')) {
             return \mainTemplate::createLink($url, $title, $options);
         }
         
-        
+        $options = self::parseExtra($options);
         $link = "<a href=\"$url\" $options >$title</a>";
         return $link;
     }

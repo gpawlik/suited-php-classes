@@ -42,12 +42,6 @@ $LANG['Mime type is not allowed. '] = 'Mime type is not allowed. ';
 $LANG['These mime types are allowed '] = 'These mime types are allowed ';
 $LANG['File is too large'] = 'File is too large';
 $LANG['Max size is '] = 'Max size is ';
-// Translation of file vendor/diversen/simple-php-classes/src/imagescale.php
-
-$LANG['System could not load image driver'] = 'System could not load image driver';
-$LANG['System could not load image'] = 'System could not load image';
-$LANG['System could not resize image'] = 'System could not resize image';
-$LANG['System could not save image'] = 'System could not save image';
 // Translation of file vendor/diversen/simple-php-classes/src/html.php
 
 $LANG['File'] = 'File';

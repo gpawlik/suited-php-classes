@@ -639,7 +639,7 @@ class layout {
     }
     
     public static function setStrAfterMenu($str) {
-        self::$menu['str'] = $str;
+        self::$menu['str'] = "<li>" . $str . "</li>";
     }
 
     
