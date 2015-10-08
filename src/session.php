@@ -69,6 +69,14 @@ class session {
             ini_set("session.cookie_domain", $session_host);
         }
         
+        
+        $session_save_path = conf::getMainIni('session_save_path');
+        if ($session_save_path) { 
+            ini_set("session.save_path", $session_save_path);
+        }
+        
+        
+        
         // session time
         $session_time = conf::getMainIni('session_time');
         if (!$session_time) { 
