@@ -239,14 +239,19 @@ class file {
     }
 
     /**
-     * get dirs in path using glob function
+     * get dirs in path using DirectoryIterator method
      * @param string $path
      * @param array $options you can set a basename which has to be correct
      *              'basename' => '/path/to/exists'
      * @return array $dirs 
      */
     public static function getDirsGlob($path, $options = array()) {
-        $it = new \DirectoryIterator($path);
+        if (file_exists($path)) {
+            $it = new \DirectoryIterator($path);
+        } else {      
+            error_log("$path does not exists", 3);
+            return array();
+        }
         
         $dirs = array ();
         foreach ($it as $file) {
