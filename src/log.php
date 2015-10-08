@@ -21,29 +21,22 @@ class log {
      * @param string $message
      * @param boolean $write_file
      */
-    public static function error ($message, $write_file = true, $echo = true) {
+    public static function error ($message) {
               
         if (!is_string($message)) {
             $message = var_export($message, true);
         }
 
-        if (conf::getMainIni('debug') && $echo == true) {
+        
+        if (conf::getMainIni('debug')) {
             if (conf::isCli()) {
                 echo $message . PHP_EOL;
             } else {
-                echo $message;
+                echo "<pre>" . $message . "</pre>";        
             }
         }
-
-        if ($write_file){
-            $message = strftime(conf::getMainIni('date_format_long')) . ": " . $message;
-            if (conf::isCli()) {
-                $path = conf::pathBase() . "/logs/coscms.log";
-                error_log($message . PHP_EOL, 3, $path);
-            } else {
-                error_log($message);
-            }
-        }
+        
+        error_log($message, 4);
     }
     
     
@@ -58,32 +51,31 @@ class log {
             return;
         } 
     }
-    
+
     /**
-     * create log file 
-     */
-    public static function createLog () {
-        
-        $file = conf::pathBase() . "/logs/error.log";
-        if (!file_exists($file)) {
-            $res = @file_put_contents($file, '');
-            if ($res === false) {
-                die("Can not create log file: $file");
-            }
+     * set log file. 
+     * Can be used for CLI
+     * @param string $file
+     */    
+    public static function setErrorLog($file = null) {
+        if (!$file) {
+            ini_set('error_log', conf::pathBase() . '/logs/coscms.log');
         }
     }
-    
+
+    /**
+     * Set a log level based on env and debug
+     */
     public static function setLogLevel() {
+        
         $env = conf::getEnv();
         if ($env == 'development') {
             error_reporting(E_ALL);
         }
-
 
         // check if we are in debug mode and display errors
         if (conf::getMainIni('debug')) {
             ini_set('display_errors', 1);
         }
     }
-
 }
