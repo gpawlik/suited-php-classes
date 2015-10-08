@@ -249,7 +249,7 @@ class file {
         if (file_exists($path)) {
             $it = new \DirectoryIterator($path);
         } else {      
-            error_log("$path does not exists", 3);
+            error_log("$path does not exists in " . __FILE__ . ": " . __LINE__);
             return array();
         }
         
