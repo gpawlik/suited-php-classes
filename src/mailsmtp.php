@@ -1,8 +1,10 @@
 <?php
 
 namespace diversen;
-use diversen\conf;
 
+use diversen\conf;
+use PHPMailer;
+use diversen\log;
 /**
  * simple wrapper of PHPMailer. 
  * just loads most basic settings from config.php 
@@ -28,36 +30,20 @@ if(!$mail->send()) {
  * 
  */
 class mailsmtp {
-
     
     /**
-     * returns a PHPHMailer object with settings from config.php
-     * @return \PHPMailer
+     * 
+     * @return PHPMailer
      */
-    /*
-    public static function getPHPMailer () {
-        $config = conf::get('smtp');
-
-        $mail = new \PHPMailer;
-        $mail->SMTPDebug = $config['SMTPDebug'];
-        $mail->isSMTP();
-        $mail->Host = $config['Host'];
-        $mail->SMTPAuth = $config['SMTPAuth'];
-        $mail->Username = $config['Username'];
-        $mail->Password = $config['Password'];
-        $mail->SMTPSecure = $config['SMTPSecure'];
-        $mail->Port = $config['Port'];
-        $mail->CharSet = $config['CharSet'];
-        $mail->From = $config['From'];
-        $mail->FromName = $config['FromName'];
-        $mail->isHTML(true);    
-        return $mail;
-    }*/
-    
     public static function getPHPMailer () {
         
-        $mail = new \PHPMailer;
-        $mail->SMTPDebug = conf::getMainIni('smtp_debug'); 
+        $mail = new PHPMailer;
+        
+        // only debug if debug flag is set
+        if (conf::getMainIni('debug')) {
+            $mail->SMTPDebug = conf::getMainIni('smtp_debug'); 
+            
+        }
         $mail->isSMTP();
         $mail->Host = conf::getMainIni('smtp_params_host');
         $mail->SMTPAuth = conf::getMainIni('smtp_params_auth');
@@ -68,6 +54,11 @@ class mailsmtp {
         $mail->CharSet = 'UTF-8';
         $mail->From = conf::getMainIni('smtp_params_email'); // $config['From'];
         $mail->FromName = conf::getMainIni('smtp_params_name'); // $config['FromName'];
+        
+        if (conf::getMainIni('smtp_params_bounce')){
+            $return_path = conf::getMainIni('smtp_params_bounce');
+            $mail->addCustomHeader("Return-Path: <$return_path>");
+        }
            
         return $mail;
     }
@@ -87,9 +78,7 @@ class mailsmtp {
         
         $mail->addAddress($to);
         $mail->Subject = $subject;
-          
-        $ary = func_get_args();
-        //print_r($ary); die;
+
         if ($html) {
             $mail->isHTML(true);
             $mail->Body    = $html;
@@ -108,13 +97,14 @@ class mailsmtp {
         
         if(!$mail->send()) {
             log::error($mail->ErrorInfo);
+            echo "message could not be sent";
             return false;
         } else {
             return true;
         }
     }
     
-    /**
+   /**
      * Send mail to main ini setting 'system_email'
      * @param string $to
      * @param string $subject
