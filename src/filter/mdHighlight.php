@@ -136,11 +136,11 @@ class mdHighlight {
         $lines = strings_normalize::newlinesToUnix($str);
         $ary = explode("\n", $lines);
 
-        $newstr = '```' . $this->lang . "\n";
+        $newstr = '~~~{.' . $this->lang . "}\n";
         foreach ($ary as $val) {
             $newstr.= "$val\n";
         }
-        $newstr.= '```';
+        $newstr.= '~~~';
         return $newstr;
     }
 
@@ -160,12 +160,11 @@ class mdHighlight {
         $lines = strings_normalize::newlinesToUnix($str);
         $ary = explode("\n", $lines);
 
-        $newstr = '```' . $this->lang . "\n";
+        $newstr = '~~~{.' . $this->lang . "}\n";
         foreach ($ary as $val) {
             $newstr.= "$val\n";
         }
-        $newstr.= '```';
+        $newstr.= '~~~';
         return $newstr;
     }
 }
-
