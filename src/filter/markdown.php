@@ -6,7 +6,7 @@ namespace diversen\filter;
  * @package    filters
  */
 
-use \Michelf\Markdown as MD;
+use \Michelf\MarkdownExtra as MD;
 
 /**
  * markdown filter.
