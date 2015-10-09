@@ -323,6 +323,10 @@ class conf {
         // from file is NOT loaded in Cli mode: You will need to set these
         // settings in config.ini
 
+        if (!isset(self::$vars['coscms_main'])) {
+            self::$vars['coscms_main'] = array();
+        }
+        
         if (!self::isCli()) {
             self::loadMain();
         } else {
@@ -358,63 +362,54 @@ class conf {
      * This will be compared to the $_SERVER['SERVER_NAME'] variable
      * and if there is a match the stage settings will override
      * the default settings. Same goes for development 
-     */    
-    public static function loadMain () {
-        
-        $config_file = self::getConfigFileName();    
-        if (!file_exists($config_file)){
+     */
+    public static function loadMain() {
+
+        $config_file = self::getConfigFileName();
+        if (!file_exists($config_file)) {
             $config_file = 'config/config.ini';
-        } 
+        }
+
+        self::$vars['coscms_main'] = array_merge(self::$vars['coscms_main'], self::getIniFileArray($config_file, true));
         
+        // set them in coscms_main_file, so it is possbile
+        // to get original value without db viewing e.g. db override. 
+        self::$vars['coscms_main_file'] = self::$vars['coscms_main'];
 
-            //self::$vars['coscms_main'] = self::getIniFileArray($config_file, true);
-            self::$vars['coscms_main'] = array_merge(self::$vars['coscms_main'], self::getIniFileArray($config_file, true));
-            // set them in coscms_main_file, so it is possbile
-            // to get original value without db viewing e.g. db override. 
-            self::$vars['coscms_main_file'] = self::$vars['coscms_main'];
-            
-            // check if any shared.ini settings should be merged
-            self::mergeSharedIni();
-            
-            if ( self::getEnv() == 'production' ) {
+        // check if any shared.ini settings should be merged
+        self::mergeSharedIni();
 
-                    // We are on REAL server and exits without
-                    // adding additional settings for stage or development
-                    // or CLI mode. 
-                    return; 
-            }
+        if (self::getEnv() == 'production') {
 
-            // Test if we are on stage server. 
-            // Overwrite register settings with stage settings
-            if ( self::getEnv() == 'stage') {
+            // We are on REAL server and exits without
+            // adding additional settings for stage or development
+            // or CLI mode. 
+            return;
+        }
 
-                    // we are on development, merge and overwrite normal settings with
-                    // development settings.
-                    self::$vars['coscms_main'] =
-                    array_merge(
-                        self::$vars['coscms_main'],
-                        self::$vars['coscms_main']['stage']
-                    );
-                    self::$vars['coscms_main']['development'] = 'stage';
-                    return;
+        // Test if we are on stage server. 
+        // Overwrite register settings with stage settings
+        if (self::getEnv() == 'stage') {
 
-            }
-            // We are on development server. 
-            // Overwrite register settings with development settings
-            if (self::getEnv() == 'development') {
+            // we are on development, merge and overwrite normal settings with
+            // development settings.
+            self::$vars['coscms_main'] = array_merge(
+                    self::$vars['coscms_main'], self::$vars['coscms_main']['stage']
+            );
+            self::$vars['coscms_main']['development'] = 'stage';
+            return;
+        }
+        // We are on development server. 
+        // Overwrite register settings with development settings
+        if (self::getEnv() == 'development') {
 
-                    self::$vars['coscms_main'] =
-                    array_merge(
-                        self::$vars['coscms_main'],
-                        self::$vars['coscms_main']['development']
-                    );
-                    self::$vars['coscms_main']['development'] = 'development';
-
-            }
-        //}
+            self::$vars['coscms_main'] = array_merge(
+                    self::$vars['coscms_main'], self::$vars['coscms_main']['development']
+            );
+            self::$vars['coscms_main']['development'] = 'development';
+        }
     }
-    
-        
+
     /**
      * load main cli configuration
      */

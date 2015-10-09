@@ -30,6 +30,7 @@ class main extends cli {
         conf::load();
 
         // Set log level - based on config.ini
+        log::setErrorLog();
         log::setLogLevel();
 
         // Set locales
