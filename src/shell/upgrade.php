@@ -48,7 +48,7 @@ function cos_upgrade ($options) {
 function cos_upgrade_to($version) {
     common::echoMessage("Will now pull source, and checkout latest tag", 'y');
     
-    $command = "git checkout master && git pull && git checkout $version";
+    $command = "git fetch --tags git checkout master && git pull && git checkout $version";
     $ret = common::execCommand($command);
     if ($ret) {
         common::abort('Aborting upgrade');
