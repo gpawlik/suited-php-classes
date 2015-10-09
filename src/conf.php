@@ -463,6 +463,7 @@ class conf {
                 return true;
             }
         }
+        return true;
     }
     
     /**
