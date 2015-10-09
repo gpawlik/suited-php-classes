@@ -97,7 +97,6 @@ class mailsmtp {
         
         if(!$mail->send()) {
             log::error($mail->ErrorInfo);
-            echo "message could not be sent";
             return false;
         } else {
             return true;
