@@ -417,7 +417,7 @@ class conf {
         $config_file = self::getConfigFileName();
 
         if (!file_exists($config_file)) {
-            return;
+            return false;
         } else {
             self::$vars['coscms_main'] = array_merge(self::$vars['coscms_main'], self::getIniFileArray($config_file, true));
 
@@ -436,7 +436,7 @@ class conf {
                 // If this is set. 
                 // adding additional settings for stage or development
                 // or CLI mode
-                return;
+                return true;
             }
 
             // Test if we are on stage server. 
@@ -450,7 +450,7 @@ class conf {
                 self::$vars['coscms_main'] = array_merge(
                         self::$vars['coscms_main'], self::$vars['coscms_main']['stage']
                 );
-                return;
+                return true;
             }
             // We are on development server. 
             // Overwrite register settings with development settings
@@ -460,6 +460,7 @@ class conf {
                 self::$vars['coscms_main'] = array_merge(
                         self::$vars['coscms_main'], self::$vars['coscms_main']['development']
                 );
+                return true;
             }
         }
     }

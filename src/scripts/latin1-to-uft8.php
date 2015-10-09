@@ -43,6 +43,8 @@
  * 
  */
 
+
+
 include_once "vendor/autoload.php";
 
 use diversen\conf;
@@ -50,8 +52,27 @@ use diversen\db;
 
 conf::setMainIni('base_path', realpath('.'));
 
-conf::loadMainCli();
+if (!conf::loadMainCli()){
+    $str = <<<EOF
+Usage: 
 
+create config/config.ini e.g.:
+
+mkdir config
+touch config/config.ini
+
+Put your credentials into config/config.ini
+Something like this: 
+
+url = "mysql:dbname=demo;host=localhost;charset=utf8"
+db_init = "SET NAMES utf8"
+username = "root"
+password = "password"
+
+EOF;
+    echo $str;
+}
+        
 $db = new db();
 $db->connect();
 
