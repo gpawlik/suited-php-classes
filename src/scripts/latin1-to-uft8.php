@@ -71,6 +71,7 @@ password = "password"
 
 EOF;
     echo $str;
+    exit(1);
 }
         
 $db = new db();
