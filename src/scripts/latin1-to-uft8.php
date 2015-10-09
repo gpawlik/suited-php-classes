@@ -2,45 +2,37 @@
 
 /**
  * 
- * If you want to use this as a standalone script you will need to 
- * modify it slightly as it uses the coscms framework. 
- * 
- * Or just clone the coscms (you will need php >= 5.3):
- * 
- * git clone git://github.com/diversen/coscms.git
- * 
- * cp config/config.ini-dist config/config.ini
- *  
- * cd coscms
- *
- * and edit config/config.ini 
- * 
- * set: 
- * 
- * url = "mysql:dbname=mydatabase;host=localhost"
- * username = "user"
- * password = "password"
- * 
- * then run 
- * 
- * php scripts/latin1-to-uft8.php 
- * 
- * This will transform all of your broken chars like: 
- * 
- * Ã¡ = á
- * Ã© = é
- * Ã­- = í
- * Ã³ = ó
- * Ã± = ñ
- * Ã¡ = Á
- * 
- * To proper utf8
- * 
- * Only testet on my own setup, so backup your database
- * 
- * There was a few problem with indexes, but they were solved 
- * by running the latin1 -> blob -> utf8 in one query 
- * 
+According to this question on stackoverflow: [Detecting utf8 broken characters in MySQL](http://stackoverflow.com/questions/1476356/detecting-utf8-broken-characters-in-mysql). I found that [this answer](http://stackoverflow.com/questions/1476356/detecting-utf8-broken-characters-in-mysql/9159875#9159875) had the correct approach. This approach will transform broken chars like the following into the correct utf8 chars: 
+
+    Ã¡ = á
+    Ã© = é
+    Ã­- = í
+    Ã³ = ó
+    Ã± = ñ
+    Ã¡ = Á
+
+At least it worked perfect for my setup, so I added a small script to the my class collection [simple-php-classes,](https://github.com/diversen/simple-php-classes) which transforms a whole MySQL database in the above way. You [can find the script on github](https://github.com/diversen/simple-php-classes/blob/master/src/scripts/latin1-to-uft8.php). Usage: 
+
+Require the script:
+
+    composer require diversen/simple-php-classes
+
+Create config file 
+
+    mkdir config
+    touch config/config.ini
+
+Add something like the following to the `config/config.ini` file:
+
+    url = "mysql:dbname=demo;host=localhost;charset=utf8"
+    db_init = "SET NAMES utf8"
+    username = "root"
+    password = "password"
+
+Run the script:
+
+    php vendor/diversen/simple-php-classes/src/scripts/latin1-to-uft8.php
+
  */
 
 
