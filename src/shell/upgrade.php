@@ -33,8 +33,7 @@ function cos_upgrade ($options) {
         if ($continue) {
             cos_upgrade_to($remote);
         }
-        
-        cos_upgrade_to($remote);
+
     } else {
         $locale = git::getTagsInstallLatest();
         common::echoMessage("Latest version/tag: $locale", 'y');
