@@ -6,9 +6,11 @@ namespace diversen;
  * @package imap
  */
 
-use Zend\Mail\Storage\Imap as ZendImap;
-use diversen\strings;
 use diversen\log;
+use diversen\strings;
+use Exception;
+use RecursiveIteratorIterator;
+use Zend\Mail\Storage\Imap as ZendImap;
 
 
 
@@ -92,7 +94,6 @@ class imap {
      * @param array $connect
      */
     public function connect ($connect = null) {
-        //print_r($connect); die ('t');
         $this->mail = new ZendImap($connect);
     }
     
@@ -218,7 +219,7 @@ class imap {
         
         try {
             $parts['subject'] = $message->subject;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $gen_sub = true;
         }
         $parts['plain'] = '';
@@ -237,7 +238,7 @@ class imap {
             $parts['plain'] = $this->decodePlain($message);
         }
         
-        foreach (new \RecursiveIteratorIterator($message) as $part) {
+        foreach (new RecursiveIteratorIterator($message) as $part) {
             try {
                 $type = $this->getContentType($part);
 
@@ -262,7 +263,7 @@ class imap {
                     // else unknown
                     $parts['unknown'][] = $part;
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 error_log($e->getMessage());
             }
         } 
@@ -299,11 +300,11 @@ class imap {
         $parts = array ();
 
         try {
-            foreach (new \RecursiveIteratorIterator($message) as $part) {
+            foreach (new RecursiveIteratorIterator($message) as $part) {
                 $type = $this->getContentType($part);
                 $parts[$type][] = $part->getContent();
             } 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
                 log::error($e->getTraceAsString());
                 log::error($e->getMessage());
         }
@@ -325,14 +326,14 @@ class imap {
     
     function findPart ($id, $type ='text/plain') {
         $foundPart = null;
-        foreach (new \RecursiveIteratorIterator($this->mail->getMessage($id)) as $part) {
+        foreach (new RecursiveIteratorIterator($this->mail->getMessage($id)) as $part) {
             try {
                 if (strtok($part->contentType, ';') == $type) {
                     $foundPart = $part;
                     return $foundPart;
                     break;
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                  log::error($e->getMessage());
             }
         }
@@ -343,8 +344,8 @@ class imap {
     
     
     function getFolders () {
-            $folders = new \RecursiveIteratorIterator($this->mail->getFolders(),
-                                             \RecursiveIteratorIterator::SELF_FIRST);
+            $folders = new RecursiveIteratorIterator($this->mail->getFolders(),
+                                             RecursiveIteratorIterator::SELF_FIRST);
 
             
             $ary = array ();
@@ -353,23 +354,5 @@ class imap {
             }
     
             return $ary;
-    }
-    
+    }    
 }
-
-
-            //print_r($folders);
-    //echo '<select name="folder">';
-            //$ary = array ();
-    /*
-            foreach ($folders as $localName => $folder) {
-        $localName = str_pad('', $folders->getDepth(), '-', STR_PAD_LEFT) .
-                     $localName;
-        echo '<option';
-        if (!$folder->isSelectable()) {
-            echo ' disabled="disabled"';
-        }
-        echo ' value="' . htmlspecialchars($folder) . '">'
-            . htmlspecialchars($localName) . '</option>';
-    }
-    echo '</select>'; */

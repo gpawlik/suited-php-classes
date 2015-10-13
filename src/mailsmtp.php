@@ -96,12 +96,15 @@ class mailsmtp {
         }
         
         if(!$mail->send()) {
-            log::error($mail->ErrorInfo);
+            self::$log = $mail->ErrorInfo;
+            log::error(self::$log); 
             return false;
         } else {
             return true;
         }
     }
+    
+    public static $log = null;
     
    /**
      * Send mail to main ini setting 'system_email'
