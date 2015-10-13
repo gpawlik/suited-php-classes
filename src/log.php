@@ -27,16 +27,19 @@ class log {
             $message = var_export($message, true);
         }
 
-        
         if (conf::getMainIni('debug')) {
             if (conf::isCli()) {
                 echo $message . PHP_EOL;
             } else {
-                echo "<pre>" . $message . "</pre>";        
+                echo "<pre>" . $message . "</pre>";
             }
         }
-        
-        error_log($message, 4);
+
+        if (conf::isCli()) {
+            error_log($message, 3, self::$cliLog);
+        } else {
+            error_log($message, 4);
+        }
     }
     
     
@@ -59,9 +62,17 @@ class log {
      */    
     public static function setErrorLog($file = null) {
         if (!$file) {
-            ini_set('error_log', conf::pathBase() . '/logs/coscms.log');
+            self::$cliLog =  conf::pathBase() . '/logs/coscms.log';
+        } else {
+            self::$cliLog = $file;
         }
     }
+    
+    /**
+     * var holding log file for CLI mode
+     * @var string $logfile
+     */
+    public static $cliLog = null;
 
     /**
      * Set a log level based on env and debug
@@ -76,6 +87,10 @@ class log {
         // check if we are in debug mode and display errors
         if (conf::getMainIni('debug')) {
             ini_set('display_errors', 1);
+        }
+        
+        if (conf::isCli()) {
+            self::setErrorLog();
         }
     }
 }
