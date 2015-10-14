@@ -2,13 +2,13 @@
 
 namespace diversen\bounce;
 
+use diversen\conf;
 use diversen\date;
 use diversen\db\rb;
 use diversen\imap;
 use diversen\log;
-use diversen\conf;
-
-
+use R;
+use Exception;
 
 
 class parser {
@@ -31,7 +31,7 @@ class parser {
     
     /**
      * init imap with options
-     * @return \diversen\imap $imap
+     * @return imap $imap
      */
     public function getImap () {
         $imap = new imap();
@@ -52,19 +52,34 @@ class parser {
         // reverse - we start with latest message = $c
         for ($x = $c; $x >= 1; $x--) {
             log::debug("Pasing num: $x");
-            $this->parseMessage($imap, $x);     
+            $res = $this->parseMessage($imap, $x); 
+            if (!$res) {
+                log::debug('Could not parse mesage $x');
+            }
+            
+            $imap->mail->noop(); // keep alive
+            //$i->mail->removeMessage($x);  
+            $imap->mail->noop(); // keep alive
+            sleep(1);
         }
     }
     
     /**
      * 
-     * @param \diversen\imap $imap 
+     * @param imap $imap 
      * @param type $x
      */
     public function parseMessage($imap, $x) {
 
         $imap->mail->noop();
-        $message = $imap->mail->getMessage($x);
+        
+        try {
+            $message = $imap->mail->getMessage($x);
+        } catch (Exception $e) {
+            log::error($e->getMessage());
+            return false;
+           
+        }
         $imap->mail->noop();
 
         $parts = $imap->getAllParts($message); 
@@ -77,7 +92,7 @@ class parser {
             $delivery_status = $parts['message/delivery-status'][0];
         }
         
-        $email = self::getEmailFromBounce($delivery_status);
+        $email = self::getBounceEmail($delivery_status);
         if ($email) {
 
             log::error("Found email in message: $email");
@@ -102,16 +117,12 @@ class parser {
             $bean->bouncedate = date::getDateNow(array('hms' => true));
             $bean->message = $delivery_status;
             $bean->returnpath = $message->getHeader('return-path', 'string');
-            \R::store($bean);
+            R::store($bean);
             log::debug("Stored user with email: $email. $bounce_code" . PHP_EOL);
         } else {
             log::error("Did not get a mail from message: " . $delivery_status);
         }
-        
-        $imap->mail->noop(); // keep alive
-        //$i->mail->removeMessage($x);  
-        $imap->mail->noop(); // keep alive
-        sleep(1);
+        return true;
     }
 
     /*
@@ -149,14 +160,14 @@ class parser {
     /**
      * returns bounce code from [message/delivery-status] part of message
      * e.g. 4.2.2
-     * @param string $message
+     * @param string $mail
      * @return string $code e.g. 4.2.2
      */
     public static function getBounceCode($mail) {
 
         // make txt an array
         $ary = explode("\n", $mail);
-        foreach ($ary as $key => $val) {
+        foreach ($ary as $val) {
 
             // find satus line
             $str = strtolower($val);
@@ -170,41 +181,42 @@ class parser {
         }
         return null;
     }
-
+    
     /**
-     * returns bounced email from [message/delivery-status] part of message
-     * @param string $txt
+     * returns email from [message/delivery-status] part of message
+     * looks for 'final-recipient: ' and returns email
+     * @param string $mail
      * @return string $email
      */
-    public static function getEmailFromBounce($txt) {
-        $pattern = "/([\s]*)([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*([ ]+|)@([ ]+|)([a-zA-Z0-9-]+\.)+([a-zA-Z]{2,}))([\s]*)/i";
+    public static function getBounceEmail($mail) {
 
-        // preg_match_all returns an associative array
-        preg_match_all($pattern, $txt, $matches);
+        // make txt an array
+        $ary = explode("\n", $mail);
+        foreach ($ary as $val) {
+
+            // find satus line
+            $str = strtolower($val);
+            if (strstr($str, 'final-recipient')) {
+                $str = str_replace('final-recipient', '', $str);
+                return self::getEmailFromStr($str);
+            }
+        }
+        return null;
+    }
+    
+    
+    public static function getEmailFromStr ($str) {
+        $pattern = "/([\s]*)([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*([ ]+|)@([ ]+|)([a-zA-Z0-9-]+\.)+([a-zA-Z]{2,}))([\s]*)/i";
+        
+        // preg_match_all
+        preg_match_all($pattern, $str, $matches);
 
         // all emails caught in $matches[0]
         if (!empty($matches[0])) {
-            foreach ($matches[0] as $key => $val) {
-                $matches[0][$key] = strtolower(trim($val));
-            }
-        }
-
-
-        $matches = array_unique($matches[0]);
-
-        log::debug("Finding email in message");
-
-        if (count($matches) > 1) {
-            // should only have one
-            log::error($matches);
+            $matches = array_unique($matches[0]);
             return array_pop($matches);
-        } else if (count($matches) == 0) {
-            $message = 'Did not find user in account|account_sub tables';
-            log::error($message);
-            return false;
-        } else {
-            $match = reset($matches);
-            return $match;
         }
+        return false;
+        
     }
 }
