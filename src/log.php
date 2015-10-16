@@ -36,7 +36,7 @@ class log {
         }
 
         if (conf::isCli()) {
-            error_log($message, 3, self::$cliLog);
+            error_log($message . PHP_EOL, 3, self::$cliLog);
         } else {
             error_log($message, 4);
         }
