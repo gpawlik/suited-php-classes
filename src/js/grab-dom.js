@@ -3,10 +3,19 @@ var system = require('system');
 var url = 'http://twitter.com/search/javascript';
 var timeout = 8000;  
 
+
+page.settings.resourceTimeout = 60000; // 60 seconds and we abort a request
+page.onResourceTimeout = function(e) {
+  console.log("PHANTOMJS: " + e.errorCode);  // it'll probably be 408 
+  console.log("PHANTOMJS: " +e.errorString); // it'll probably be 'Network timeout on resource'
+  console.log("PHANTOMJS: " + e.url);        // the url whose request timed out
+  phantom.exit(1);
+};
+
 function displayHelp () {
     console.log('Usage:');
     console.log(system.args[0] + ' \'http://twitter.com/search/javascript\'');
-    phantom.exit();
+    phantom.exit(0);
 }
 
 function argParser () {
@@ -35,13 +44,13 @@ try {
             getFullDom();
         } else {
             console.log('failure open page');
-            phantom.exit();
+            phantom.exit(1);
         }
     });
 
 } catch (err) {
     console.log(err.message);
-    phantom.exit();
+    phantom.exit(1);
 }
 
 function getFullDom() {
@@ -52,6 +61,6 @@ function getFullDom() {
             //return $('html').html();
         });
         console.log(results);
-        phantom.exit();
+        phantom.exit(0);
     }, timeout);
 }
