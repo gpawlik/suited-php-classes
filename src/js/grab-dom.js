@@ -9,7 +9,6 @@ function displayHelp () {
     phantom.exit();
 }
 
-
 function argParser () {
     if (system.args.length === 1) {        
         displayHelp();
@@ -19,31 +18,31 @@ function argParser () {
         url = system.args[1];
         if (system.args[2] != 'undefined') {
             timeout = system.args[2];
-        }
-        //phantom.exit();        
+        }       
     }
 }
 
 argParser();
 
-page.open(url, function (status) {
-    
-    
-    
-    if (status == 'success') {
-        // inject jquery
-        //page.injectJs("http://code.jquery.com/jquery-latest.min.js", function() {
-    // jQuery is loaded, now manipulate the DOM
-        //});
-        getFullDom();
-    } else {
-       console.log('failure open page');
-       phantom.exit();
-    }
-});
+try {
+    page.open(url, function (status) {
+        
+        if (status == 'success') {
+            // inject jquery
+            //page.injectJs("http://code.jquery.com/jquery-latest.min.js", function() {
+            // jQuery is loaded, now manipulate the DOM
+            //});
+            getFullDom();
+        } else {
+            console.log('failure open page');
+            phantom.exit();
+        }
+    });
 
-
-
+} catch (err) {
+    console.log(err.message);
+    phantom.exit();
+}
 
 function getFullDom() {
     window.setTimeout(function () {
