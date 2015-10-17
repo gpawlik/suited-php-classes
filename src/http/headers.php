@@ -13,6 +13,7 @@ namespace diversen\http;
  */
 class headers {
 
+    
     /**
      * parse curl headers string and return array
      * @param string $response
@@ -39,6 +40,8 @@ class headers {
      * @return array $headers
      */
     public static function getCurlHeadersAry($url) {
+        $cookie_file = sys_get_temp_dir() . '/curl_headers_cookie.txt';
+        
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_FILETIME, true);
@@ -46,6 +49,8 @@ class headers {
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_HEADER, true);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie_file);
+        curl_setopt($curl, CURLOPT_COOKIEFILE,$cookie_file);
         $headers = curl_exec($curl);
         return self::parseCurlHeaders($headers);
     }
