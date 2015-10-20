@@ -41,7 +41,7 @@ class parser {
     /**
      * function which is easy to add to a cron job
      */
-    public function parse() {
+    public function parse($remove = true) {
 
         $imap = $this->getImap();
         $c = $imap->countMessages();
@@ -58,7 +58,9 @@ class parser {
             }
             
             $imap->mail->noop(); // keep alive
-            //$i->mail->removeMessage($x);  
+            if ($remove) {
+                $imap->mail->removeMessage($x);
+            }
             $imap->mail->noop(); // keep alive
             sleep(1);
         }
