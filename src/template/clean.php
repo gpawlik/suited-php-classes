@@ -1,8 +1,11 @@
 <?php
 
 namespace diversen\template;
+
+use diversen\conf;
 use diversen\template;
-use diversen\conf as conf;
+use diversen\template\assets;
+
 /**
  * file contains a clean template, which can be used
  * if we need to print a clean page
@@ -28,28 +31,25 @@ class clean {
 <!--[if lt IE 9]>
 	<script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
 <![endif]-->
-<title><?=template_assets::getTitle(); ?></title>
+<title><?=assets::getTitle(); ?></title>
 
 <?php
 
-template_assets::setRelAsset('css', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css');  
-template_assets::setRelAsset('js', '//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js');  
-template_assets::setRelAsset('js', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js');
+assets::setRelAsset('css', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css');  
+assets::setRelAsset('js', '//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js');  
+assets::setRelAsset('js', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js');
 
-echo template_assets::getRelAssets();
-echo template_assets::getJsHead();
-echo template_meta::getMeta();
+echo assets::getRelAssets();
+echo assets::getJsHead();
+echo meta::getMeta();
 
-
-//template_assets::setTemplateCss('zimpleza', null, 10);
-template_assets::setJs('/js/jquery.ui.touch-punch.min.js');
-template_assets::setCss('/templates/zimpleza/devices.css');
-echo template_favicon::getFaviconHTML();
-echo template_assets::getCompressedCss();
-echo template_assets::getInlineCss();
+echo favicon::getFaviconHTML();
+echo assets::getCompressedCss();
+echo assets::getInlineCss();
 
 ?>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/2.23.0/css/uikit.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/2.23.0/js/uikit.min.js"></script>
 </head>
 <body><?php
     }
@@ -60,8 +60,8 @@ echo template_assets::getInlineCss();
     public static function footer () {
 
 echo template::getEndHTML();
-echo template_assets::getCompressedJs();
-echo template_assets::getInlineJs();
+echo assets::getCompressedJs();
+echo assets::getInlineJs();
 
 ?>
 </body>
