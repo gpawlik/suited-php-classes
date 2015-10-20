@@ -22,9 +22,15 @@ class clean {
     /**
      * echo the header
      */
-    public static function header () { ?>
+    public static function header () { 
+        $lang = conf::getMainIni('lang');
+        if (!$lang) {
+            $lang = 'en';
+        }
+        
+        ?>
 <!doctype html>
-<html lang="<?=conf::$vars['coscms_main']['lang']?>">
+<html lang="<?php=$lang?>">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
