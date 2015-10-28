@@ -39,8 +39,6 @@ function install_template ($options, $return_val = null) {
     } else {
         $template = $options['template'];
     }
-    
-    //$template_path = conf::pathBase() . "/htdocs/templates/$template";
 
     $str = "Proceeding with install of template $template";
     $install = new templateinstaller();
