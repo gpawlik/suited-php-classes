@@ -926,21 +926,7 @@ $(document).ready(function() {
         }
         return $str;
     }
-    
-    /**
-     * var holding first select element. Defaults to null
-     * @var mixed
-     */
-    public static $selectTop = null;
-    
-    /**
-     * sets top select element
-     * @param array $ary
-     */
-    public static function setSelectTopValue ($ary) {
-        self::$selectTop = $ary;
-        
-    } 
+
 
 
     /**
@@ -968,6 +954,24 @@ $(document).ready(function() {
         return $str;
     }
     
+    public static function selectAry(
+            $name, 
+            $rows, 
+            $value=null, 
+            $extra = array(), 
+            $init = array()){
+        
+        $ary = array ();
+        foreach ($rows as $key => $val) {
+            $ary[] = array ('id' => $key, 'title' => $val);
+        }
+        
+        $dropdown = self::selectClean($name, $ary, 'title', 'id', $value, $extra, $init);
+        $str = $dropdown . self::$br . "\n" ;
+        self::$fields[] = array ('value' => $str);
+        return $str;
+    }
+    
     /**
      * method for getting a drop down box. This will be colleted in the HTML::fields[]
      * If you just want a select box use selectClean
@@ -985,11 +989,7 @@ $(document).ready(function() {
         if (!isset($extra['id'])) {
             $extra['id'] = $name;
         }
-        
-        if (self::$selectTop) {
-            array_unshift($rows, self::$selectTop);
-        }
-        
+
         $extra = self::parseExtra($extra);
         
         $dropdown = "<select name=\"$name\" $extra";
