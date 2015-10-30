@@ -1,7 +1,10 @@
 <?php
 
 namespace diversen\db;
-use \diversen\conf;
+
+use diversen\conf;
+use Exception;
+use R;
 /**
  * File contains RB (Redbeans) helpers for easy connecting to CosCMS 
  * DB using Redbeans
@@ -11,29 +14,17 @@ use \diversen\conf;
 /**
  * @ignore
  */
-include_once "vendor/diversen/simple-php-classes/src/rb.php";
-use RedBean_Facade as R;
+include_once "vendor/diversen/redbean-composer/rb.php";
 
-/**
- * override default RB model formatter
- * @ignore
- */
-class MyModelFormatter implements \RedBean_IModelFormatter {
-
-    public function formatModel($model) {
-        //return $model.'_Object';
-    }
-
-}
 
 /**
  * class db_rb contains some helpers methods for RB. 
  * Methods for connecting, converting array to beans
  * 
  * example: 
- * db_rb::connect();
- * $bean = db_rb::getBean('test');
- * $bean = db_rb::arrayToBean($bean, $_POST);
+ * rb::connect();
+ * $bean = rb::getBean('test');
+ * $bean = rb::arrayToBean($bean, $_POST);
  * r::store($bean);
  * @package db
  * 
@@ -51,11 +42,8 @@ class rb {
             $url = conf::getMainIni('url');
             $username = conf::getMainIni('username');
             $password = conf::getMainIni('password');
-            R::setStrictTyping(false); 
-            $formatter = new MyModelFormatter;
-            \RedBean_ModelHelper::setModelFormatter($formatter);
             
-            R::setup($url, $username,$password); //mysql
+            R::setup($url, $username,$password); 
             $freeze = conf::getMainIni('rb_freeze');
             if ($freeze == 1) {
                 R::freeze(true);
@@ -128,7 +116,7 @@ class rb {
         try{
             R::trashAll($beans);   
             R::commit();
-        } catch(\Exception $e) {
+        } catch(Exception $e) {
             R::rollback();
         }
     }
@@ -143,7 +131,7 @@ class rb {
         try{
             $res = R::store($bean);
             R::commit();
-        } catch(\Exception $e) {
+        } catch(Exception $e) {
             R::rollback();
             $res = false;
         }
