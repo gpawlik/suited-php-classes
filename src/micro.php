@@ -5,6 +5,9 @@
  * a php micro framework with modules
  */
 namespace diversen;
+use diversen\file;
+use diversen\conf;
+use diversen\uri\direct;
 
 class micro {
     
@@ -15,7 +18,7 @@ class micro {
     /** Default module */
     public $default = 'main';
     /** Controller action */
-    private $action = null;
+    private $action = 'index';
     
     /**
      * Route a request to a module
@@ -49,39 +52,36 @@ class micro {
      */
     private function setControllerAction () {
         
-        // Parse url. 3 case:
+        // Parse url. 2 cases:
         // a) Default controller
-        // b) Module controller
-        // C) Sub module controller
+        // b) Module controller        
+
         
-        $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $ary = explode('/', $url);
+        // Get all modules
+        $mod_path = conf::pathBase() . "/" . $this->modules;
+        $mods = file::getDirsGlob($mod_path, array ('basename' => true));
+        $base = direct::fragment(0);
         
-        // Submodule e.g. /github/connect/index
-        if (isset($ary[3])) {
-            $this->controller = $ary[1] . "/" . $ary[2];
-            $this->action = $ary[3];
-            if (empty($this->action)) {
-                $this->action = 'index';
+        if (!in_array($base, $mods)) {
+            
+            // Could not find a controller / module          
+            $this->controller = $this->default;
+            $action = direct::fragment(0);
+            if ($action) {
+                $this->action = $action; 
             }
-            return;
-        }
-        
-        // Default e.g /index or / or /test
-        if (!isset($ary[2])) {
-            $this->controller = $this->default; //"main";
-            $this->action = $ary[1];
-            if (empty($this->action)) {
-                $this->action = 'index';
-            }
-        // module (base) e.g. /github/index or /github/gist   
+            
         } else {
-            $this->controller = $ary[1];
-            $this->action = $ary[2];
-            if (empty($this->action)) {
-                $this->action = 'index';
+            
+            // Found a controller / module
+            $this->controller = $base;
+            $action = direct::fragment(1);
+            if ($action) {
+                $this->action = $action;
             }
         }
+        
+        
     }
     
     /**
