@@ -9,30 +9,45 @@ namespace diversen;
 class micro {
     
     /** Controller name */
-    public $controller;
+    private $controller;
     /** Modules placement name */
     public $modules ='modules';
     /** Default module */
-    public $default = 'default';
+    public $default = 'main';
     /** Controller action */
-    public $action = null;
+    private $action = null;
     
     /**
-     * set a controller file
-     * include controller file
-     * execute controller action
+     * Route a request to a module
+     * Parse module action or parse default error action
      */
-    public function execute() {
+    public function parse() {
         
-        $this->setController();       
+        $this->setControllerAction();       
         $file =  $this->modules . "/" . $this->controller . "/module.php";    
         if (file_exists($file)) {
             include_once $file;
         }
-        $this->setAction();
+        $this->parseRequest();
     }
     
-    public function setController () {
+    /**
+     * Route a request to a module
+     * Parse module action or parse default error action
+     * @return str $str
+     */
+    public function parseGetStr() {
+        ob_start();
+        $this->parse();
+        $str = ob_get_contents();
+        ob_clean();
+        return $str;
+    }
+    
+    /**
+     * Sets a controller and a action
+     */
+    private function setControllerAction () {
         
         // Parse url. 3 case:
         // a) Default controller
@@ -54,7 +69,7 @@ class micro {
         
         // Default e.g /index or / or /test
         if (!isset($ary[2])) {
-            $this->controller = "main";
+            $this->controller = $this->default; //"main";
             $this->action = $ary[1];
             if (empty($this->action)) {
                 $this->action = 'index';
@@ -74,14 +89,14 @@ class micro {
      * @param string $path
      * @return string $class
      */
-    public function pathToClass ($path) {
+    private function pathToClass ($path) {
         return str_replace('/', '\\', $path);
     }
     
     /**
      * set a module action
      */
-    public function setAction () {
+    private function parseRequest () {
         
         $path = "modules/". $this->controller . "/module";
         $class = $this->pathToClass($path);
@@ -104,7 +119,7 @@ class micro {
      * error notice with 404 header
      * @return void
      */
-    public function notFound () {
+    private function notFound () {
         
         $path = "modules/". $this->controller . "/module";
         $class = $this->pathToClass($path);
