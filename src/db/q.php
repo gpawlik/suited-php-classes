@@ -511,7 +511,9 @@ class q extends connect {
      * @param string $table the table to delete from
      */
     public static function delete ($table){
-        return self::setDelete($table);
+        self::$method = 'delete';
+        self::$query = "DELETE FROM $table ";
+        return new self;
     }
     
         /**
