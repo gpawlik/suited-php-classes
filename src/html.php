@@ -954,6 +954,16 @@ $(document).ready(function() {
         return $str;
     }
     
+    /**
+     * Generates a dropdown from a array with keys and values like e.g.: 
+     * array (1 => 'test', 2 => 'test2');
+     * @param string $name
+     * @param array $rows
+     * @param type $value
+     * @param type $extra
+     * @param type $init
+     * @return string
+     */
     public static function selectAry(
             $name, 
             $rows, 

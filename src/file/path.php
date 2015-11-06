@@ -13,6 +13,12 @@ namespace diversen\file;
  */
 class path {
 
+    
+    /**
+     * function returns utf8 pathinfo as the native pathinfo returns pathinfo
+     * @param string $path
+     * @return array $pathinfo
+     */
     public static function utf8($path) {
         return self::pathinfo_utf8($path);
     }
@@ -34,7 +40,7 @@ class path {
      * @param string $path
      * @return array $pathinfo
      */
-    public static function pathinfo_utf8($path) {
+    private static function pathinfo_utf8($path) {
 
         $dirname = '';
         $basename = '';

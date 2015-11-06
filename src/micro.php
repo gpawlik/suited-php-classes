@@ -121,9 +121,6 @@ class micro {
      */
     private function notFound () {
         
-        $path = "modules/". $this->controller . "/module";
-        $class = $this->pathToClass($path);
-        
         $path =  $this->modules . "/error/module";
         $class = $this->pathToClass($path);
         if (file_exists($path)) {
