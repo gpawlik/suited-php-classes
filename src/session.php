@@ -658,14 +658,15 @@ class session {
             // user may have been deleted
             if (empty($a)) {
                 self::killSessionAll($user_id);
-                return;
+                return false;
             } 
             
             if ($a['locked'] == 1) {
                 self::killSessionAll($user_id);
-                return;
+                return false;
             }
         }
+        return true;
     } 
     
     /**

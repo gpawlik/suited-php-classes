@@ -107,7 +107,12 @@ class boot {
 
         // start session
         session::initSession();
-        session::checkAccount();
+        $res = session::checkAccount();
+        if (!$res) {
+            http::locationHeader(
+                    '/', 
+                    lang::translate('Your session was terminated'));
+        }
 
         // set account timezone if enabled - can only be done after session
         // as user needs to be logged in

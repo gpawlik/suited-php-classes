@@ -302,7 +302,8 @@ class html {
             $csrf = new \Riimu\Kit\CSRF\CSRFHandler(false); 
             try {
                 $csrf->validateRequest(true);
-            } catch (\Riimu\Kit\CSRF\InvalidCSRFTokenException $ex) {           
+            } catch (\Riimu\Kit\CSRF\InvalidCSRFTokenException $ex) {
+                log::error($ex->getMessage());
                 http::locationHeader('/error/accessdenied', 'Bad request');
                 return false;
             }
