@@ -400,7 +400,6 @@ class moduleloader {
     
     public function getParsedModuleAction () {
         
-
         $controller = $this->info['controller'];
         $action = $controller. 'Action';
         $module_class = self::modulePathToClassName($this->info['module_class']);

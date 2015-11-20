@@ -1341,13 +1341,22 @@ $(document).ready(function() {
      */
     public static function getHeadline ($message, $tag = 'h1') {
         if (method_exists('mainTemplate', 'getHeadline')) {
-           
             return \mainTemplate::getHeadline($message, $tag);
         }
         $str = "<div class=\"headline\">\n";
         $str.= "<$tag>$message</$tag>\n";
         $str.= "</div>\n";
         return $str;
+    }
+    
+    /**
+     * Displays a default progress bar
+     */
+    public static function getProgressBar () {
+        if (method_exists('mainTemplate', 'getProgressBar')) {
+            return \mainTemplate::getProgressBar();
+        }
+        return '<progress max="100" value="0"></progress>';
     }
     
     /**

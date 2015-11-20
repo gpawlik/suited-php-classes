@@ -373,6 +373,32 @@ class assets extends template {
         }
     }
     
+        /**
+     * Will load the js as file and place and add it to array which can
+     * be parsed in user templates.
+     * 
+     * @param   string   $js file path of the javascript
+     * @param   int $order the loading order of javascript 0 is first > 0 is
+     *                   later.
+     * @param array $options
+     */
+    public static function setStringCss($css, $order = null, $options = array()){
+        
+        if (isset($options['search'])){
+            $css = str_replace($options['search'], $options['replace'], $css);
+        }
+        
+        if (isset($order)){
+            if (isset(self::$inlineCss[$order])) {
+                self::setStringCss($css, $order +1);
+            }
+            self::$inlineCss[$order] = $css;
+            
+        } else {
+            self::$inlineCss[] = $css;
+        }
+    }
+    
     /**
      * method for setting js files to be used in user templates.
      * @param   string   $js_url /web/path/to/my.js 
