@@ -2,17 +2,6 @@
 
 A simple framework, and a set of simple php classes. 
 
-# Refactor
-
-PHP as ini files. OK
-Remove constants.
-Load from base dir. Mv logs/ backup/ etc.  
-
-# Dependencies
-
-        "ext-mbstring": "*",
-        "ext-gd": "*",
-
 Libs to remember
 
 # mobile detection
