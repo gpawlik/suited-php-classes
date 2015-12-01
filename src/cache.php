@@ -130,12 +130,13 @@ class cache {
      * @return  strin   $str
      */
     private static function setDb($module, $id, $data) {
+        q::begin();
         self::delete($module, $id);
         $id = self::generateId($module, $id);
         $values = array('id' => $id, 'unix_ts' => time());
         $values['data'] = serialize($data);
-        return q::insert(self::$table)->values($values)->exec();
-        
+        q::insert(self::$table)->values($values)->exec();
+        return q::commit();
     }
 
     /**
