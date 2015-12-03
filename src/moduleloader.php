@@ -773,7 +773,12 @@ class moduleloader {
         }
         
         foreach($filters as $val) {
-            $str.= $i . ") " .  lang::translate("filter_" . $val . "_help") . "<br />";
+            $t = lang::translate("filter_" . $val . "_help");
+            if ($t == "NT: filter_" . $val . "_help") {
+                continue;
+            }
+            
+            $str.= $i . ") " .  $t . "<br />";
             $i++;
         }
         
