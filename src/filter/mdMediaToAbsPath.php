@@ -2,10 +2,10 @@
 
 namespace diversen\filter;
 /**
- * markdown filter. use Michelf markdown
- * @package    filters
+ * Markdown filter that downloads media, and make paths to absoulte file-system
+ * paths. 
  */
-use diversen\uri\direct as direct;
+use diversen\uri\direct;
 use Michelf\Markdown as mark;
 use diversen\conf as conf;
 use diversen\file;
@@ -16,7 +16,7 @@ use diversen\log;
  *
  * @package    filters
  */
-class mdDownloadImages extends mark {
+class mdMediaToAbsPath extends mark {
 
     /**
      * if set images will be downloaded to file system
@@ -41,23 +41,15 @@ class mdDownloadImages extends mark {
         }
 
         $alt_text = $this->encodeAttribute($alt_text);
+
         if (isset($this->urls[$link_id])) {
             $url = $this->encodeAttribute($this->urls[$link_id]);
-            if (self::$download) {
-                $url = $this->saveImage($url);
-                if (self::$getRaw) {
-                    $url = conf::pathHtdocs() . "$url";
-                    return "![$alt_text]($url)";
-                }
+            $url = $this->saveMedia($url);
+            if (!$url) {
+                return '';
+            } else {
+                return "![$alt_text]($url)";
             }
-            $result = "<img class=\"media_image\" src=\"$url\" alt=\"$alt_text\"";
-            if (isset($this->titles[$link_id])) {
-                $title = $this->titles[$link_id];
-                $title = $this->encodeAttribute($title);
-                $result .= " title=\"$title\"";
-            }
-            $result .= $this->empty_element_suffix;
-            $result = $this->hashPart($result);
         } else {
             # If there's no such link ID, leave intact:
             $result = $whole_match;
@@ -74,28 +66,17 @@ class mdDownloadImages extends mark {
 
         $alt_text = $this->encodeAttribute($alt_text);
         $url = $this->encodeAttribute($url);
-        if (self::$download) {
 
-            $url = $this->saveImage($url);
-            
-            if (self::$getRaw) {
-                
-                $url = conf::pathHtdocs() . "$url";
-                
-                return "![$alt_text]($url)";
-            }
+        $url = $this->saveMedia($url);
+        if (!$url) {
+            return '';
         }
-        $result = "<img class=\"media_image\" src=\"$url\" alt=\"$alt_text\"";
-        if (isset($title)) {
-            $title = $this->encodeAttribute($title);
-            $result .= " title=\"$title\""; # $title already quoted
-        }
-        $result .= $this->empty_element_suffix;
+        $url = conf::pathHtdocs() . "$url";
+        return "![$alt_text]($url)";
 
-        return $this->hashPart($result);
     }
 
-    protected function doImages($text) {
+    protected function doMedia($text) {
         #
         # Turn Markdown image shortcuts into <img> tags.
         #
@@ -148,9 +129,13 @@ class mdDownloadImages extends mark {
 
         return $text;
     }
-
-    protected function saveImage($url) {
-
+    
+    /**
+     * Images are stored in database. 
+     * @param type $url
+     * @return boolean
+     */
+    public function saveImage ($url) {
         $id = direct::fragment(2, $url);
         $title = direct::fragment(3, $url);
 
@@ -162,7 +147,7 @@ class mdDownloadImages extends mark {
         $file = @file_get_contents($image_url);
         if ($file === false) {
             log::error('Could not get file content ' . $file);
-            return '';
+            return false;
         }
 
         // make dir 
@@ -170,6 +155,28 @@ class mdDownloadImages extends mark {
         file::mkdir($dir);
         file_put_contents($save_path, $file);
         return $web_path;
+        
+    }
+    
+    public function saveMp4($url) {
+        $file = conf::pathHtdocs() . $url;
+        if (!file_exists($file)) {
+            return false;
+        }
+        return $file;
+    }
+
+    protected function saveMedia($url) {
+ 
+        $type = file::getExtension($url);
+        if ($type == 'mp4') {    
+            return $this->saveMp4($url);
+        } else {
+            return $this->saveImage($url);
+        }
+        
+        
+        
     }
 
     /**
@@ -181,22 +188,10 @@ class mdDownloadImages extends mark {
 
         static $md = null;
         if (!$md) {
-            $md = new mdDownloadImages();
+            $md = new mdMediaToAbsPath();
         }
 
-        $md->no_entities = true;
-        $md->no_markup = true;
-        
-        if (isset(self::$getRaw)) {
-            return $md->doImages($text); 
-        }
+        return $md->doMedia($text); 
 
-        $text = $md->transform($text);
-        return $text;
     }
-
-}
-
-class filters_mdDownloadImages extends mdDownloadImages {
-    
 }

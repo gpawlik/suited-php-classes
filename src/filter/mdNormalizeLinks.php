@@ -88,6 +88,7 @@ class mdNormalizeLinks extends \Michelf\MarkdownExtra {
 			}xs', array(&$this, '_doAnchors_reference_callback'), $text);
 
         $this->in_anchor = false;
+        
         return $text;
     }
 
