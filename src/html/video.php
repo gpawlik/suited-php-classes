@@ -66,11 +66,9 @@ EOF;
 
         $mp4 = $formats['mp4'];
         $str = <<<EOF
-<video controls="controls"> 
-   <source src="$mp4" type="video/mp4" /> 
-   <p> 
-      The videos can not be played back on your system.<br/> 
-   </p> 
+<video width="100%" controls="true">
+  <source src="$mp4" type="video/mp4" /> 
+  Your browser does not support HTML5 video.
 </video>
 EOF;
         return $str;

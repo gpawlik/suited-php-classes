@@ -70,10 +70,17 @@ class mdCreateVideoTag extends mark {
         $url = $this->encodeAttribute($url);
         $type = strtolower(file::getExtension($url));
         if ($type == 'mp4') {
+            
             $v = new video();
-            $v->videojsInclude();
             $o = array('mp4' => $url);
-            return $v->getVideojsHtml($alt_text, $o);
+            if ($this->player == 'videojs') {
+                $v->videojsInclude();
+                return $v->getVideojsHtml($alt_text, $o);
+            } else {
+                return $v->getHtml5($alt_text, $o);
+            }
+                
+                
         } else {
             return "![$alt_text]($url)";
         }
@@ -191,6 +198,9 @@ class mdCreateVideoTag extends mark {
         return $md->doMedia($text); 
 
     }
+    
+    public $player = 'html5'; // html5 or videojs
+    
 }
 
 class filter_mdCreateVideoTag extends mdCreateVideoTag {}
