@@ -7,16 +7,18 @@ namespace diversen\filter;
  */
 use diversen\uri\direct;
 use Michelf\Markdown as mark;
-use diversen\conf as conf;
+use diversen\conf;
 use diversen\file;
 use diversen\log;
+use diversen\html\video;
+
 
 /**
  * markdown filter.
  *
  * @package    filters
  */
-class mdMediaToAbsPath extends mark {
+class mdCreateVideoTag extends mark {
 
     
 
@@ -33,12 +35,23 @@ class mdMediaToAbsPath extends mark {
 
         if (isset($this->urls[$link_id])) {
             $url = $this->encodeAttribute($this->urls[$link_id]);
-            $url = $this->saveMedia($url);
-            if (!$url) {
+            $url = $this->checkMp4($url);
+            if (!$url) {                
                 return '';
+            }
+
+            $type = strtolower(file::getExtension($url));
+            if ($type == 'mp4') {
+                $v = new video();
+                $v->videojsInclude();
+                $o = array ('mp4' => $url);
+                return $v->getVideojsHtml($alt_text, $o);
             } else {
                 return "![$alt_text]($url)";
             }
+            
+                
+            
         } else {
             # If there's no such link ID, leave intact:
             $result = $whole_match;
@@ -55,14 +68,15 @@ class mdMediaToAbsPath extends mark {
 
         $alt_text = $this->encodeAttribute($alt_text);
         $url = $this->encodeAttribute($url);
-
-        $url = $this->saveMedia($url);
-        if (!$url) {
-            return '';
+        $type = strtolower(file::getExtension($url));
+        if ($type == 'mp4') {
+            $v = new video();
+            $v->videojsInclude();
+            $o = array('mp4' => $url);
+            return $v->getVideojsHtml($alt_text, $o);
+        } else {
+            return "![$alt_text]($url)";
         }
-        $url = conf::pathHtdocs() . "$url";
-        return "![$alt_text]($url)";
-
     }
 
     protected function doMedia($text) {
@@ -124,7 +138,7 @@ class mdMediaToAbsPath extends mark {
      * @param type $url
      * @return boolean
      */
-    public function saveImage ($url) {
+    public function checkImage ($url) {
         $id = direct::fragment(2, $url);
         $title = direct::fragment(3, $url);
 
@@ -139,15 +153,12 @@ class mdMediaToAbsPath extends mark {
             return false;
         }
 
-        // make dir 
-        $dir = dirname($path);
-        file::mkdir($dir);
-        file_put_contents($save_path, $file);
-        return $web_path;
+        return $url;
         
     }
     
-    public function saveMp4($url) {
+    public function checkMp4($url) {
+        
         $file = conf::pathHtdocs() . $url;
         if (!file_exists($file)) {
             return false;
@@ -155,14 +166,14 @@ class mdMediaToAbsPath extends mark {
         return $url;
     }
 
-    protected function saveMedia($url) {
+    protected function checkMedia($url) {
  
         $type = file::getExtension($url);
         if ($type == 'mp4') {    
-            return $this->saveMp4($url);
+            return $this->checkMp4($url);
         } else {
-            return $this->saveImage($url);
-        }
+            return $this->checkImage($url);
+        }     
     }
 
     /**
@@ -174,10 +185,12 @@ class mdMediaToAbsPath extends mark {
 
         static $md = null;
         if (!$md) {
-            $md = new mdMediaToAbsPath();
+            $md = new self;
         }
 
         return $md->doMedia($text); 
 
     }
 }
+
+class filter_mdCreateVideoTag extends mdCreateVideoTag {}

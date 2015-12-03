@@ -7,7 +7,7 @@ namespace diversen\filter;
  */
 use diversen\uri\direct;
 use Michelf\Markdown as mark;
-use diversen\conf as conf;
+use diversen\conf;
 use diversen\file;
 use diversen\log;
 
@@ -16,7 +16,7 @@ use diversen\log;
  *
  * @package    filters
  */
-class mdMediaToAbsPath extends mark {
+class mdRmBrokenMedia extends mark {
 
     
 
@@ -33,7 +33,7 @@ class mdMediaToAbsPath extends mark {
 
         if (isset($this->urls[$link_id])) {
             $url = $this->encodeAttribute($this->urls[$link_id]);
-            $url = $this->saveMedia($url);
+            $url = $this->checkMedia($url);
             if (!$url) {
                 return '';
             } else {
@@ -56,11 +56,11 @@ class mdMediaToAbsPath extends mark {
         $alt_text = $this->encodeAttribute($alt_text);
         $url = $this->encodeAttribute($url);
 
-        $url = $this->saveMedia($url);
+        $url = $this->checkMedia($url);
         if (!$url) {
             return '';
         }
-        $url = conf::pathHtdocs() . "$url";
+        
         return "![$alt_text]($url)";
 
     }
@@ -124,7 +124,7 @@ class mdMediaToAbsPath extends mark {
      * @param type $url
      * @return boolean
      */
-    public function saveImage ($url) {
+    public function checkImage ($url) {
         $id = direct::fragment(2, $url);
         $title = direct::fragment(3, $url);
 
@@ -139,15 +139,11 @@ class mdMediaToAbsPath extends mark {
             return false;
         }
 
-        // make dir 
-        $dir = dirname($path);
-        file::mkdir($dir);
-        file_put_contents($save_path, $file);
-        return $web_path;
+        return $url;
         
     }
     
-    public function saveMp4($url) {
+    public function checkMp4($url) {
         $file = conf::pathHtdocs() . $url;
         if (!file_exists($file)) {
             return false;
@@ -155,14 +151,17 @@ class mdMediaToAbsPath extends mark {
         return $url;
     }
 
-    protected function saveMedia($url) {
+    protected function checkMedia($url) {
  
         $type = file::getExtension($url);
         if ($type == 'mp4') {    
-            return $this->saveMp4($url);
+            return $this->checkMp4($url);
         } else {
-            return $this->saveImage($url);
+            return $this->checkImage($url);
         }
+        
+        
+        
     }
 
     /**
@@ -174,7 +173,7 @@ class mdMediaToAbsPath extends mark {
 
         static $md = null;
         if (!$md) {
-            $md = new mdMediaToAbsPath();
+            $md = new mdRmBrokenMedia();
         }
 
         return $md->doMedia($text); 
