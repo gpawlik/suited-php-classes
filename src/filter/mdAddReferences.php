@@ -1,24 +1,26 @@
 <?php
 
+// <div id ="image">
+
+
 namespace diversen\filter;
 /**
- * Markdown filter that downloads media, and make paths to absoulte file-system
- * paths. 
+ * Markdown filter that 
+ * 1) add 'id' refrences to all media
+ * 2) optional return of all media as a markdown doc.
  */
 use diversen\uri\direct;
 use Michelf\Markdown as mark;
 use diversen\conf;
 use diversen\file;
 use diversen\log;
-use diversen\html\video;
-
 
 /**
  * markdown filter.
  *
  * @package    filters
  */
-class mdCreateVideoTag extends mark {
+class mdAddReferences extends mark {
 
     
 
@@ -35,22 +37,21 @@ class mdCreateVideoTag extends mark {
 
         if (isset($this->urls[$link_id])) {
             $url = $this->encodeAttribute($this->urls[$link_id]);
-            $url = $this->checkMp4($url);
-            if (!$url) {                
-                return '';
-            }
-
-            $type = strtolower(file::getExtension($url));
-            if ($type == 'mp4') {
-                $v = new video();
-                $v->videojsInclude();
-                $o = array ('mp4' => $url);
-                return $v->getVideojsHtml($alt_text, $o);
-            } else {
-                return "![$alt_text]($url)";
-            }
+            $type = $this->getType($url);
             
+            $id = uniqid();
+            $str = "<div id =\"$id\">";
+            $str.= "![$alt_text]($url)";
+            $str.= '</div>';
+            
+            if ($type == 'mp4') {
+                self::$media['movie'][] = "Movie [$alt_text](#$id).";   
+            } else {
+                self::$media['figure'][] = "Figure [$alt_text](#$id).";
                 
+            }
+            //echo $str;
+            return $str;
             
         } else {
             # If there's no such link ID, leave intact:
@@ -59,9 +60,11 @@ class mdCreateVideoTag extends mark {
 
         return $result;
     }
+    
+    public static $media = array ();
+    
 
     protected function _doImages_inline_callback($matches) {
-        
         $whole_match = $matches[1];
         $alt_text = $matches[2];
         $url = $matches[3] == '' ? $matches[4] : $matches[3];
@@ -69,23 +72,23 @@ class mdCreateVideoTag extends mark {
 
         $alt_text = $this->encodeAttribute($alt_text);
         $url = $this->encodeAttribute($url);
-        $type = strtolower(file::getExtension($url));
+
+        $type = $this->getType($url);
+        
+        $id = uniqid();
+        $str = "<div id =\"$id\">";
+        $str.= "![$alt_text]($url)";
+        $str.= '</div>';
+
         if ($type == 'mp4') {
-            
-            $v = new video();
-            $o = array('mp4' => $url);
-            
-            if ($this->player == 'videojs') {
-                $v->videojsInclude();
-                return $v->getVideojsHtml($alt_text, $o);
-            } else {
-                return $v->getHtml5($alt_text, $o);
-            }
-                
-                
+            self::$media['movie'][] = "Movie [$alt_text](#$id).";
         } else {
-            return "![$alt_text]($url)";
+            
+            self::$media['figure'][] = "Figure [$alt_text](#$id).";
+            
         }
+        
+        return $str;
     }
 
     protected function doMedia($text) {
@@ -167,7 +170,6 @@ class mdCreateVideoTag extends mark {
     }
     
     public function checkMp4($url) {
-        
         $file = conf::pathHtdocs() . $url;
         if (!file_exists($file)) {
             return false;
@@ -175,14 +177,20 @@ class mdCreateVideoTag extends mark {
         return $url;
     }
 
-    protected function checkMedia($url) {
+    protected function getType($url) {
  
         $type = file::getExtension($url);
+        return strtolower($type);
+        
+        /*
         if ($type == 'mp4') {    
             return $this->checkMp4($url);
         } else {
             return $this->checkImage($url);
-        }     
+        } */
+        
+        
+        
     }
 
     /**
@@ -194,15 +202,12 @@ class mdCreateVideoTag extends mark {
 
         static $md = null;
         if (!$md) {
-            $md = new self;
+            $md = new mdAddReferences();
         }
 
         return $md->doMedia($text); 
 
     }
-    
-    public $player = 'html5'; // html5 or videojs
-    
 }
 
-class filter_mdCreateVideoTag extends mdCreateVideoTag {}
+    

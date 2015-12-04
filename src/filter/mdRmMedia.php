@@ -2,23 +2,20 @@
 
 namespace diversen\filter;
 /**
- * Markdown filter that downloads media, and make paths to absoulte file-system
- * paths. 
+ * Markdown filter that removes types of media, e.g. mp4 from markdown files. 
  */
 use diversen\uri\direct;
 use Michelf\Markdown as mark;
 use diversen\conf;
 use diversen\file;
 use diversen\log;
-use diversen\html\video;
-
 
 /**
  * markdown filter.
  *
  * @package    filters
  */
-class mdCreateVideoTag extends mark {
+class mdRmMedia extends mark {
 
     
 
@@ -35,23 +32,12 @@ class mdCreateVideoTag extends mark {
 
         if (isset($this->urls[$link_id])) {
             $url = $this->encodeAttribute($this->urls[$link_id]);
-            $url = $this->checkMp4($url);
-            if (!$url) {                
+            $url = $this->checkMedia($url);
+            if (!$url) {
                 return '';
-            }
-
-            $type = strtolower(file::getExtension($url));
-            if ($type == 'mp4') {
-                $v = new video();
-                $v->videojsInclude();
-                $o = array ('mp4' => $url);
-                return $v->getVideojsHtml($alt_text, $o);
             } else {
                 return "![$alt_text]($url)";
             }
-            
-                
-            
         } else {
             # If there's no such link ID, leave intact:
             $result = $whole_match;
@@ -61,7 +47,6 @@ class mdCreateVideoTag extends mark {
     }
 
     protected function _doImages_inline_callback($matches) {
-        
         $whole_match = $matches[1];
         $alt_text = $matches[2];
         $url = $matches[3] == '' ? $matches[4] : $matches[3];
@@ -69,23 +54,14 @@ class mdCreateVideoTag extends mark {
 
         $alt_text = $this->encodeAttribute($alt_text);
         $url = $this->encodeAttribute($url);
-        $type = strtolower(file::getExtension($url));
-        if ($type == 'mp4') {
-            
-            $v = new video();
-            $o = array('mp4' => $url);
-            
-            if ($this->player == 'videojs') {
-                $v->videojsInclude();
-                return $v->getVideojsHtml($alt_text, $o);
-            } else {
-                return $v->getHtml5($alt_text, $o);
-            }
-                
-                
-        } else {
-            return "![$alt_text]($url)";
+
+        $url = $this->checkMedia($url);
+        if (!$url) {
+            return '';
         }
+        
+        return "![$alt_text]($url)";
+
     }
 
     protected function doMedia($text) {
@@ -166,43 +142,35 @@ class mdCreateVideoTag extends mark {
         
     }
     
-    public function checkMp4($url) {
-        
-        $file = conf::pathHtdocs() . $url;
-        if (!file_exists($file)) {
-            return false;
-        }
-        return $url;
-    }
+
 
     protected function checkMedia($url) {
  
         $type = file::getExtension($url);
         if ($type == 'mp4') {    
-            return $this->checkMp4($url);
+            return false;
         } else {
             return $this->checkImage($url);
-        }     
+        }    
     }
 
     /**
      *
      * @param  string     string to markdown.
+     * @param  string     type to remove, e.g. mp4
      * @return string
      */
-    public static function filter($text) {
+    public static function filter($text, $type = 'mp4') {
 
         static $md = null;
         if (!$md) {
-            $md = new self;
+            $md = new mdRmMedia();
         }
-
-        return $md->doMedia($text); 
+        
+        self::$type = $type;
+        return $md->doMedia($text, $type); 
 
     }
     
-    public $player = 'html5'; // html5 or videojs
-    
+    public static $type = null;
 }
-
-class filter_mdCreateVideoTag extends mdCreateVideoTag {}

@@ -2,8 +2,7 @@
 
 namespace diversen\filter;
 /**
- * Markdown filter that downloads media, and make paths to absoulte file-system
- * paths. 
+ * Markdown filter that removes broken media. E.g. files or videos.
  */
 use diversen\uri\direct;
 use Michelf\Markdown as mark;
