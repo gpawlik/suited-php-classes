@@ -24,6 +24,10 @@ $LANG['This Content type is not allowed'] = 'This Content type is not allowed';
 
 $LANG['(Admin) Edit profile'] = '(Admin) Edit profile';
 $LANG['Logout'] = 'Logout';
+// Translation of file vendor/diversen/simple-php-classes/src/filter/mdAddReferences.php
+
+$LANG['Movie'] = 'Movie';
+$LANG['Figure'] = 'Figure';
 // Translation of file vendor/diversen/simple-php-classes/src/html.php
 
 $LANG['File'] = 'File';

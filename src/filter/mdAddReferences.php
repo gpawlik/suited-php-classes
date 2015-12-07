@@ -45,9 +45,9 @@ class mdAddReferences extends mark {
             $str.= '</div>';
             
             if ($type == 'mp4') {
-                self::$media['movie'][] = "Movie [$alt_text](#$id).";   
+                self::$media['movie'][] = lang::translate('Movie') . " [$alt_text](#$id).";   
             } else {
-                self::$media['figure'][] = "Figure [$alt_text](#$id).";
+                self::$media['figure'][] = lang::translate('Figure') . " [$alt_text](#$id).";
                 
             }
             //echo $str;
