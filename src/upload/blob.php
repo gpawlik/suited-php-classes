@@ -11,27 +11,27 @@ class blob extends upload {
 
     /**
      * gets file pointer
-     * @param array $filename
+     * @param array $file
      * @param array $options
      * @return mixed $fp file pointer | true | false
      */
-    public static function getFP($filename, $options = array()){
+    public static function getFP($file, $options = array()){
         if (!empty($options)) {
             self::$options = $options;
         }
 
-
-        if(isset($_FILES[$filename])) {
+        if(isset($file['name'])) {
             
             // check native
-            $res = self::checkUploadNative($filename);
+            $res = self::checkUploadNative($file);
             if (!$res) { 
                 return false;
             }
             
             // check mime
             if (isset(self::$options['allow_mime'])) {
-                $res = self::checkAllowedMime($filename);
+
+                $res = self::checkAllowedMime($file);
                 if (!$res) { 
                     return false;                
                 }
@@ -39,13 +39,13 @@ class blob extends upload {
 
             // check maxsize. Note: Will overrule php ini settings
             if (isset(self::$options['maxsize'])) {               
-                $res = self::checkMaxSize($filename);
+                $res = self::checkMaxSize($file);
                 if (!$res) { 
                     return false;
                 }
             }
 
-            $fp = fopen($_FILES[$filename]['tmp_name'], 'rb');
+            $fp = fopen($file['tmp_name'], 'rb');
             return $fp;
         }
         // no files

@@ -294,9 +294,9 @@ class upload {
      * @param string $filename the filename to check
      * @return boolean $res
      */
-    public static function checkAllowedMime ($filename) {
+    public static function checkAllowedMime ($file) {
         // if (isset($allow_mime)){
-        $type = file::getMime($_FILES[$filename]['tmp_name']);
+        $type = file::getMime($file['tmp_name']);
 
         if (!in_array($type, self::$options['allow_mime'])) {
             $message = lang::translate('Mime type is not allowed. ');
@@ -313,8 +313,8 @@ class upload {
      * @param string $filename
      * @return boolean $res 
      */
-    public static function checkUploadNative ($filename) {        
-        $upload_return_code = $_FILES[$filename]['error'];
+    public static function checkUploadNative ($file) {        
+        $upload_return_code = $file['error'];
         if ($upload_return_code != 0) {
             self::$errors[] = upload::getNativeErrorMessage($upload_return_code);
             return false;
@@ -328,11 +328,11 @@ class upload {
      * @param int $maxsize bytes
      * @return boolean $res
      */
-    public static function checkMaxSize ($filename, $maxsize = null) {
+    public static function checkMaxSize ($file, $maxsize = null) {
         if (!$maxsize) {
             $maxsize = self::$options['maxsize'];
         }
-        if($_FILES[$filename]['size'] > $maxsize ){
+        if($file['size'] > $maxsize ){
             $message = lang::translate('File is too large');
             $message.= lang::translate('Max size is ');
             $message.= self::bytesToSize($maxsize);
