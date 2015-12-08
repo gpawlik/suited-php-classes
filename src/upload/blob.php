@@ -1,6 +1,9 @@
 <?php
 
 namespace diversen\upload;
+
+use diversen\file;
+use diversen\lang;
 use diversen\upload;
 
 /**

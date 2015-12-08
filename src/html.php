@@ -737,7 +737,6 @@ EOF;
         
         self::hidden('MAX_FILE_SIZE', $bytes);
         
-        
         $label = lang::translate('File') . ". ";
         $label.= lang::translate('Max size') . ". ";
         $size = upload::bytesToGreek($bytes);

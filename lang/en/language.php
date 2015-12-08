@@ -46,10 +46,10 @@ $LANG['No title'] = 'No title';
 $LANG['You can not access this page, because your account has been locked!'] = 'You can not access this page, because your account has been locked!';
 // Translation of file vendor/diversen/simple-php-classes/src/upload.php
 
-$LANG['File exceeds php.ini settings'] = 'File exceeds php.ini settings';
-$LANG['File exceeds max size'] = 'File exceeds max size';
-$LANG['File was only partial uploaded'] = 'File was only partial uploaded';
-$LANG['No file was uploaded'] = 'No file was uploaded';
+$LANG['File(s) exceeds php.ini settings'] = 'File(s) exceeds php.ini settings';
+$LANG['File(s) exceeds max size'] = 'File(s) exceeds max size';
+$LANG['File(s) was only partial uploaded'] = 'File(s) was only partial uploaded';
+$LANG['No files was uploaded'] = 'No files was uploaded';
 $LANG['No temp dir exists'] = 'No temp dir exists';
 $LANG['Could not write to file system'] = 'Could not write to file system';
 $LANG['Unknow upload error'] = 'Unknow upload error';
@@ -57,7 +57,7 @@ $LANG['File already exists'] = 'File already exists';
 $LANG['Could not move file.'] = 'Could not move file.';
 $LANG['Mime type is not allowed. '] = 'Mime type is not allowed. ';
 $LANG['These mime types are allowed '] = 'These mime types are allowed ';
-$LANG['File is too large'] = 'File is too large';
+$LANG['File is too large.'] = 'File is too large.';
 $LANG['Max size is '] = 'Max size is ';
 // Translation of file vendor/diversen/simple-php-classes/src/moduleloader.php
 

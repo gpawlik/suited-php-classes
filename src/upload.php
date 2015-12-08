@@ -148,13 +148,13 @@ class upload {
     public static function getNativeErrorMessage($error_code) {
         switch ($error_code) {
             case UPLOAD_ERR_INI_SIZE:
-                return lang::translate('File exceeds php.ini settings');
+                return lang::translate('File(s) exceeds php.ini settings');
             case UPLOAD_ERR_FORM_SIZE:
-                return lang::translate('File exceeds max size');
+                return lang::translate('File(s) exceeds max size');
             case UPLOAD_ERR_PARTIAL:
-                return lang::translate('File was only partial uploaded');
+                return lang::translate('File(s) was only partial uploaded');
             case UPLOAD_ERR_NO_FILE:
-                return lang::translate('No file was uploaded');
+                return lang::translate('No files was uploaded');
             case UPLOAD_ERR_NO_TMP_DIR:
                 return lang::translate('No temp dir exists');
             case UPLOAD_ERR_CANT_WRITE:
@@ -333,9 +333,10 @@ class upload {
             $maxsize = self::$options['maxsize'];
         }
         if($file['size'] > $maxsize ){
-            $message = lang::translate('File is too large');
-            $message.= lang::translate('Max size is ');
-            $message.= self::bytesToSize($maxsize);
+            $error = lang::translate('File is too large.');
+            $error.= lang::translate('Max size is ') .
+                    self::bytesToGreek($maxsize);
+            log::error($error);
             self::$errors[] = $message;
             return false;
         }

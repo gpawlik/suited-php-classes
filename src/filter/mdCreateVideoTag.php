@@ -158,7 +158,7 @@ class mdCreateVideoTag extends mark {
 
         $file = @file_get_contents($image_url);
         if ($file === false) {
-            log::error('Could not get file content ' . $file);
+            log::error('Could not get file content (video) ' . $file);
             return false;
         }
 
