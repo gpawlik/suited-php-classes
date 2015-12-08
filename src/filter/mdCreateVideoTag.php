@@ -5,12 +5,15 @@ namespace diversen\filter;
  * Markdown filter that downloads media, and make paths to absoulte file-system
  * paths. 
  */
-use diversen\uri\direct;
-use Michelf\Markdown as mark;
+
 use diversen\conf;
 use diversen\file;
-use diversen\log;
 use diversen\html\video;
+use diversen\http\headers;
+use diversen\log;
+use diversen\uri\direct;
+use Michelf\Markdown as mark;
+
 
 
 /**
@@ -156,9 +159,9 @@ class mdCreateVideoTag extends mark {
         $web_path = conf::getWebFilesPath($path);
         $image_url = conf::getSchemeWithServerName() . $url;
 
-        $file = @file_get_contents($image_url);
-        if ($file === false) {
-            log::error('Could not get file content (video) ' . $file);
+        $code = headers::getReturnCode($image_url);
+        if ($code != 200) {
+            log::error("Could not get file content (image). Got: $code " . $image_url);
             return false;
         }
 

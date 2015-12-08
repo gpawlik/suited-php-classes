@@ -33,7 +33,6 @@ class blob extends upload {
             
             // check mime
             if (isset(self::$options['allow_mime'])) {
-
                 $res = self::checkAllowedMime($file);
                 if (!$res) { 
                     return false;                
@@ -52,7 +51,7 @@ class blob extends upload {
             return $fp;
         }
         // no files
-        return true;
+        return false;
     }
 
     /**

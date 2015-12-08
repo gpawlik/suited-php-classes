@@ -9,6 +9,7 @@ use Michelf\Markdown as mark;
 use diversen\conf;
 use diversen\file;
 use diversen\log;
+use diversen\http\headers;
 
 /**
  * markdown filter.
@@ -16,8 +17,6 @@ use diversen\log;
  * @package    filters
  */
 class mdRmBrokenMedia extends mark {
-
-    
 
     protected function _doImages_reference_callback($matches) {
         $whole_match = $matches[1];
@@ -40,7 +39,8 @@ class mdRmBrokenMedia extends mark {
             }
         } else {
             # If there's no such link ID, leave intact:
-            $result = $whole_match;
+            return '';
+            echo $result = $whole_match;
         }
 
         return $result;
@@ -131,12 +131,14 @@ class mdRmBrokenMedia extends mark {
         $save_path = conf::getFullFilesPath($path);
         $web_path = conf::getWebFilesPath($path);
         $image_url = conf::getSchemeWithServerName() . $url;
-
-        $file = @file_get_contents($image_url);
-        if ($file === false) {
-            log::error('Could not get file content (image) ' . $file);
+        
+        $code = headers::getReturnCode($image_url);
+        if ($code != 200) {
+            log::error("Could not get file content (image). Got: $code " . $image_url);
             return false;
-        }
+        } 
+        
+        
 
         return $url;
         

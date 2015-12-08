@@ -1,28 +1,22 @@
 <?php
 
-// <div id ="image">
-
-
 namespace diversen\filter;
+
 /**
  * Markdown filter that 
  * 1) add 'id' refrences to all media
  * 2) optional return of all media as a markdown doc.
  */
+
+use diversen\file;
+use diversen\lang;
 use diversen\uri\direct;
 use Michelf\Markdown as mark;
-use diversen\conf;
-use diversen\file;
-use diversen\log;
+use modules\image\module as imageModule;
 
-/**
- * markdown filter.
- *
- * @package    filters
- */
+
+
 class mdAddReferences extends mark {
-
-    
 
     protected function _doImages_reference_callback($matches) {
         $whole_match = $matches[1];
@@ -38,19 +32,24 @@ class mdAddReferences extends mark {
         if (isset($this->urls[$link_id])) {
             $url = $this->encodeAttribute($this->urls[$link_id]);
             $type = $this->getType($url);
-            
+        
+        
+            if (!$this->isFigure($type, $url)) {
+                return $str = "![$alt_text]($url)";
+            }
+
             $id = uniqid();
             $str = "<div id =\"$id\">";
-            $str.= "![$alt_text]($url)";
             $str.= '</div>';
-            
+            $str.= "![$alt_text]($url)";
+
             if ($type == 'mp4') {
-                self::$media['movie'][] = lang::translate('Movie') . " [$alt_text](#$id).";   
-            } else {
-                self::$media['figure'][] = lang::translate('Figure') . " [$alt_text](#$id).";
-                
-            }
-            //echo $str;
+                $m = ++self::$m;
+                self::$media['movie'][] = "Movie $m [$alt_text](#$id).";
+            } else  {
+                $f = ++self::$f;
+                self::$media['figure'][] = "Figur $f [$alt_text](#$id).";    
+            }        
             return $str;
             
         } else {
@@ -62,9 +61,11 @@ class mdAddReferences extends mark {
     }
     
     public static $media = array ();
-    
+    public static $f = 0; 
+    public static $m = 0;
 
     protected function _doImages_inline_callback($matches) {
+        
         $whole_match = $matches[1];
         $alt_text = $matches[2];
         $url = $matches[3] == '' ? $matches[4] : $matches[3];
@@ -75,20 +76,61 @@ class mdAddReferences extends mark {
 
         $type = $this->getType($url);
         
-        $id = uniqid();
-        $str = "<div id =\"$id\">";
-        $str.= "![$alt_text]($url)";
-        $str.= '</div>';
-
-        if ($type == 'mp4') {
-            self::$media['movie'][] = "Movie [$alt_text](#$id).";
-        } else {
-            
-            self::$media['figure'][] = "Figure [$alt_text](#$id).";
-            
+        
+        if (!$this->isFigure($type, $url)) {
+            return $str = "![$alt_text]($url)";
         }
         
+        $id = uniqid();
+        $str = "<div id =\"$id\">";
+        $str.= '</div>';
+        $str.= "![$alt_text]($url)";
+        
+        if ($type == 'mp4') {
+            $m = ++self::$m;
+            self::$media['movie'][] = "Movie $m [$alt_text](#$id).";
+        } else  {
+            $f = ++self::$f;
+            self::$media['figure'][] = "Figur $f [$alt_text](#$id).";    
+        }        
         return $str;
+    }
+    
+    /**
+     * Check to see if a image is a figure.
+     * @param string $type (mp4 or image type)
+     * @param string $url
+     * @return false|string $res
+     */
+    public function isFigure ($type, $url) {
+        
+        // Movie is always a reference.
+        if ($type == 'mp4') {
+            return $url;
+        }
+        
+        // Image. 
+        if ($type != 'mp4') {
+           
+            // Check if image is a figure. 
+            $a = parse_url($url);
+            
+            //Off-site image. Not a figure
+            if (isset($a['scheme'])) {
+                return false;
+            }
+            
+            $mod = direct::fragment(0, $url);
+            if ($mod == 'image') {
+                $id = direct::fragment(2, $url);
+                $i = new imageModule();
+                $row = $i->getSingleFileInfo($id);
+                if ($row['figure'] == 1) {
+                    return $row;
+                }    
+            }
+            return false;
+        }
     }
 
     protected function doMedia($text) {
@@ -145,52 +187,16 @@ class mdAddReferences extends mark {
         return $text;
     }
     
-    /**
-     * Images are stored in database. 
-     * @param type $url
-     * @return boolean
-     */
-    public function checkImage ($url) {
-        $id = direct::fragment(2, $url);
-        $title = direct::fragment(3, $url);
-
-        $path = "/images/$id/$title";
-        $save_path = conf::getFullFilesPath($path);
-        $web_path = conf::getWebFilesPath($path);
-        $image_url = conf::getSchemeWithServerName() . $url;
-
-        $file = @file_get_contents($image_url);
-        if ($file === false) {
-            log::error('Could not get file content (image) ' . $file);
-            return false;
-        }
-
-        return $url;
-        
-    }
     
-    public function checkMp4($url) {
-        $file = conf::pathHtdocs() . $url;
-        if (!file_exists($file)) {
-            return false;
-        }
-        return $url;
-    }
 
+    /**
+     * Get type of extension
+     * @param type $url
+     * @return type
+     */
     protected function getType($url) {
- 
         $type = file::getExtension($url);
-        return strtolower($type);
-        
-        /*
-        if ($type == 'mp4') {    
-            return $this->checkMp4($url);
-        } else {
-            return $this->checkImage($url);
-        } */
-        
-        
-        
+        return strtolower($type);        
     }
 
     /**

@@ -10,6 +10,7 @@ use Michelf\Markdown as mark;
 use diversen\conf as conf;
 use diversen\file;
 use diversen\log;
+use diversen\http\headers;
 
 /**
  * markdown filter.
@@ -159,10 +160,12 @@ class mdDownloadImages extends mark {
         $web_path = conf::getWebFilesPath($path);
         $image_url = conf::getSchemeWithServerName() . $url;
 
-        $file = @file_get_contents($image_url);
-        if ($file === false) {
-            log::error('Could not get file content (image) ' . $file);
+        $code = headers::getReturnCode($image_url);
+        if ($code != 200) {
+            log::error("Could not get file content (image). Got: $code " . $image_url);
             return '';
+        } else {
+            $file = file_get_contents($image_url);
         }
 
         // make dir 

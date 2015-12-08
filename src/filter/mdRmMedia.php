@@ -9,6 +9,7 @@ use Michelf\Markdown as mark;
 use diversen\conf;
 use diversen\file;
 use diversen\log;
+use diversen\http\headers;
 
 /**
  * markdown filter.
@@ -132,9 +133,9 @@ class mdRmMedia extends mark {
         $web_path = conf::getWebFilesPath($path);
         $image_url = conf::getSchemeWithServerName() . $url;
 
-        $file = @file_get_contents($image_url);
-        if ($file === false) {
-            log::error('Could not get file content (image) ' . $file);
+        $code = headers::getReturnCode($image_url);
+        if ($code != 200) {
+            log::error("Could not get file content (image). Got: $code " . $image_url);
             return false;
         }
 
@@ -142,8 +143,11 @@ class mdRmMedia extends mark {
         
     }
     
-
-
+    /**
+     * Checks broken media
+     * @param type $url
+     * @return boolean
+     */
     protected function checkMedia($url) {
  
         $type = file::getExtension($url);

@@ -7,9 +7,10 @@ namespace diversen\filter;
  */
 use diversen\uri\direct;
 use Michelf\Markdown as mark;
-use diversen\conf as conf;
+use diversen\conf;
 use diversen\file;
 use diversen\log;
+use diversen\http\headers;
 
 /**
  * markdown filter.
@@ -132,13 +133,15 @@ class mdMediaToAbsPath extends mark {
         $save_path = conf::getFullFilesPath($path);
         $web_path = conf::getWebFilesPath($path);
         $image_url = conf::getSchemeWithServerName() . $url;
-
-        $file = @file_get_contents($image_url);
-        if ($file === false) {
-            log::error('Could not get file content (image) ' . $file);
+        
+        $code = headers::getReturnCode($image_url);
+        if ($code != 200) {
+            log::error("Could not get file content (image). Got: $code " . $image_url);
             return false;
+        } else {
+            $file = file_get_contents($image_url);
         }
-
+        
         // make dir 
         $dir = dirname($path);
         file::mkdir($dir);
