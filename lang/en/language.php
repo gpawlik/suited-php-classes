@@ -26,8 +26,9 @@ $LANG['(Admin) Edit profile'] = '(Admin) Edit profile';
 $LANG['Logout'] = 'Logout';
 // Translation of file vendor/diversen/simple-php-classes/src/html.php
 
-$LANG['File'] = 'File';
-$LANG['Max size'] = 'Max size';
+$LANG['Max size per file'] = 'Max size per file';
+$LANG['Max number of files: <span class="notranslate">{MAX_FILES}</span>'] = 'Max number of files: <span class="notranslate">{MAX_FILES}</span>';
+$LANG['Only one file at a time'] = 'Only one file at a time';
 // Translation of file vendor/diversen/simple-php-classes/src/html/helpers.php
 
 $LANG['Edit'] = 'Edit';

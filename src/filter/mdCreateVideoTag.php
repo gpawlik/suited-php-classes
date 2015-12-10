@@ -204,7 +204,7 @@ class mdCreateVideoTag extends mark {
 
     }
     
-    public $player = 'html5'; // html5 or videojs
+    public $player = 'videojs'; // html5 or videojs
     
 }
 

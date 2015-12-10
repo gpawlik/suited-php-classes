@@ -10,14 +10,12 @@ class video {
 
         static $loaded = null;
         $css = <<<EOF
-<style>
 .video-js {
     min-width:100%; 
     max-width:100%;
 
 }
 .vjs-fullscreen {padding-top: 0px}
-</style>
 EOF;
         if (!$loaded) {
             assets::setJs("http://vjs.zencdn.net/5.0.2/video.js");

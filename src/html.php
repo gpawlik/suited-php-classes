@@ -737,10 +737,19 @@ EOF;
         
         self::hidden('MAX_FILE_SIZE', $bytes);
         
-        $label = lang::translate('File') . ". ";
-        $label.= lang::translate('Max size') . ". ";
+        
+        $label = lang::translate('Max size per file') . ". ";
         $size = upload::bytesToGreek($bytes);
+        
         $label.= $size;
+        if (isset($options['multiple'])) {
+            $max_files = ini_get('max_file_uploads');
+            $label.= lang::translate('Max number of files: <span class="notranslate">{MAX_FILES}</span>', array ('MAX_FILES' => $max_files));
+        } else {
+            $label.= "<br />"; 
+            $label.= lang::translate('Only one file at a time');
+        }
+        
         
         self::label($filename, $label );
         self::file($filename, $options);
