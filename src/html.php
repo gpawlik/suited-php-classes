@@ -744,6 +744,7 @@ EOF;
         $label.= $size;
         if (isset($options['multiple'])) {
             $max_files = ini_get('max_file_uploads');
+            $label.= "<br />"; 
             $label.= lang::translate('Max number of files: <span class="notranslate">{MAX_FILES}</span>', array ('MAX_FILES' => $max_files));
         } else {
             $label.= "<br />"; 
