@@ -77,8 +77,8 @@ class mdCreateVideoTag extends mark {
             
             $v = new video();
             $o = array('mp4' => $url);
-            
-            if ($this->player == 'videojs') {
+
+            if (self::$player == 'videojs') {
                 $v->videojsInclude();
                 return $v->getVideojsHtml($alt_text, $o);
             } else {
@@ -204,8 +204,6 @@ class mdCreateVideoTag extends mark {
 
     }
     
-    public $player = 'videojs'; // html5 or videojs
+    public static $player = 'videojs'; // html5 or videojs
     
 }
-
-class filter_mdCreateVideoTag extends mdCreateVideoTag {}
