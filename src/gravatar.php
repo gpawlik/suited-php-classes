@@ -34,7 +34,7 @@ class gravatar {
      * @return string $str containing either just a URL or a complete image tag
      */
     public static function get_gravatar($email, $s = 80, $d = 'identicon', $r = 'g', $img = false, $atts = array()) {
-        $url = 'http://www.gravatar.com/avatar/';
+        $url = 'https://www.gravatar.com/avatar/';
         $url .= md5(strtolower(trim($email)));
         $url .= "?s=$s&amp;d=$d&amp;r=$r";
         if ($img) {
