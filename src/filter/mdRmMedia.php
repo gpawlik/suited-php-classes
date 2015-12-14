@@ -118,30 +118,7 @@ class mdRmMedia extends mark {
 
         return $text;
     }
-    
-    /**
-     * Images are stored in database. 
-     * @param type $url
-     * @return boolean
-     */
-    public function checkImage ($url) {
-        $id = direct::fragment(2, $url);
-        $title = direct::fragment(3, $url);
 
-        $path = "/images/$id/$title";
-        $save_path = conf::getFullFilesPath($path);
-        $web_path = conf::getWebFilesPath($path);
-        $image_url = conf::getSchemeWithServerName() . $url;
-
-        $code = headers::getReturnCode($image_url);
-        if ($code != 200) {
-            log::error("Could not get file content (image). Got: $code " . $image_url);
-            return false;
-        }
-
-        return $url;
-        
-    }
     
     /**
      * Checks broken media
@@ -151,11 +128,10 @@ class mdRmMedia extends mark {
     protected function checkMedia($url) {
  
         $type = file::getExtension($url);
-        if ($type == 'mp4') {    
+        if ($type == 'mp4' && self::$type == 'mp4') {    
             return false;
-        } else {
-            return $this->checkImage($url);
-        }    
+        }   
+        return $url;
     }
 
     /**

@@ -61,7 +61,7 @@ class mdMediaToAbsPath extends mark {
         if (!$url) {
             return '';
         }
-        $url = conf::pathHtdocs() . "$url";
+        //$url = conf::pathHtdocs() . "$url";
         return "![$alt_text]($url)";
 
     }
@@ -131,22 +131,25 @@ class mdMediaToAbsPath extends mark {
 
         $path = "/images/$id/$title";
         $save_path = conf::getFullFilesPath($path);
-        $web_path = conf::getWebFilesPath($path);
-        $image_url = conf::getSchemeWithServerName() . $url;
+        $web_path = conf::getSchemeWithServerName() . conf::getWebFilesPath($path);
+        //$image_url = conf::getSchemeWithServerName() . $url;
         
-        $code = headers::getReturnCode($image_url);
-        if ($code != 200) {
-            log::error("Could not get file content (image). Got: $code " . $image_url);
+        $code = headers::getReturnCode($web_path);
+        
+        if ($code != '200') {
+            log::error("Could not get file content (image). Got: $code " . $web_path . ' in ' . __CLASS__);
             return false;
         } else {
-            $file = file_get_contents($image_url);
+            $file = file_get_contents($web_path);
         }
         
         // make dir 
         $dir = dirname($path);
         file::mkdir($dir);
         file_put_contents($save_path, $file);
-        return $web_path;
+        // echo $save_path; die;
+        
+        return $save_path;
         
     }
     
