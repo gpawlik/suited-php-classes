@@ -44,27 +44,13 @@ class mdDownloadImages extends mark {
         $alt_text = $this->encodeAttribute($alt_text);
         if (isset($this->urls[$link_id])) {
             $url = $this->encodeAttribute($this->urls[$link_id]);
-            if (self::$download) {
-                $url = $this->saveImage($url);
-                if (self::$getRaw) {
-                    $url = conf::pathHtdocs() . "$url";
-                    return "![$alt_text]($url)";
-                }
+            
+            if ($this->isImage($url)) {
+                $this->saveImage($url);
             }
-            $result = "<img class=\"media_image\" src=\"$url\" alt=\"$alt_text\"";
-            if (isset($this->titles[$link_id])) {
-                $title = $this->titles[$link_id];
-                $title = $this->encodeAttribute($title);
-                $result .= " title=\"$title\"";
-            }
-            $result .= $this->empty_element_suffix;
-            $result = $this->hashPart($result);
-        } else {
-            # If there's no such link ID, leave intact:
-            $result = $whole_match;
-        }
-
-        return $result;
+            
+            return;
+        } 
     }
 
     protected function _doImages_inline_callback($matches) {
@@ -75,25 +61,13 @@ class mdDownloadImages extends mark {
 
         $alt_text = $this->encodeAttribute($alt_text);
         $url = $this->encodeAttribute($url);
-        if (self::$download) {
 
-            $url = $this->saveImage($url);
-            
-            if (self::$getRaw) {
-                
-                $url = conf::pathHtdocs() . "$url";
-                
-                return "![$alt_text]($url)";
-            }
+        if ($this->isImage($url)) {
+            $this->saveImage($url);
         }
-        $result = "<img class=\"media_image\" src=\"$url\" alt=\"$alt_text\"";
-        if (isset($title)) {
-            $title = $this->encodeAttribute($title);
-            $result .= " title=\"$title\""; # $title already quoted
-        }
-        $result .= $this->empty_element_suffix;
+        // $url = $this->saveImage($url);
+        return;
 
-        return $this->hashPart($result);
     }
 
     protected function doImages($text) {
@@ -149,12 +123,27 @@ class mdDownloadImages extends mark {
 
         return $text;
     }
-
+        /**
+     * Checks broken media
+     * @param type $url
+     * @return boolean
+     */
+    protected function isImage($url) {
+ 
+        $type = file::getExtension($url);
+        if ($type == 'mp4') {    
+            return false;
+        }   
+        return true;
+    }
+    
     protected function saveImage($url) {
 
         $id = direct::fragment(2, $url);
         $title = direct::fragment(3, $url);
-
+        
+        
+        
         $path = "/images/$id/$title";
         $save_path = conf::getFullFilesPath($path);
         $web_path = conf::getWebFilesPath($path);
@@ -197,9 +186,5 @@ class mdDownloadImages extends mark {
         $text = $md->transform($text);
         return $text;
     }
-
-}
-
-class filters_mdDownloadImages extends mdDownloadImages {
-    
+   
 }

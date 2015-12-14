@@ -129,26 +129,18 @@ class mdMediaToAbsPath extends mark {
         $id = direct::fragment(2, $url);
         $title = direct::fragment(3, $url);
 
+        $title = rawurlencode($title);
         $path = "/images/$id/$title";
         $save_path = conf::getFullFilesPath($path);
         $web_path = conf::getSchemeWithServerName() . conf::getWebFilesPath($path);
-        //$image_url = conf::getSchemeWithServerName() . $url;
         
         $code = headers::getReturnCode($web_path);
         
         if ($code != '200') {
             log::error("Could not get file content (image). Got: $code " . $web_path . ' in ' . __CLASS__);
             return false;
-        } else {
-            $file = file_get_contents($web_path);
-        }
-        
-        // make dir 
-        $dir = dirname($path);
-        file::mkdir($dir);
-        file_put_contents($save_path, $file);
-        // echo $save_path; die;
-        
+        } 
+ 
         return $save_path;
         
     }
