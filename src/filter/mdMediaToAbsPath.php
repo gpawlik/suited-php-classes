@@ -150,7 +150,7 @@ class mdMediaToAbsPath extends mark {
         if (!file_exists($file)) {
             return false;
         }
-        return $url;
+        return $file;
     }
 
     protected function saveMedia($url) {
