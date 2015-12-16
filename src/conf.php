@@ -656,14 +656,41 @@ class conf {
     */
     public static function getFullFilesPath ($file = null) {
         
-        $base = self::pathHtdocs();
-        $domain = self::getDomain();
-        $files_path = $base . "/files/$domain";
+        $files_path = self::pathFiles();
         if ($file) {
             return $files_path . $file;
         }
-        
         return $files_path;
+    }
+    
+    /**
+     * Get base path for files
+     * Normal it is /base/dir/htdocs
+     * But it can be set with conf ini setting 'files_path'
+     * @return string $path public files path
+     */
+    public static function pathFilesBase () {
+        $base = self::getMainIni('files_path');
+        if (!$base) {
+            $base = self::pathHtdocs();
+        }
+        return $base;
+    }
+    
+    /**
+     * Return full path to public files with files/{$domain} attached
+     * @return string $str
+     */
+    public static function pathFiles () {
+        
+        $base = self::pathFilesBase();
+        if (!$base) {
+            $base = self::pathHtdocs();
+        }
+        
+        $domain = self::getDomain();
+        $str = $base . "/files/$domain";
+        return $str;
     }
 
     /**
