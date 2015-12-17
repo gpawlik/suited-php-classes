@@ -439,7 +439,7 @@ class assets extends template {
             if (!$cached_assets_inline) {
                 $str.= "<script src=\"$val\" type=\"text/javascript\"></script>\n";
             } else {
-                $str.= file_get_contents(conf::pathFilesBase() . "/$val");
+                $str.= file_get_contents(conf::pathFilesBase() . "$val");
             }
         }
         if ($cached_assets_inline) {
@@ -457,7 +457,7 @@ class assets extends template {
         foreach (self::$js as $key => $val){
             if (!preg_match('#^(http|https)://#', $val) AND !preg_match('#^(//)#', $val) ) {
                 unset(self::$js[$key]);
-                $str.= file::getCachedFile(conf::pathFilesBase() . "/$val") ."\n\n\n";
+                $str.= file::getCachedFile(conf::pathHtdocs() . "/$val") ."\n\n\n";
             }
         }
             
@@ -500,7 +500,6 @@ class assets extends template {
         ksort(self::$js);        
         if (conf::getMainIni('cached_assets_compress')) {
             self::setJsAsSingleFile();
-            
         }
                  
         return self::getJs();    
