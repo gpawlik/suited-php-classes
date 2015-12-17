@@ -85,7 +85,7 @@ function cos_check_magic_gpc () {
  */
 function cos_check_files_dir () {
     clearstatcache();
-    $files_dir = conf::pathHtdocs() . "/files";
+    $files_dir = conf::pathFilesBase() . "/files";
     $domain = conf::getMainIni('domain');
     $files_dir.="/$domain";
     

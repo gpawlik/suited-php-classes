@@ -171,7 +171,7 @@ class mdCreateVideoTag extends mark {
     
     public function checkMp4($url) {
         
-        $file = conf::pathHtdocs() . $url;
+        $file = conf::pathFilesBase() . $url;
         if (!file_exists($file)) {
             return false;
         }
