@@ -2,7 +2,7 @@
 
 namespace diversen\js;
 
-use diversen\template;
+use diversen\template\assets;
 /**
  * file conatins php code for setting toc js in templates
  * @package js
@@ -19,7 +19,7 @@ class toc {
      * @param array $options e.g. array ('exclude' => 'h1', 'content' => '#content_article'); 
      */
     public static function set ($options = array ()) {
-        template::setJs('/bower_components/toc/dist/toc.min.js');
+        assets::setJs('/bower_components/toc/dist/toc.min.js');
         if (!isset($options['selectors'])) {
             $options['selectors'] = 'h1,h2,h3,h4';
         }
@@ -31,6 +31,6 @@ class toc {
         $('#toc').toc({selectors: '{$options['selectors']}' , container: '{$options['container']}', prefix: 'toc', 'smoothScrolling': false});
     });
 EOF;
-        template::setStringJs($str);
+        assets::setStringJs($str);
     }
 }

@@ -4,10 +4,10 @@ namespace diversen;
 use diversen\html;
 use diversen\moduleloader;
 use diversen\conf as conf;
-use diversen\template\assets as assets;
+use diversen\template\assets;
 use diversen\template\meta as meta;
-use diversen\template\favicon as template_favicon;
-use diversen\template\logo as template_logo;
+use diversen\template\favicon;
+use diversen\template\logo;
 /**
  * File containing template class. 
  * 
@@ -120,210 +120,7 @@ class template {
         }
         return false;
     }
-    
-    /**
-     * gets rel assets. assure that we only get every asset once.
-     * @return string $assets 
-     */
-    public static function getRelAssets () {
-        return assets::getRelAssets();
-    }
-    
-    /**
-     * method for adding css or js in top of document. 
-     * @param string $type 'css' or 'js'
-     * @param string $link 'src' link of the asset 
-     */
-    public static function setRelAsset ($type, $link) {
-        assets::setRelAsset($type, $link);
-    }
-    
-    /**
-     * method for getting html for front page. If no logo has been 
-     * uploaded. You will get logo as html
-     * @param type $options options to give to html::createHrefImage
-     * @return string $str the html compsoing the logo or main title
-     */
-    public static function getLogoHTML ($options = array()) {
-        return template_logo::getLogoHTML($options);
-    }
 
-    /**
-     * method for getting the meta tags as a string
-     * You can specifiy meta keywords and description global in config.ini
-     * by using the settings, meta_desc and meta_keywords.
-     *  
-     * @return string $str the meta tags as a string. This can be used
-     *                     in your mainTemplate
-     */
-    public static function getMeta (){        
-        return meta::getMeta();
-    }
-    
-
-    
-    /**
-     * set css that should not be cached. We have downloaded source of a 
-     * js script and we will compress anything into a single file. In order
-     * to avoid path issues with images in css we can use this in order
-     * to just link to the CSS
-     * @param string $css_url
-     * @param string $order
-     * @param array $options
-     */
-    public static function setNoCacheCss ($css_url, $order = null, $options = array ()) {
-        assets::setNoCacheCss($css_url, $order, $options);
-    }
-
-    /**
-     * method for setting css files to be used on page
-     *
-     * @param string $css_url pointing to the css on your server e.g. /templates/module/good.css
-     * @param int  $order loading order. 0 is loaded first and > 0 is loaded later
-     * @param array $options
-     */
-    public static function setCss($css_url, $order = null, $options = null){
-        assets::setCss($css_url, $order, $options);
-    }
-
-
-    /**
-     * method for getting css for displaing in user template
-     * @return  string  the css as a string
-     */
-    public static function getCss(){
-        return assets::getCss();
-    }
-    
-
-    /**
-     * takes all CSS and puts in one file. It works the same way as 
-     * template::getCss. You can sepcify this in your ini settings by using
-     * cached_assets_compress = 1
-     * Usefull if you have many css files. 
-     * @return string $str
-     */
-    public static function getCompressedCss(){
-        return assets::getCompressedCss();
-    }
-    
-    /**
-     * Will load the js as file and place and add it to array which can
-     * be parsed in user templates.
-     * 
-     * @param   string   $js file path of the javascript
-     * @param   int $order the loading order of javascript 0 is first > 0 is
-     *                   later.
-     * @param array $options
-     */
-    public static function setStringJs($js, $order = null, $options = array()){
-        assets::setStringJs($js, $order, $options);
-    }
-
-
-    /**
-     * method for setting js files to be used by user templates. This is
-     * used with javascripts which are placed in web space.
-     * @param   string   $js_url pointing to the path of the javascript
-     * @param   int      $order the loading order of javascript 0 is first > 0 is
-     *                   later.
-     * @param   array    $options defaults: array ('head' => false)
-     */
-    public static function setJs($js_url, $order = null, $options = null){
-        assets::setJs($js_url, $order, $options);
-    }
-
-    /**
-     * method for getting css files used in user templates
-     * @return  string  the css as a string
-     */
-    public static function getJs(){
-        return assets::getJs();
-    }
-      
-    /**
-     * takes all JS and puts them in one file. It works the same way as 
-     * template::getJs (except you only get one file) 
-     * You can sepcify this in your ini settings by using
-     * cached_assets_compress = 1
-     * Usefull if you have many JS files. 
-     * @return string $str
-     */
-    public static function getCompressedJs(){
-        return assets::getCompressedJs(); 
-    }
-    
-    /**
-     * gets js for head as a string
-     */
-    public static function getJsHead(){
-        return assets::getJsHead();
-    }
-    
-    /**
-     * returns favicon html
-     * @return string $html 
-     */
-    public static function getFaviconHTML () {
-        return template_favicon::getFaviconHTML();
-    }
-    
-    /**
-     * Will load the js as file and place and add it to array which can
-     * be parsed in user templates. This is used with js files that exists
-     * outside webspace, e.g. in modules
-     * 
-     * @param   string   $js file path of the javascript
-     * @param   int      $order the loading order of javascript 0 is first > 0 is
-     *                   later.
-     * @param array $options
-     */
-    public static function setInlineJs($js, $order = null, $options = array()){
-        assets::setInlineJs($js, $order, $options);
-    }
-
-    /**
-     * method for getting all inline js as a string
-     * @return  string  $str the js as a string
-     */
-    public static function getInlineJs(){
-        return assets::getInlineJs();
-    }
-
-    /**
-     * method for setting user css used inline in user templates.
-     *
-     * @param   string   $css string file path of the css
-     * @param   int      $order the loading order of css 0 is first > 0 is
-     *                   later.
-     * @param array $options
-     */
-    public static function setInlineCss($css, $order = null, $options = array()){
-        assets::setInlineCss($css, $order, $options);
-    }
-    
-        /**
-     * method for setting user css used inline in user templates.
-     *
-     * @param   string   $css string file path of the css
-     * @param   int      $order the loading order of css 0 is first > 0 is
-     *                   later.
-     * @param array $options
-     */
-    public static function setModuleInlineCss($module, $css, $order = null, $options = array()){
-        assets::setModuleInlineCss($module, $css, $order, $options);
-    }
-
-    
-    /**
-     * method for caching a asset (js or css)
-     * @param type $css
-     * @param type $order
-     * @param type $type 
-     */
-    public static function cacheAsset ($css, $order, $type) {
-        assets::cacheAsset($css, $order, $type);
-    }
     
     /**
      * returns a included files content with vars substitued
@@ -341,25 +138,6 @@ class template {
             return $contents;
         }
         return false;
-    }
-    
-    /**
-     * method for parsing a css file and substituing css var with
-     * php defined values
-     * @param string $css
-     * @param array  $vars
-     * @param int    $order
-     */
-    public static function setParseVarsCss($css, $vars, $order = null){
-        assets::setParseVarsCss($css, $vars, $order);
-    }
-
-    /**
-     * method for getting css used in inline in user templates
-     * @return  string  the css as a string
-     */
-    public static function getInlineCss(){
-        return assets::getInlineCss();
     }
 
     /**
@@ -429,18 +207,5 @@ class template {
     
     public static function loadTemplateIniAssets () {
         assets::loadTemplateIniAssets();
-    }
-    
-    
-    /**
-     * checks if a css style is registered. If not
-     * we use common.css in template folder.
-     * 
-     * @param string $template
-     * @param int $order
-     * @param string $version
-     */
-    public static function setTemplateCss ($template = '', $order = 0, $version = 0){
-        assets::setTemplateCss($template, $order, $version);
     }
 }

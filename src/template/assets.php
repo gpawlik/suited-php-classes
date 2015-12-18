@@ -3,7 +3,6 @@
 namespace diversen\template;
 
 use diversen\template;
-use diversen\csspacker;
 use diversen\conf;
 use diversen\file;
 use diversen\layout;
@@ -19,14 +18,9 @@ use diversen\layout;
  * @package template
  */
 
-
-
-// Nice find but does not work properly
-// include_once "class.JavaScriptPacker.php";
-
 class assets extends template {
     
-        /**
+    /**
      * holding css files
      * @var array   $css
      */
@@ -69,74 +63,22 @@ class assets extends template {
      * @var string $cacheDir 
      */
     public static $cacheDir = 'cached_assets';
-
-    /**
-     * name of cache dir web where we cache assets
-     * @var string $cacheDirWeb  
-     * 
-     */
-    public static $cacheDirWeb = '';
     
     /**
-     * array holding css that should not be cached or compressed
-     * @var array $noCacheCss
-     */
-    public static $noCacheCss = array ();
-    
-        
-     /**
-     * method for caching a asset (js or css)
-     * @param type $css
-     * @param type $order
-     * @param type $type 
-     */
-    public static function cacheAsset ($asset, $order, $type, $options = array ()) {
-        if (conf::isCli()) {
-            return;
-        }
+     * Checks if cache dir exists. If not, then it will be created.
+     * @staticvar boolean $cacheChecked
+     */    
+    public static function checkCreateCacheDir () {
         static $cacheChecked = false;
-     
-        if (!$cacheChecked) {            
+        if (!$cacheChecked) {
             self::$cacheDir = conf::getFullFilesPath() . '/' . self::$cacheDir;
             if (!file_exists(self::$cacheDir)) {
-                mkdir(self::$cacheDir);
+                mkdir(self::$cacheDir, 0770, true);
             }  
             $cacheChecked = true;
         }
-        
-        
-        
-        $md5 = md5($asset);        
-        $cached_asset = conf::getFullFilesPath() . "/cached_assets/$md5.$type";
-        $cache_dir = conf::getWebFilesPath('/cached_assets');
-        if (file_exists($cached_asset && !conf::getMainIni('cached_assets_reload'))) {
-            
-            if ($type == 'css') {
-                self::setCss("$cache_dir/$md5.$type", $order);
-            }
-            
-            if ($type == 'js') {
-                self::setJs("$cache_dir/$md5.$type", $order);
-            }          
-        } else {
-            
-            $str = file_get_contents($asset); 
-            if (isset($options['search'])) {
-                $str = self::searchReplace($str, $options);
-            }
-            
-            file_put_contents($cached_asset, $str, LOCK_EX);
-
-            if ($type == 'css') {
-                self::setCss("$cache_dir/$md5.$type", $order);
-            }
-            
-            if ($type == 'js') {
-                self::setJs("$cache_dir/$md5.$type", $order);
-            } 
-        }
     }
-    
+
     /**
      * gets rel assets. assure that we only get every asset once.
      * @return string $assets 
@@ -156,90 +98,35 @@ class assets extends template {
     }
     
     /**
-     * method for adding css or js in top of document. 
+     * Method for adding CSS or JS to a HTML document. 
      * @param string $type 'css' or 'js'
      * @param string $link 'src' link of the asset 
      */
     public static function setRelAsset ($type, $link) {
         if ($type == 'css') {
-            self::$rel[] = "<link rel=\"stylesheet\" type=\"text/css\" href=\"$link\" />\n";
+            self::$rel[] = "<link rel=\"stylesheet\" href=\"$link\" />" . PHP_EOL;
         }
         if ($type == 'js') {
-            self::$rel[] = "<script type=\"text/javascript\" src=\"$link\"></script>\n";
+            self::$rel[] = "<script src=\"$link\"></script>" . PHP_EOL;
         }
     }
     
-    /**
-     * set css that should not be cached. We have downloaded source of a 
-     * js script and we will compress anything into a single file. In order
-     * to avoid path issues with images in css we can use this in order
-     * to just link to the CSS
-     * @param string $css_url
-     * @param string $order
-     * @param array $options
-     */
-    public static function setNoCacheCss ($css_url, $order = null, $options = array ()) {
-         if (isset($order)){
-            if (isset(self::$css[$order])) {
-                self::setNoCacheCss($css_url, $order + 1, $options);
-            } else {
-                self::$noCacheCss[$order] = $css_url;
-            }
-        } else {
-            $next = self::getNextCount();
-            if (isset(self::$css[$next])) {
-                self::setCss($css_url, $order + 1, $options);
-            }
-            self::$noCacheCss[$next] = $css_url;
-        }
-    }
     
     /**
-     * method for setting css files to be used on page
-     *
-     * @param string $css_url pointing to the css on your server e.g. /templates/module/good.css
-     * @param int  $order loading order. 0 is loaded first and > 0 is loaded later
+     * Method for setting CSS which is in the public space, e.g. htdocs
+     * @param string $css_url e.g. /templates/module/good.css
+     * @param int  $order 0 is loaded first and > 0 is loaded later
      * @param array $options
      */
     public static function setCss($css_url, $order = null, $options = null){
-        if (isset($options['no_cache'])) {
-            self::setNoCacheCss($css_url, $order, $options);
-            return;
-        }
-        
-        if (isset($order)){
-            if (isset(self::$css[$order])) {
-                self::setCss($css_url, $order + 1, $options);
-            } else {
-                self::$css[$order] = $css_url;
-            }
+
+        if (isset(self::$css[$order])) {
+            self::setCss($css_url, $order + 1, $options);
         } else {
-            $next = self::getNextCount();
-            if (isset(self::$css[$next])) {
-                self::setCss($css_url, $order + 1, $options);
-            }
-            self::$css[$next] = $css_url;
+            self::$css[$order] = $css_url;
         }
     }
-    
-    /**
-     * var for keep count of css been set. 
-     * why: because if we set a css with a order of e.g. 20000
-     * then the next css without a order  will be set to 20001
-     * Therefor: we use an internal counter of all css were it does not
-     * matter what order they are loaded in
-     * @var int $count
-     */
-    private static $count = 1;
-    
-    /**
-     * 
-     * @return int $count next available css placeholder
-     */
-    private static function getNextCount() {
-        return self::$count++;
-    }
-    
+
     /**
      * method for getting css for displaing in user template
      * @return  string  the css as a string
@@ -248,65 +135,54 @@ class assets extends template {
         
         $str = "";
         ksort(self::$css);
-        
-        $cached_assets_inline = conf::getMainIni('cached_assets_inline');
         foreach (self::$css as $key => $val){
-            if (!$cached_assets_inline) {
-                $str.= "<link rel=\"stylesheet\" type=\"text/css\" href=\"$val\" />\n";
-            } else {
-                $str.= file_get_contents(conf::pathFilesBase() . "/$val") . "\n";
-            }
+            $str.= "<link rel=\"stylesheet\" href=\"$val\" />\n";
             unset(self::$css[$key]);
         }
-        
-        if ($cached_assets_inline) {
-            return "<style>$str</style>";
-        }
         return $str;
+        
     }
     
+    /**
+     * Return a CSS take with $css 
+     * @param string $css
+     * @return string $str
+     */
     public static function getCssLinkRel ($css) {
         return "<link rel=\"stylesheet\" type=\"text/css\" href=\"$css\" />\n";
     } 
     
     /**
-     * gets all css as a single string
+     * Get all content of self::$css as a single CSS string
      * @return string $css
      */
     public static function getCssAsSingleStr () {
+        
         $str = '';
-        foreach (self::$css as $key => $val){
-            if (!preg_match('/^(http|https):/', $val) AND !preg_match('#^(//)#', $val) ) {
-                unset(self::$css[$key]);
-                    
-                $file = conf::pathFilesBase() . "$val";
-                    
-                $str.= "\n/* Caching $file*/\n";
-                if (!conf::getMainIni('cache_disable')) {
-                    $str.= file::getCachedFile($file) ."\n\n\n";
-                } else {
-                    $str.= file_get_contents($file);
-                }
-            } 
+        foreach (self::$css as $key => $val) {
+            $file = conf::pathHtdocs() . "$val";
+            $str.= PHP_EOL . "/* Caching $file */" . PHP_EOL;
+            $str.= file::getCachedFile($file) . PHP_EOL;
+            unset(self::$css[$key]);
+        }
+        foreach (self::$inlineCss as $key => $val) {
+            $str.= PHP_EOL . $val . PHP_EOL;
+            unset(self::$inlineCss[$key]);
         }
         
-        if (conf::getMainIni('cached_assets_pack')) {
-            $str = csspacker::packcss($str);  
-        }
         return $str;
+        
     }
     
     /**
-     * puts all css into one file, place this file in `cached_assets`
-     * sets the new css path
+     * Gets all contents of self::$css, and place the content in a single CSS
+     * file with a named based on md5
+     * This file is the set as the only file in self::$css
      */
     public static function setCssAsSingleFile () {
-        $str = self::getCssAsSingleStr ();
-        if (conf::getMainIni('cached_assets_minify')) {
-            $cssp = new csspacker();
-            $str =$cssp->packcss($str);
-        }
-            
+        
+        // Note. All files are read every time
+        $str = self::getCssAsSingleStr ();    
         $md5 = md5($str);
         $domain = conf::getDomain();
             
@@ -334,16 +210,13 @@ class assets extends template {
      */
     public static function getCompressedCss(){
         
+        // Generate single source file 
         ksort(self::$css);
-        if (conf::getMainIni('cached_assets_compress')) {
+        if (conf::getMainIni('cached_assets')) {
             self::setCssAsSingleFile();  
-        } 
-        
-        ksort(self::$noCacheCss);
-        foreach (self::$noCacheCss as $val) {
-            self::setCss($val);
         }
         return self::getCss();
+        
     }
 
     
@@ -410,18 +283,19 @@ class assets extends template {
             self::$jsHead[] = $js_url;
             return;
         }
-        
-        if (isset($order)){
-            if (isset(self::$js[$order])) {
-                self::setJs($js_url, $order + 1, $options);
-            } else {
-                self::$js[$order] = $js_url;
-            }
+
+        if (isset(self::$js[$order])) {
+            self::setJs($js_url, $order + 1, $options);
         } else {
-            self::$js[] = $js_url;
+            self::$js[$order] = $js_url;
         }
     }
     
+    /**
+     * Set JS in head of document
+     * @param string $js_url
+     * @param int $order
+     */
     public static function setJsHead ($js_url, $order = null) {
         self::setJs($js_url, $order, array ('head' => true));
     }
@@ -434,18 +308,12 @@ class assets extends template {
         $str = "";
         ksort(self::$js);
 
-        $cached_assets_inline = conf::getMainIni('cached_assets_inline');
-        foreach (self::$js as $val){
-            if (!$cached_assets_inline) {
-                $str.= "<script src=\"$val\" type=\"text/javascript\"></script>\n";
-            } else {
-                $str.= file_get_contents(conf::pathFilesBase() . "$val");
-            }
-        }
-        if ($cached_assets_inline) {
-            return "<script>$str</script>\n";
+        foreach (self::$js as $key => $val){
+            $str.= "<script src=\"$val\"></script>\n";
+            unset(self::$js[$key]);
         }
         return $str;
+        
     }
     
     /**
@@ -453,14 +321,19 @@ class assets extends template {
      * @return string $css
      */
     public static function getJsAsSingleStr () {
+        
         $str = '';
-        foreach (self::$js as $key => $val){
-            if (!preg_match('#^(http|https)://#', $val) AND !preg_match('#^(//)#', $val) ) {
-                unset(self::$js[$key]);
-                $str.= file::getCachedFile(conf::pathHtdocs() . "/$val") ."\n\n\n";
-            }
+        foreach (self::$js as $key => $val) {
+            $file = conf::pathHtdocs() . "$val";
+            $str.= PHP_EOL . "/* Caching JS $file */" . PHP_EOL;
+            $str.= file::getCachedFile($file) . PHP_EOL;
+            unset(self::$js[$key]);
         }
-            
+        foreach (self::$inlineJs as $key => $val) {
+            $str.= PHP_EOL . $val . PHP_EOL;
+            unset(self::$inlineJs[$key]);
+        }
+        
         return $str;
     }
     
@@ -496,13 +369,12 @@ class assets extends template {
      */
     public static function getCompressedJs(){
         
-        $str = "";
         ksort(self::$js);        
-        if (conf::getMainIni('cached_assets_compress')) {
+        if (conf::getMainIni('cached_assets')) {
             self::setJsAsSingleFile();
         }
-                 
-        return self::getJs();    
+        return self::getJs();   
+        
     }
     
     /**
@@ -539,24 +411,16 @@ class assets extends template {
      * @param array $options
      */
     public static function setInlineJs($js, $order = null, $options = array()){
-        if (conf::getMainIni('cached_assets') && !isset($options['no_cache'])) {
-            self::cacheAsset ($js, $order, 'js', $options);
-            return;
-        }
-        
-        $str = file_get_contents($js);
+
+        $str = file::getCachedFile($js);
         if (isset($options['search'])){
             $str = self::searchReplace($str, $options);
         }
-        
-        if (isset($order)){
-            if (isset(self::$inlineJs[$order])) {
-                self::$inlineJs[] = $str;
-            } else {
-                self::$inlineJs[$order] = $str;
-            }
+
+        if (isset(self::$inlineJs[$order])) {
+            self::setInlineJs($js, $order + 1);
         } else {
-            self::$inlineJs[] = $str;
+            self::$inlineJs[$order] = $str;
         }
     }
 
@@ -567,7 +431,7 @@ class assets extends template {
     public static function getInlineJs(){
         $str = "";
         ksort(self::$inlineJs);
-        foreach (self::$inlineJs as $val){            
+        foreach (self::$inlineJs as $val){         
             $str.= "<script type=\"text/javascript\">$val</script>\n";
         }
         return $str;
@@ -582,15 +446,10 @@ class assets extends template {
      * @param array $options array ('no_cache' => 0)
      */
     public static function setInlineCss($css, $order = null, $options = array()){
-
-        if (conf::getMainIni('cached_assets') && !isset($options['no_cache'])) {
-            self::cacheAsset ($css, $order, 'css');
-            return;
-        }
           
-        $str = file_get_contents($css);                
-        if (isset($order)){
-            self::$inlineCss[$order] = $str;
+        $str = file::getCachedFile($css);        
+        if (isset(self::$inlineCss[$order])){
+            self::setInlineCss($css, $order + 1);
         } else {
             self::$inlineCss[] = $str;
         }
@@ -642,13 +501,11 @@ class assets extends template {
         $str = "";
         ksort(self::$inlineCss);
         foreach (self::$inlineCss as $key => $val){
-            $str.= "<style type=\"text/css\">$val</style>\n";
-            unset(self::$inlineCss[$key]);
+            $str.= "<style>$val</style>\n";
         }
         return $str;
     }
-
-        
+    
     /**
      * load assets specified in ini settings from template
      */
@@ -668,7 +525,6 @@ class assets extends template {
             }   
         }
         
-        
         $js = conf::getModuleIni('template_js');
         if ($js) {
             foreach ($js as $val) {
@@ -686,25 +542,18 @@ class assets extends template {
      * @param int $order
      * @param string $version
      */
-    public static function setTemplateCss ($template = '', $order = 0, $version = 0){
+    public static function setTemplateCss ($template = '', $order = 0){
 
         $css = conf::getMainIni('css');
         if (!$css) {
-            // no css set use default/default.css
-            //self::setCss("/templates/$template/default/default.css?version=$version", $order);
+            // If no css, use default/default.css
             self::setCss("/templates/$template/default/default.css", $order);
             return;
         }
         
-        $base_path = "/templates/$template/$css";
-        $css_path = conf::pathHtdocs() . "/$base_path/$css.css";
-        $css_web_path = $base_path . "/$css.css";
-        if (file_exists($css_path)) {
-            self::setCss("$css_web_path", $order);
-        } else {
-            self::setCss("/templates/$template/default/default.css", $order);
-            return;
-        }
+        $css = "/templates/$template/$css/$css.css";
+        self::setCss($css, $order);
+
 
     }
     
