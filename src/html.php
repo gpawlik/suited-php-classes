@@ -709,14 +709,11 @@ EOF;
     <input type="hidden" name="APC_UPLOAD_PROGRESS" id="progress_key" value="$up_id"/>
     <!---->
 EOF;
-        
-        
-        $str.= "<input type=\"file\" name=\"$name\" id=\"$name\" $extra />\n"  . self::$br . "\n";      
+        $str.= "<input type=\"file\" name=\"$name\" id=\"$name\" $extra />"  . self::$br;      
         $str.= <<<EOF
-    <!--Include the iframe-->
-    <iframe id="upload_frame" height = 40 name="upload_frame" frameborder="0" border="0" src="" scrolling="no" scrollbar="no" > </iframe>
+
+    <iframe id="upload_frame" width ="100%" height = "20" name="upload_frame" frameborder="0" border="0" src="" scrolling="no" scrollbar="no" > </iframe>
     <br />
-    <!---->
 EOF;
         self::$fields[] = array ('value' => $str);
         return $str;
