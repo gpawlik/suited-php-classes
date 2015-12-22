@@ -473,7 +473,7 @@ class assets extends template {
         $module_css = conf::pathModules() . "/$module/$css";   
         $template_name = layout::getTemplateName();
         $template_override =  "/templates/$template_name/$module$css";  
-        if (file_exists(conf::pathFilesBase() . $template_override) ) {
+        if (file_exists(conf::pathHtdocs() . $template_override) ) {
             self::setCss($template_override);
             return;
         }        
