@@ -84,15 +84,20 @@ class assets extends template {
      * @return string $assets 
      */
     public static function getRelAssets () {
+        $css = self::getRelAssetsType('css');
+        $js = self::getRelAssetsType('js');
+        return $css . PHP_EOL . $js . PHP_EOL;
+    }
+    
+    public static function getRelAssetsType ($type) {
         $str = '';
-        static $set = array ();
-        foreach (self::$rel as $val) {
-            if (isset($set[$val])) { 
-                continue;
-            } else {
-                $set[$val] = 1;
-                $str.=$val;
-            }
+        
+        if (!isset(self::$rel[$type])) {
+            return '';
+        }
+        
+        foreach (self::$rel[$type] as $val) {
+            $str.=$val;
         }
         return $str;
     }
@@ -104,10 +109,10 @@ class assets extends template {
      */
     public static function setRelAsset ($type, $link) {
         if ($type == 'css') {
-            self::$rel[] = "<link rel=\"stylesheet\" href=\"$link\" />" . PHP_EOL;
+            self::$rel[$type][] = "<link rel=\"stylesheet\" href=\"$link\" />" . PHP_EOL;
         }
         if ($type == 'js') {
-            self::$rel[] = "<script src=\"$link\"></script>" . PHP_EOL;
+            self::$rel[$type][] = "<script src=\"$link\"></script>" . PHP_EOL;
         }
     }
     
@@ -471,12 +476,11 @@ class assets extends template {
         if (file_exists(conf::pathFilesBase() . $template_override) ) {
             self::setCss($template_override);
             return;
-        }
-        
+        }        
         self::setInlineCss($module_css);
     }
     
-        /**
+    /**
      * method for parsing a css file and substituing css var with
      * php defined values
      * @param string $css
