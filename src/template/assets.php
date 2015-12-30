@@ -423,7 +423,7 @@ class assets extends template {
         }
 
         if (isset(self::$inlineJs[$order])) {
-            self::setInlineJs($js, $order + 1);
+            self::setInlineJs($js, $order + 1, $options);
         } else {
             self::$inlineJs[$order] = $str;
         }

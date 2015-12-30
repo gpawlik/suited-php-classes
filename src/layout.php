@@ -421,6 +421,11 @@ class layout {
         return $str;
     }
     
+    /**
+     * Get a main menu link <li>...</li>
+     * @param array $menu
+     * @return string $str html link
+     */
     public static function getMainMenuLink ($menu) {
         $options = array();
         $str = '';
