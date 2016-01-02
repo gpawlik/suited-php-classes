@@ -1,12 +1,12 @@
 {
-    "name": "diversen/simple-php-classes",
-    "description": "A collection of simple classes",
-    "homepage": "http://github.com/diversen/simple-php-classes",
+    "name": "gpawlik/suited-php-classes",
+    "description": "A collection of useful classes",
+    "homepage": "http://github.com/gpawlik/suited-php-classes",
     "keywords": ["lib", "framework"],
     "license": "BSD-3-Clause",
     "autoload": {
         "psr-4": {
-            "diversen\\": "src/"
+            "gpawlik\\": "src/"
         }
     },
     "extra": {

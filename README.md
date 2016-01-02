@@ -1,6 +1,6 @@
-# Simple php classes
+# Suited php classes
 
-A simple framework, and a set of simple php classes. 
+A simple framework, and a set of useful php classes. 
 
 Libs to remember
 
